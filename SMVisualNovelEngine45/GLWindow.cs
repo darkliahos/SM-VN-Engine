@@ -7,6 +7,7 @@ using SMVisualNovelEngine45.Content_Managers;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Input;
+using OpenTK.Graphics.ES11;
 
 namespace SMVisualNovelEngine45
 {
@@ -51,8 +52,7 @@ namespace SMVisualNovelEngine45
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
-            GL.ClearColor(BackgroundColor);
-            //GL.ClearColor(0.1f, 0.2f, 0.5f, 0.0f);
+            GL.ClearColorx(BackgroundColor.R, BackgroundColor.G, BackgroundColor.B, BackgroundColor.A);
             GL.Enable(EnableCap.DepthTest);
         }
 
@@ -70,7 +70,7 @@ namespace SMVisualNovelEngine45
 
             Matrix4 projection = Matrix4.CreatePerspectiveFieldOfView((float)Math.PI / 4, Width / (float)Height, 1.0f, 64.0f);
             GL.MatrixMode(MatrixMode.Projection);
-            GL.LoadMatrix(ref projection);
+            //GL.LoadMatrix(ref projection);
         }
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace SMVisualNovelEngine45
             GL.PushMatrix();
             GL.LoadIdentity();
 
-            GL.Ortho(image.Left, image.Right,image.Bottom, image.Top, -1, 1);
+            //GL.Ortho(image.Left, image.Right,image.Bottom, image.Top, -1, 1);
 
             GL.MatrixMode(MatrixMode.Modelview);
             GL.PushMatrix();
@@ -119,28 +119,28 @@ namespace SMVisualNovelEngine45
 
             GL.Enable(EnableCap.Texture2D);
 
-            GL.BindTexture(TextureTarget.Texture2D, image.BinData);
+            //GL.BindTexture(TextureTarget.Texture2D, image.BinData);
 
-            //Draws a square
-            GL.Begin(BeginMode.Quads);
+            ////Draws a square
+            //GL.Begin(BeginMode.Quads);
 
-            //Bottom Left Corner
-            GL.TexCoord2(0, 1);
-            GL.Vertex3(image.BottomLeft.X, image.BottomLeft.Y, image.BottomLeft.Z);
+            ////Bottom Left Corner
+            //GL.TexCoord2(0, 1);
+            //GL.Vertex3(image.BottomLeft.X, image.BottomLeft.Y, image.BottomLeft.Z);
 
-            //Bottom Right Corner
-            GL.TexCoord2(1, 1);
-            GL.Vertex3(image.BottomRight.X, image.BottomRight.Y, image.BottomRight.Z);
+            ////Bottom Right Corner
+            //GL.TexCoord2(1, 1);
+            //GL.Vertex3(image.BottomRight.X, image.BottomRight.Y, image.BottomRight.Z);
 
-            //Top Right Corner
-            GL.TexCoord2(1, 0);
-            GL.Vertex3(image.TopRight.X, image.TopRight.Y, image.TopRight.Z);
+            ////Top Right Corner
+            //GL.TexCoord2(1, 0);
+            //GL.Vertex3(image.TopRight.X, image.TopRight.Y, image.TopRight.Z);
 
-            //Top Left Corner
-            GL.TexCoord2(0, 0);
-            GL.Vertex3(image.TopLeft.X, image.TopLeft.Y, image.TopLeft.Z);
+            ////Top Left Corner
+            //GL.TexCoord2(0, 0);
+            //GL.Vertex3(image.TopLeft.X, image.TopLeft.Y, image.TopLeft.Z);
 
-            GL.End();
+            //GL.End();
 
             GL.Disable(EnableCap.Texture2D);
             GL.PopMatrix();

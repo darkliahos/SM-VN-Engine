@@ -65,6 +65,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <None Include="app.config" />
     <None Include="Resources\fakelist.cs" />
     <Compile Include="WhenWorkingWithImages.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
