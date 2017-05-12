@@ -1,0 +1,63 @@
+﻿<Window x:Class="SMVSEEditor.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MainWindow" Height="720" Width="1280" Background="LightSteelBlue">
+    <Grid>
+        <Menu x:Name="MainMenu" IsMainMenu="True" Margin="0,0,0,662" HorizontalAlignment="Right" Width="1272" Background ="Black" Foreground="#FFE4D8D8" FontFamily="Felix Titling" FontSize="14">
+
+            <MenuItem Header="_File" Background="Black">
+                <MenuItem Header="_New..."/>
+                <Separator/>
+                <MenuItem Header="_Open..." />
+                <Separator Background="Black"/>
+                <MenuItem Header="_Save" />
+                <MenuItem Header="_Save As..." />
+                <Separator />
+                <MenuItem x:Name="btnMenuExit" Header="_Exit" Background="Black" Click="btnMenuExit_Click" />
+            </MenuItem>
+            <MenuItem Header="_Edit">
+                <MenuItem Header="_Cut" Command="Cut">
+                    <MenuItem.Icon>
+                        <Image Source="Images/cut.png" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="_Copy" Command="Copy">
+                    <MenuItem.Icon>
+                        <Image Source="Images/copy.png" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="_Paste" Command="Paste">
+                    <MenuItem.Icon>
+                        <Image Source="Images/paste.png" />
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+
+            <MenuItem Header="_View"/>
+            <MenuItem x:Name="MenuGame" Header="_Game" Click="MenuGame_Click"/>
+            <MenuItem Header="_Window"/>
+            <MenuItem Header="_Help"/>
+        </Menu>
+        <!-- It's important that this is in the end of the XAML as it needs to be on top of everything else! -->
+        <Grid x:Name="InputBox" Visibility="Collapsed">
+            <Grid Background="Black" Opacity="0.5"/>
+            <Border
+            MinWidth="250"
+            Background="Orange" 
+            BorderBrush="Black" 
+            BorderThickness="1" 
+            CornerRadius="75,75,75,75" 
+            HorizontalAlignment="Center" 
+            VerticalAlignment="Center">
+                <StackPanel>
+                    <TextBlock x:Name="lblMessage" Margin="75" Text="Input Box:" FontWeight="Bold" FontFamily="Cambria" />
+                    <TextBox MinWidth="150" HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="txtMessage"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Button x:Name="OkButton" Margin="5" Content="Ok" Background="{x:Null}"/>
+                        <Button x:Name="Cancel" Margin="5" Content="Cancel" Background="{x:Null}" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>
