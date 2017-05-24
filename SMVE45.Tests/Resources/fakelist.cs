@@ -1,3 +1,0 @@
-Tada
-Poo
-Broken Cheese
