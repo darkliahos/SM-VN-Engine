@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 15
+VisualStudioVersion = 15.0.26403.7
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMVisualNovelEngine45", "SMVisualNovelEngine45\SMVisualNovelEngine45.csproj", "{0BFF0095-632B-419D-BBAA-B1C3B611D940}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMVSEEditor", "SMVSEEditor\SMVSEEditor.csproj", "{BDA631F1-3C6E-42C6-A0A4-F779CE160D3B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,25 +15,6 @@ Global
 		{0BFF0095-632B-419D-BBAA-B1C3B611D940}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0BFF0095-632B-419D-BBAA-B1C3B611D940}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0BFF0095-632B-419D-BBAA-B1C3B611D940}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BDA631F1-3C6E-42C6-A0A4-F779CE160D3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BDA631F1-3C6E-42C6-A0A4-F779CE160D3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BDA631F1-3C6E-42C6-A0A4-F779CE160D3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BDA631F1-3C6E-42C6-A0A4-F779CE160D3B}.Release|Any CPU.Build.0 = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 4
-		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = https://secretmonster.visualstudio.com/defaultcollection
-		SccLocalPath0 = .
-		SccProjectUniqueName1 = SMVisualNovelEngine45\\SMVisualNovelEngine45.csproj
-		SccProjectName1 = SMVisualNovelEngine45
-		SccLocalPath1 = SMVisualNovelEngine45
-		SccProjectUniqueName2 = SMVE45.Tests\\SMVE45.Tests.csproj
-		SccProjectName2 = SMVE45.Tests
-		SccLocalPath2 = SMVE45.Tests
-		SccProjectUniqueName3 = SMVSEEditor\\SMVSEEditor.csproj
-		SccProjectName3 = SMVSEEditor
-		SccLocalPath3 = SMVSEEditor
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
