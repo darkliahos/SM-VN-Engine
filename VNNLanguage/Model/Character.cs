@@ -2,9 +2,9 @@
 {
     public class Character
     {
-        public int CharacterIndex { get; set; }
-
         public string CharacterFriendlyName { get; set; }
+
+        public string DisplayName { get; set; }
 
         public Coordinate Position { get; set; }
 

@@ -50,7 +50,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ParserTests.cs" />
+    <Compile Include="ParserTests\AddCharacterTests.cs" />
+    <Compile Include="ParserTests\WriteLineTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -60,6 +61,10 @@
     <ProjectReference Include="..\VNNLanguage\VNNLanguage.csproj">
       <Project>{97dc807a-8c71-4860-97eb-cdf5abc9493b}</Project>
       <Name>VNNLanguage</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\VNNMedia\VNNMedia.csproj">
+      <Project>{3F4F76BC-8F74-4C13-BACD-068605075A20}</Project>
+      <Name>VNNMedia</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

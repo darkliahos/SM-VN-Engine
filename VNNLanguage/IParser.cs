@@ -1,5 +1,6 @@
 ﻿using System;
 using VNNLanguage.Exceptions;
+using VNNMedia;
 
 namespace VNNLanguage
 {
@@ -11,10 +12,12 @@ namespace VNNLanguage
     public class DirtyParser : IParser
     {
         IInstructor instructor;
+        IContentManager contentManager;
 
-        public DirtyParser(IInstructor instructor)
+        public DirtyParser(IInstructor instructor, IContentManager contentManager)
         {
             this.instructor = instructor;
+            this.contentManager = contentManager;
         }
 
         /// <summary>
@@ -37,6 +40,12 @@ namespace VNNLanguage
                 instructor.WriteLine(says.Trim(), characterName.Trim());
                 return true;
             }
+
+            if(command.ToLower().Contains("Add Character"))
+            {
+
+            }
+
             throw new NotImplementedException();
         }
     }
