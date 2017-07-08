@@ -28,6 +28,8 @@ namespace VNNLanguage
 
         bool CheckCharacterExists(string friendlyName);
 
+        void ShowCharacter(string friendlyName, Animation animation);
+
         void HideCharacter(string friendlyName, Animation animation);
 
         void RemoveCharacter(string friendlyName, Animation animation);
