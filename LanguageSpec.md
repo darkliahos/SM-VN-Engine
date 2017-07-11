@@ -67,7 +67,7 @@ So if you wanted to hide a character called Alanis
 
 ```Hide Alanis Fade Out```
 
-If we want to bring back the character without having the readd the character 
+If we want to bring back the character without having the readding the character 
 
 We can just use 
 
@@ -87,9 +87,41 @@ So if we wanted to completely remove Alanis
 
 ###Changing Character Sprite
 
+The engine for the time being will use tweening, the sprite must exist in the character folder with the name of the spirte. 
+
+```Change Sprite [Character] [Animation]```
+
+So if we wanted to change Alanis's sprite to sad.png, we would use 
+
+```Change Sprite Alanis Swizzle```
+
 ###Moving Character
 
+There are two ways of moving a character around the screen, one if we just want to move them along in one direction
+
+```Move [Character] [Number of Pixels]px [Direction]]```
+
+So it would be 
+
+```Move Alanis 40px Left```
+
+If we wanted to move the character sprite anywhere on the screen, we could just type
+
+```Move [Character] ([Up, Down, Left, Right])```
+
+So it would be 
+
+```Move Alanis (40,50,50,20)```
+
 ###Checking if the Character exists
+
+So if we need check if the character is on the scene or even in the background, we can use this character
+
+```Is [Character] in background?``` OR ```Is [Character] In scene?```
+
+So it could be
+
+```Is Alanis in background?``` OR ```Is Alanis In scene?```
 
 ###Forking
 
