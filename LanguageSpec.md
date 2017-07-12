@@ -125,11 +125,28 @@ So it could be
 
 ###Forking
 
+Forking allows for multiple scenarios in a scene, they can be small diversions which merge into a story branch or for more complex branching can transfer to other scenes or even end the game old together. 
+
+Forking can be written with scenarios embedded inside of them, however this can result in spaghetti code but good for beginners or they can be written to point to scenarios. 
+
+To Start a fork we can write 
+
+```BEGIN FORK [Scenario Name]```
+
+To End a scenario fork we can write
+
+```END FORK [Scenario Name]```
+
+
+
+
 ###Jump Line
 
 ###Background Management
 
 ###Sound
+
+###Change Scene
 
 ###Ending Game
 
