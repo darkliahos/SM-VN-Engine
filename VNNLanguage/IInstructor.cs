@@ -22,6 +22,22 @@ namespace VNNLanguage
 
         void ChangeBackground(byte[] image);
 
+        /// <summary>
+        /// This will add the character to the centre of the screen by default
+        /// </summary>
+        /// <param name="friendlyName"></param>
+        /// <param name="image"></param>
+        /// <param name="animation"></param>
+        void AddCharacter(string friendlyName, byte[] image, Animation animation);
+
+        /// <summary>
+        /// This is designed to give the user more control where to place the character
+        /// </summary>
+        /// <param name="friendlyName"></param>
+        /// <param name="image"></param>
+        /// <param name="animation"></param>
+        /// <param name="height"></param>
+        /// <param name="width"></param>
         void AddCharacter(string friendlyName, byte[] image, Animation animation, int height, int width);
 
         void ChangeCharacterDisplayName(string friendlyName, string displayName);

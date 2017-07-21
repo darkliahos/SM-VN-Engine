@@ -41,8 +41,14 @@ namespace VNNLanguage
                 return true;
             }
 
-            if(command.ToLower().Contains("Add Character"))
+            if(command.ToLower().Contains("add"))
             {
+                string characterName = command.Substring(3, command.IndexOf("*") -4 );
+                string sprite = command.Substring(command.IndexOf("*"), command.Length - command.LastIndexOf("*") -1);
+                string animation = command.Substring(command.LastIndexOf("*")+ 1, command.Length - command.LastIndexOf("*") -1);
+                var image = contentManager.GetCharacterImage(characterName, sprite.Replace("*", string.Empty));
+                instructor.AddCharacter(characterName.Trim(), image, (Animation)Enum.Parse(typeof(Animation), animation.Replace(" ", string.Empty)));
+                return true;
 
             }
 
