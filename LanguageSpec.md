@@ -1,16 +1,16 @@
-=Language Spec=
+# Language Spec
 
 This is very much in draft at the moment, until this has been implemented in the Visual Novel Engine, expect this to change at short notice
 
-==Version history==
+## Version history
 
 v0.01 - Sohail Nasir - Initial draft of the language for the engine
 
-==Purpose of this document==
+## Purpose of this document
 
 To allow for discussion of what this language should be
 
-==Terms==
+## Terms
 
 Scene - What is currently displaying on screen
 
@@ -18,14 +18,14 @@ Scope - What is living in memory whether or not its displayed or not
 
 Character - An object that represents the character, this is the character metadata, sprites
 
-==Design goals==
+## Design goals
 
 Language should be easy for someone who is not technical to write, It should use verbose and easy to explain syntax.
 
 
-==Language Features==
+## Language Features
 
-===Writing a line===
+### Writing a line
 
 ```[Character] SAYS [Whatever]```
 
@@ -41,13 +41,13 @@ If you don't want a character or maybe if you wanted to create a system level me
 
 The Language would infer the lack of the character in this scenario would be a system level message
 
-===Lack of a character in scope:===
+### Lack of a character in scope:
 
 TODO:// DISCUSS 
 
 Maybe we throw an error if the character does not exist or display a silioute (?)
 
-===Adding Character to scene===
+### Adding Character to scene
 
 ```Add [Character] *[Sprite]* [Animation]```
 
@@ -59,7 +59,7 @@ So for the sprite "Happy" would be defined in a folder with the character name a
 
 The Fade in would be a prebuilt animation
 
-===Removing a character from the scene===
+### Removing a character from the scene
 
 There are two ways to remove a character from the scene
 
@@ -89,7 +89,7 @@ So if we wanted to completely remove Alanis
 
 ```Remove Alanis Fade Out```
 
-===Changing Character Sprite===
+### Changing Character Sprite
 
 The engine for the time being will use tweening, the sprite must exist in the character folder with the name of the spirte. 
 
@@ -99,7 +99,7 @@ So if we wanted to change Alanis's sprite to sad.png, we would use
 
 ```Change Sprite Alanis Swizzle```
 
-===Moving Character===
+### Moving Character
 
 There are two ways of moving a character around the screen, one if we just want to move them along in one direction
 
@@ -127,7 +127,7 @@ So it could be
 
 ```Is Alanis in background?``` OR ```Is Alanis In scene?```
 
-===Jump Scenario===
+### Jump Scenario
 
 Jumping scenario allows us to jump from one place to another, so long as the scenario is declared somewhere in the file. 
 
@@ -143,7 +143,7 @@ So to jump to a scenario it would just be:
 
 ```JUMP [Scenario]``` or ```JUMP "Down by the bay```
 
-===Forking===
+### Forking
 
 Forking allows for multiple scenarios in a scene, they can be small diversions which merge into a story branch or for more complex branching can transfer to other scenes or even end the game old together. 
 
@@ -166,7 +166,7 @@ END FORK "Ask me later"
 ```
 This will be limited to 4 forks for the time being however if advances are made and there is a demand than it could be increased. 
 
-===Background Management===
+### Background Management
 
 Every scene will always have a background of sorts, by default if a background is not set then the scene will just assume a blackground in order to set a background for the scene. The backgrounds will be stored in a folder and the naming of the background will just assume the file name, so in order to change it it will be a case of calling the change the background command like this:
 
@@ -176,13 +176,13 @@ So if we have background called face.png, the command will be
 
 ```CHANGE BACKGROUND Face```
 
-===Sound===
+### Sound
 
 Sound still is somewhat not defined yet, so far some thoughts are 
 
 ```PLAY "Some.mp3"```
 
-===Ending Game===
+### Ending Game
 
 If the game needs to end, ie: the user has finished the game or for effect you just feel like kicking the user, then you it is a case of just writing:
 
