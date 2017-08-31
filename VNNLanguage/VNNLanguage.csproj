@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions\StringUtils.cs" />
     <Compile Include="Model\Coordinate.cs" />
     <Compile Include="Enums\Animation.cs" />
     <Compile Include="Exceptions\ParserException.cs" />
