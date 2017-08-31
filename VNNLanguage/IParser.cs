@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using VNNLanguage.Exceptions;
+using VNNLanguage.Extensions;
 using VNNMedia;
 
 namespace VNNLanguage
@@ -27,7 +29,7 @@ namespace VNNLanguage
         /// <returns></returns>
         public bool Parse(string command)
         {
-            if(command.ToLower().Contains("says"))
+            if(command.ContainsInsensitive("says"))
             {
                 string characterName = command.Substring(0, command.ToLower().IndexOf("says"));
                 string says = command.Substring(command.ToLower().IndexOf("says") + 4, command.Length - characterName.Length - 4);
@@ -41,7 +43,7 @@ namespace VNNLanguage
                 return true;
             }
 
-            if(command.ToLower().Contains("add"))
+            if(command.ContainsInsensitive("add"))
             {
                 string characterName = command.Substring(3, command.IndexOf("*") -4 );
                 string sprite = command.Substring(command.IndexOf("*"), command.Length - command.LastIndexOf("*") -1);
@@ -50,6 +52,13 @@ namespace VNNLanguage
                 instructor.AddCharacter(characterName.Trim(), image, (Animation)Enum.Parse(typeof(Animation), animation.Replace(" ", string.Empty)));
                 return true;
 
+            }
+
+            if(command.ContainsInsensitive("remove"))
+            {
+                string characterName = Regex.Replace(command, "remove", "", RegexOptions.IgnoreCase).TrimStart();
+                instructor.RemoveCharacter(characterName, Animation.FadeOut);
+                return true;
             }
 
             throw new NotImplementedException();
