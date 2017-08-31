@@ -5,6 +5,7 @@ This is very much in draft at the moment, until this has been implemented in the
 ## Version history
 
 v0.01 - Sohail Nasir - Initial draft of the language for the engine
+v0.02 - Sohail Nasir - Changed Remove character to make a bit more sense
 
 ## Purpose of this document
 
@@ -46,6 +47,7 @@ The Language would infer the lack of the character in this scenario would be a s
 TODO:// DISCUSS 
 
 Maybe we throw an error if the character does not exist or display a silioute (?)
+How do we denote animations?
 
 ### Adding Character to scene
 
@@ -83,11 +85,11 @@ So for our example of Alanis, we could write:
 
 A more permanant route, if we want to completely the character out of the scene, we can do 
 
-```Remove [Character] [Animation]```
+```Remove [Character]```
 
 So if we wanted to completely remove Alanis 
 
-```Remove Alanis Fade Out```
+```Remove Alanis```
 
 ### Changing Character Sprite
 
