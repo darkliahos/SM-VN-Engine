@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
+using VNNLanguage.Constants;
 using VNNLanguage.Exceptions;
 using VNNLanguage.Extensions;
 using VNNMedia;
@@ -13,6 +16,8 @@ namespace VNNLanguage
 
     public class DirtyParser : IParser
     {
+        private Regex moveRegex = new Regex("^(move)", RegexOptions.IgnoreCase);
+       
         IInstructor instructor;
         IContentManager contentManager;
 
@@ -31,21 +36,22 @@ namespace VNNLanguage
         {
             if(command.ContainsInsensitive("says"))
             {
-                string characterName = command.Substring(0, command.ToLower().IndexOf("says"));
-                string says = command.Substring(command.ToLower().IndexOf("says") + 4, command.Length - characterName.Length - 4);
-
-                if(string.IsNullOrWhiteSpace(says))
+                string characterName = GetPrimaryCharacterName(command);
+                if(RegexConstants.GetStuffInQuotes.IsMatch(command))
+                {
+                    var says = RegexConstants.GetStuffInQuotes.Match(command).Captures[0].Value;
+                    instructor.WriteLine(says.TrimStart('"').TrimEnd('"'), characterName);
+                    return true;
+                }
+                else
                 {
                     throw new ParserException("The character must say something", command);
                 }
-
-                instructor.WriteLine(says.Trim(), characterName.Trim());
-                return true;
             }
 
             if(command.ContainsInsensitive("add"))
             {
-                string characterName = command.Substring(3, command.IndexOf("*") -4 );
+                string characterName = GetPrimaryCharacterName(command);
                 string sprite = command.Substring(command.IndexOf("*"), command.Length - command.LastIndexOf("*") -1);
                 string animation = command.Substring(command.LastIndexOf("*")+ 1, command.Length - command.LastIndexOf("*") -1);
                 var image = contentManager.GetCharacterImage(characterName, sprite.Replace("*", string.Empty));
@@ -56,12 +62,31 @@ namespace VNNLanguage
 
             if(command.ContainsInsensitive("remove"))
             {
-                string characterName = Regex.Replace(command, "remove", "", RegexOptions.IgnoreCase).TrimStart();
+                string characterName = GetPrimaryCharacterName(command);
                 instructor.RemoveCharacter(characterName, Animation.FadeOut);
                 return true;
             }
 
+            if(command.StartsWith("MOVE"))
+            {
+                var directionValues = Enum.GetValues(typeof(Direction)).Cast<Direction>().Select(d=> d.ToString());
+                string characterName = GetPrimaryCharacterName(command);
+                var moveBy = RegexConstants.GetPixelValue.IsMatch(command) ? RegexConstants.GetPixelValue.Match(command).Captures[0].Value.Replace("px", string.Empty) : throw new ParserException("Specify how much to move the character");
+                var direction = command.FindAndGetKeywords(directionValues);
+                instructor.MoveCharacterSingleDirection(characterName, direction.ToEnum<Direction>(), Convert.ToInt32(moveBy));
+                return true;
+            }
+
             throw new NotImplementedException();
+        }
+
+        private string GetPrimaryCharacterName(string command)
+        {
+            if(RegexConstants.CharacterNameRegex.IsMatch(command))
+            {
+                return RegexConstants.CharacterNameRegex.Match(command).Captures[0].Value.TrimStart('[').TrimEnd(']');
+            }
+            return string.Empty;
         }
     }
 }

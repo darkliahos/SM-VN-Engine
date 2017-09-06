@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace VNNLanguage.Extensions
@@ -19,5 +20,24 @@ namespace VNNLanguage.Extensions
         {
             return input.IndexOf(value, stringComparison) >= 0;
         }
+
+        /// <summary>
+        /// Sees if a set of keywords match and returns the first instance of the matching keyword
+        /// This is case insensitive
+        /// </summary>
+        /// <param name="input">The string you are checking</param>
+        /// <param name="keywords">an array of keywords</param>
+        /// <returns></returns>
+        public static string FindAndGetKeywords(this string input, IEnumerable<string> keywords)
+        {
+            var keywordRegex = new Regex($@"\b({string.Join("|", keywords)})\b", RegexOptions.IgnoreCase);
+            return keywordRegex.Match(input).Captures[0].Value;
+        }
+
+        public static T ToEnum<T>(this string value)
+        {
+            return (T)Enum.Parse(typeof(T), value, true);
+        }
+
     }
 }
