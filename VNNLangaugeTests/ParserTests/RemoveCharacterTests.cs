@@ -17,7 +17,7 @@ namespace VNNLangaugeTests.ParserTests
         public void GivenJonesIsRemoved_ThenTheInstructorShouldRemoveJones()
         {
             //Arrange
-            string command = "Remove Jones";
+            string command = "Remove [Jones]";
             var instructor = new Mock<IInstructor>();
             var contentManager = new Mock<IContentManager>();
             instructor.Setup(i => i.RemoveCharacter(It.IsAny<string>(), Animation.FadeOut));
@@ -31,10 +31,10 @@ namespace VNNLangaugeTests.ParserTests
         }
 
         [Test]
-        public void GivenBastardBarretIsRemoved_ThenTheInstructorShouldRemoveJones()
+        public void GivenBastardBarretIsRemoved_ThenTheInstructorShouldRemoveBastardBarret()
         {
             //Arrange
-            string command = "Remove Bastard Barret";
+            string command = "Remove [Bastard Barret]";
             var instructor = new Mock<IInstructor>();
             var contentManager = new Mock<IContentManager>();
             instructor.Setup(i => i.RemoveCharacter(It.IsAny<string>(), Animation.FadeOut));

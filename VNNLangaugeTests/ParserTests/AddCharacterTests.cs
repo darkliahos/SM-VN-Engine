@@ -18,7 +18,7 @@ namespace VNNLangaugeTests.ParserTests
         {
             // Arrange
             //TODO: Do we want to denote sprites with stars?
-            var command = "Add Sam Bridge The Elder *Happy* Fade In";
+            var command = "Add [Sam Bridge The Elder] *Happy* Fade In";
             var characterName = "Sam Bridge The Elder";
             var fakeImage = new byte[1];
 

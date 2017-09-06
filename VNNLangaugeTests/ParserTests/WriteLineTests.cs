@@ -10,19 +10,16 @@ namespace VNNLangaugeTests
     public class WriteLineTests
     {
         [Test]
-        public void GivenFuckyTheDinosaurSaysILikeMeat_WithoutQuotes_ThenTheInstructorShouldRecieveWriteLineCommandWithExactTextAndNotAddQuotes()
+        public void GivenTheSayCommandIsWithoutQuotes_ThenParserErrorShouldBeThrown()
         {
             //Arrange
-            string command = "Fucky The Dinosaur SAYS I Like meat";
+            string command = "[Fucky The Dinosaur] SAYS I Like meat";
             var instructor = new Mock<IInstructor>();
             var contentManager = new Mock<IContentManager>();
             instructor.Setup(i => i.WriteLine(It.IsAny<string>(), It.IsAny<string>()));
             var parser = new DirtyParser(instructor.Object, contentManager.Object);
-            //Act
-            var result = parser.Parse(command);
-            //Assert
-            instructor.Verify(i => i.WriteLine("I Like meat", "Fucky The Dinosaur"));
-            Assert.AreEqual(true, result);
+            //Act & Assert
+            Assert.Throws<ParserException>(() => parser.Parse(command));
 
         }
 
@@ -30,7 +27,7 @@ namespace VNNLangaugeTests
         public void GivenTinkyWinkySaysEhOh_ThenTheInstructorShouldRecieveWriteLineCommandWithExactTextAndCorrectCharacter()
         {
             //Arrange
-            string command = "Tinky Winky SAYS \"Eh-oh\"";
+            string command = "[Tinky Winky] SAYS \"Eh-oh\"";
             var instructor = new Mock<IInstructor>();
             var contentManager = new Mock<IContentManager>();
             instructor.Setup(i => i.WriteLine(It.IsAny<string>(), It.IsAny<string>()));
@@ -38,7 +35,7 @@ namespace VNNLangaugeTests
             //Act
             var result = parser.Parse(command);
             //Assert
-            instructor.Verify(i => i.WriteLine("\"Eh-oh\"", "Tinky Winky"));
+            instructor.Verify(i => i.WriteLine("Eh-oh", "Tinky Winky"));
             Assert.AreEqual(true, result);
 
         }
@@ -55,7 +52,7 @@ namespace VNNLangaugeTests
             //Act
             var result = parser.Parse(command);
             //Assert
-            instructor.Verify(i => i.WriteLine("\"Your base belongs to us\"", string.Empty));
+            instructor.Verify(i => i.WriteLine("Your base belongs to us", string.Empty));
             Assert.AreEqual(true, result);
 
         }
@@ -64,7 +61,7 @@ namespace VNNLangaugeTests
         public void GivenThatNothingIsSaidAtAll_ThenParserShouldThrowAParserError()
         {
             //Arrange
-            string command = "Ronan SAYS ";
+            string command = "[Ronan] SAYS ";
             var instructor = new Mock<IInstructor>();
             var contentManager = new Mock<IContentManager>();
             var parser = new DirtyParser(instructor.Object, contentManager.Object);
@@ -77,7 +74,7 @@ namespace VNNLangaugeTests
         public void GivenThatCommandHas2Says_ThenSecondSaysShouldBeDisplayInText()
         {
             //Arrange
-            string command = "Tutty Monster SAYS Harveer says I like cheese!";
+            string command = "[Tutty Monster] SAYS \"Harveer says I like cheese!\"";
             var instructor = new Mock<IInstructor>();
             var contentManager = new Mock<IContentManager>();
             instructor.Setup(i => i.WriteLine(It.IsAny<string>(), It.IsAny<string>()));

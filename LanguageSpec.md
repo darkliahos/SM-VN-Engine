@@ -6,6 +6,7 @@ This is very much in draft at the moment, until this has been implemented in the
 
 v0.01 - Sohail Nasir - Initial draft of the language for the engine
 v0.02 - Sohail Nasir - Changed Remove character to make a bit more sense
+v0.03 - Sohail Nasir - Refined syntax following discussions
 
 ## Purpose of this document
 
@@ -26,13 +27,17 @@ Language should be easy for someone who is not technical to write, It should use
 
 ## Language Features
 
+In order to define a character, they must be surrounded by brackets like this: 
+
+```[Character Name here]```
+
 ### Writing a line
 
 ```[Character] SAYS [Whatever]```
 
 So an example of this is if we had a character called Alanis and Alanis said hello, we would write it like this:
 
-```Alanis SAYS hello```
+```[Alanis] SAYS hello```
 
 We would identifiy anything before Says as the character name, anything after says would be what we would want to attribute to the character
 
@@ -47,15 +52,14 @@ The Language would infer the lack of the character in this scenario would be a s
 TODO:// DISCUSS 
 
 Maybe we throw an error if the character does not exist or display a silioute (?)
-How do we denote animations?
 
 ### Adding Character to scene
 
-```Add [Character] *[Sprite]* [Animation]```
+```Add [Character] [Sprite] *[Animation]*```
 
 So an example of this would if we had a character called Alanis and we wanted to add Alanis to the scene and wanted to use an already created sprite with a fade in animation, we can do that with a line like this
 
-```Add Alanis *Happy* Fade In```
+```Add [Alanis] Happy *Fade In*```
 
 So for the sprite "Happy" would be defined in a folder with the character name and with an image called "Happy.png"
 
@@ -67,21 +71,21 @@ There are two ways to remove a character from the scene
 
 For something temporary, ie: you are hiding the character for a little while maybe you have other characters on the screen or for dramatic effect.
 
-```Hide [Character] [Animation]```
+```Hide [Character] *[Animation]*```
 
 So if you wanted to hide a character called Alanis
 
-```Hide Alanis Fade Out```
+```Hide [Alanis] *Fade Out*```
 
 If we want to bring back the character without having the readding the character 
 
 We can just use 
 
-```Show [Character] [Animation]```
+```Show [Character] *[Animation]*```
 
 So for our example of Alanis, we could write: 
 
-```Add Alanis Fade In```
+```Show [Alanis] *Fade In*```
 
 A more permanant route, if we want to completely the character out of the scene, we can do 
 
@@ -89,35 +93,35 @@ A more permanant route, if we want to completely the character out of the scene,
 
 So if we wanted to completely remove Alanis 
 
-```Remove Alanis```
+```Remove [Alanis]```
 
 ### Changing Character Sprite
 
 The engine for the time being will use tweening, the sprite must exist in the character folder with the name of the spirte. 
 
-```Change Sprite [Character] [Animation]```
+```Change Sprite [Character] *[Animation]*```
 
 So if we wanted to change Alanis's sprite to sad.png, we would use 
 
-```Change Sprite Alanis Swizzle```
+```Change Sprite [Alanis] *Swizzle*```
 
 ### Moving Character
 
 There are two ways of moving a character around the screen, one if we just want to move them along in one direction
 
-```Move [Character] [Number of Pixels]px [Direction]]```
+```MOVE [Character] [Number of Pixels]px [Direction]]```
 
-So it would be 
+So it would be: 
 
-```Move Alanis 40px Left```
+```MOVE [Alanis] 40px Left```
 
 If we wanted to move the character sprite anywhere on the screen, we could just type
 
-```Move [Character] ([Up, Down, Left, Right])```
+```MOVE [Character] ([Up, Down, Left, Right])```
 
-So it would be 
+So it would be:
 
-```Move Alanis (40,50,50,20)```
+```MOVE [Alanis] (40,50,50,20)```
 
 ===Checking if the Character exists===
 
@@ -127,7 +131,7 @@ So if we need check if the character is on the scene or even in the background, 
 
 So it could be
 
-```Is Alanis in background?``` OR ```Is Alanis In scene?```
+```Is [Alanis] in background?``` OR ```Is [Alanis] In scene?```
 
 ### Jump Scenario
 
