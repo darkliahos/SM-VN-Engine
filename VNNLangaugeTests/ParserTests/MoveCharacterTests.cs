@@ -25,7 +25,7 @@ namespace VNNLangaugeTests.ParserTests
             //Act
             var result = parser.Parse(command);
             //Assert
-            instructor.Verify(i => i.MoveCharacterSingleDirection("Fucky", Direction.Left, 30));
+            instructor.Verify(i => i.MoveCharacter("Fucky", Direction.Left, 30));
             Assert.AreEqual(true, result);
         }
     }

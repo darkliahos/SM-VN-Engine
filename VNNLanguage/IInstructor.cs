@@ -52,9 +52,9 @@ namespace VNNLanguage
 
         void ChangeCharacterSprite(string friendlyName, byte[] image);
 
-        void MoveCharacterSingleDirection(string friendlyName, Direction direction, int pixels);
+        void MoveCharacter(string friendlyName, Direction direction, int pixels);
 
-        void MoveCharacter(string friendlyName, int height, int width);
+        void PlaceCharacter(string friendlyName, int x, int y, int scaleHeight = 0, int scaleWidth= 0);
 
         void PlaySound(byte[] sound);
 
