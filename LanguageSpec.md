@@ -7,6 +7,7 @@ This is very much in draft at the moment, until this has been implemented in the
 v0.01 - Sohail Nasir - Initial draft of the language for the engine
 v0.02 - Sohail Nasir - Changed Remove character to make a bit more sense
 v0.03 - Sohail Nasir - Refined syntax following discussions
+v0.04 - Sohail Nasir - Forking a bit more defined and some typos are fixed.
 
 ## Purpose of this document
 
@@ -47,11 +48,9 @@ If you don't want a character or maybe if you wanted to create a system level me
 
 The Language would infer the lack of the character in this scenario would be a system level message
 
-### Lack of a character in scope:
+### Lack of a character in scope
 
-TODO:// DISCUSS 
-
-Maybe we throw an error if the character does not exist or display a silioute (?)
+If Debug throw an error, if final release then show sillouette to player. 
 
 ### Adding Character to scene
 
@@ -87,23 +86,23 @@ So for our example of Alanis, we could write:
 
 ```Show [Alanis] *Fade In*```
 
-A more permanant route, if we want to completely the character out of the scene, we can do 
+A more permanant route, if we want to completely remove the character out of the scene, we can do:
 
 ```Remove [Character]```
 
-So if we wanted to completely remove Alanis 
+So if we wanted to completely remove Alanis:
 
 ```Remove [Alanis]```
 
 ### Changing Character Sprite
 
-The engine for the time being will use tweening, the sprite must exist in the character folder with the name of the spirte. 
+The engine for the time being will use tweening, the sprite must exist in the character folder with the name of the sprite.
 
-```Change Sprite [Character] *[Animation]*```
+```CHANGE SPRITE [Character] [Sprite] *[Animation]*```
 
 So if we wanted to change Alanis's sprite to sad.png, we would use 
 
-```Change Sprite [Alanis] *Swizzle*```
+```CHANGE SPRITE [Alanis] Sad *Swizzle*```
 
 ### Moving Character
 
@@ -111,64 +110,64 @@ There are two ways of moving a character around the screen, one if we just want 
 
 ```MOVE [Character] [Number of Pixels]px [Direction]]```
 
-So it would be: 
+So it would be:
 
 ```MOVE [Alanis] 40px Left```
 
+### Place Character
+
 If we wanted to move the character sprite anywhere on the screen, we could just type
 
-```MOVE [Character] ([Up, Down, Left, Right])```
+```PLACE [Character] ([Up, Down, Left, Right])```
 
 So it would be:
 
-```MOVE [Alanis] (40,50,50,20)```
+```PLACE [Alanis] (40,50,50,20)```
 
-===Checking if the Character exists===
+###Checking if the Character exists
 
 So if we need check if the character is on the scene or even in the background, we can use this character
 
-```Is [Character] in background?``` OR ```Is [Character] In scene?```
+```Is [Character] In scene?```
 
 So it could be
 
-```Is [Alanis] in background?``` OR ```Is [Alanis] In scene?```
+ ```Is [Alanis] In scene?```
 
 ### Jump Scenario
 
-Jumping scenario allows us to jump from one place to another, so long as the scenario is declared somewhere in the file. 
+Jumping scenario allows us to jump from one place to another in the story, so long as the scenario is declared somewhere in the script file.
 
-To Declare a scenario, we can type 
+To Declare a scenario, we can type:
 
 ```Scenario "[Scenario Name]"```
 
-So an example of this will be 
+So an example of this will be:
 
 ```Scenario "Down by the bay"```
 
-So to jump to a scenario it would just be: 
+So to jump to a scenario it would just be:
 
-```JUMP [Scenario]``` or ```JUMP "Down by the bay```
+```JUMP [Scenario]``` or ```JUMP "Down by the bay"```
 
 ### Forking
 
-Forking allows for multiple scenarios in a scene, they can be small diversions which merge into a story branch or for more complex branching can transfer to other scenes or even end the game old together. 
+Forking allows for multiple scenarios in a scene, they can be small diversions which merge into a story branch or for more complex branching can transfer to other scenes or even end the game all together. 
 
-Forking can be written with scenarios embedded inside of them, however this can result in spaghetti code but good for beginners or they can be written to point to scenarios. 
+Forking can be written with scenarios embedded inside of a forking statment, however this can result in spaghetti code but good for beginners or they can be written to point to scenarios.
 
-So if we had a for for a decision that was being made, we could write it this way:
+So if we had a fork in which we needed the user to make a decision and execute scenarios based on what the user decided then we come up with this:
 
 ```
-Alanis SAYS "Would you like cheese?"
+[Alanis] SAYS "Would you like cheese?"
 BEGIN CHOICES
-BEGIN FORK "I love cheese"
+FORK "I love cheese"
 JUMP "SCENARIO 1"
-END FORK "I love cheese"
-BEGIN FORK "No way, I am a married man"
+FORK "No way, I am a married man"
 JUMP "SCENARIO 2"
-END FORK "No way, I am a married man"
 BEGIN FORK "Ask me later"
 JUMP "SCENARIO 3"
-END FORK "Ask me later"
+END CHOICES
 ```
 This will be limited to 4 forks for the time being however if advances are made and there is a demand than it could be increased. 
 
@@ -186,11 +185,10 @@ So if we have background called face.png, the command will be
 
 Sound still is somewhat not defined yet, so far some thoughts are 
 
-```PLAY "Some.mp3"```
+```PLAY "Some.wav"```
 
 ### Ending Game
 
-If the game needs to end, ie: the user has finished the game or for effect you just feel like kicking the user, then you it is a case of just writing:
+If the game needs to end, ie: the user has finished the game or for effect you just feel like kicking the user, then it is a case of just writing:
 
 ```END STORY```
-
