@@ -1,8 +1,10 @@
-﻿namespace VNNLanguage
+﻿using System;
+
+namespace VNNLanguage
 {
     public class Character
     {
-        public string CharacterFriendlyName { get; set; }
+        public string FriendlyName { get; set; }
 
         public string DisplayName { get; set; }
 
@@ -14,7 +16,9 @@
 
         public byte[] CurrentSprite { get; set; }
 
-        public bool IsVisible { get; set; }
+        public bool InScene { get; set; }
+
+        public Guid Identifier { get; set; }
     }
 
 }
