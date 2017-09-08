@@ -40,7 +40,6 @@ namespace VNNLanguage.Model
                 return characters.TryRemove(characterId, out Character removedCharacter);
             }
             return false;
-
         }
 
 
