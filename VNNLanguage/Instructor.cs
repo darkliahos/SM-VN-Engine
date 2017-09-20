@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using VNNLanguage.Model;
 using System;
+using VNNLanguage.Exceptions;
 
 namespace VNNLanguage
 {
@@ -11,11 +12,13 @@ namespace VNNLanguage
 
         }
 
+        //TODO: FIX Issue #7 & Issue #8 first
         public void AddCharacter(string friendlyName, byte[] image, Animation animation)
         {
             throw new NotImplementedException();
         }
 
+        //TODO: FIX Issue #7 & Issue #8 first
         public void AddCharacter(string friendlyName, byte[] image, Animation animation, int height, int width)
         {
             throw new NotImplementedException();
@@ -28,12 +31,15 @@ namespace VNNLanguage
 
         public void ChangeCharacterDisplayName(string friendlyName, string displayName)
         {
-            throw new NotImplementedException();
+            CharacterState.Instance.ChangeCharacterName(friendlyName, displayName);
         }
 
         public void ChangeCharacterSprite(string friendlyName, byte[] image)
         {
-            throw new NotImplementedException();
+            if(CharacterState.Instance.ChangeSprite(friendlyName, image))
+            {
+                throw new NotImplementedException();
+            }
         }
 
         public bool CheckCharacterExists(string friendlyName)
@@ -53,7 +59,10 @@ namespace VNNLanguage
 
         public void HideCharacter(string friendlyName, Animation animation)
         {
-            throw new NotImplementedException();
+            if (!CharacterState.Instance.HideCharacter(friendlyName))
+            {
+                throw new NotImplementedException();
+            }
         }
 
         public void JumpLine(int number)
@@ -68,7 +77,11 @@ namespace VNNLanguage
 
         public void PlaceCharacter(string friendlyName, int x, int y, int scaleHeight = 0, int scaleWidth = 0)
         {
-            throw new NotImplementedException();
+            if(CharacterState.Instance.PlaceCharacter(friendlyName, x, y, scaleHeight, scaleWidth))
+            {
+                throw new NotImplementedException();
+            }
+            throw new ArgumentNullException($"Failed to place {friendlyName}");
         }
 
         public void PlaySound(byte[] sound)
@@ -86,7 +99,10 @@ namespace VNNLanguage
 
         public void ShowCharacter(string friendlyName, Animation animation)
         {
-            throw new NotImplementedException();
+            if (!CharacterState.Instance.ShowCharacter(friendlyName))
+            {
+                throw new NotImplementedException();
+            }
         }
 
         public void WriteLine(string text, string character)

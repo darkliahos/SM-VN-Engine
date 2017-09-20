@@ -32,12 +32,68 @@ namespace VNNLanguage.Model
             return characters.TryAdd(identifier, character);
         }
 
-        public bool RemoveCharacter(string friendlyname)
+        public bool RemoveCharacter(string friendlyName)
         {
-            if(CharacterExists(friendlyname))
+            if(CharacterExists(friendlyName))
             {
-                var characterId = characters.First(c => c.Value.FriendlyName == friendlyname).Key;
+                var characterId = characters.First(c => c.Value.FriendlyName == friendlyName).Key;
                 return characters.TryRemove(characterId, out Character removedCharacter);
+            }
+            return false;
+        }
+
+        public bool PlaceCharacter(string friendlyName, int x, int y, int height, int width)
+        {
+            if (CharacterExists(friendlyName))
+            {
+                var character = characters.First(c => c.Value.FriendlyName == friendlyName);
+                character.Value.Position.XAxis = x;
+                character.Value.Position.YAxis = y;
+                character.Value.SpriteHeight = height;
+                character.Value.SpriteWidth = width;
+                return true;
+            }
+            return false;
+        }
+
+        public bool ShowCharacter(string friendlyName)
+        {
+            if (CharacterExists(friendlyName))
+            {
+                var character = characters.First(c => c.Value.FriendlyName == friendlyName);
+                character.Value.InScene = true;
+                return true;
+            }
+            return false;
+        }
+
+        public bool HideCharacter(string friendlyName)
+        {
+            if (CharacterExists(friendlyName))
+            {
+                var character = characters.First(c => c.Value.FriendlyName == friendlyName);
+                character.Value.InScene = false;
+                return true;
+            }
+            return false;
+        }
+
+        public void ChangeCharacterName(string friendlyName, string newDisplayName)
+        {
+            if (CharacterExists(friendlyName))
+            {
+                var character = characters.First(c => c.Value.FriendlyName == friendlyName);
+                character.Value.DisplayName = newDisplayName;
+            }
+        }
+
+        public bool ChangeSprite(string friendlyName, byte[] sprite)
+        {
+            if (CharacterExists(friendlyName))
+            {
+                var character = characters.First(c => c.Value.FriendlyName == friendlyName);
+                character.Value.CurrentSprite = sprite;
+                return true;
             }
             return false;
         }
