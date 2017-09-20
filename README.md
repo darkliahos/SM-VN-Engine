@@ -1,4 +1,6 @@
-# Visual-Novel-Engine
+# Visual-Novel-Engine 
+![Travis build status](https://travis-ci.org/Mostly-Horrific/Visual-Novel-Engine.svg?branch=master)
+
 A super simple engine that allows for scripting of Japanese style visual novel games
 
 ## A bit of an introduction
