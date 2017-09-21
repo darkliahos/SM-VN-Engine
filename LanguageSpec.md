@@ -116,13 +116,17 @@ So it would be:
 
 ### Place Character
 
-If we wanted to move the character sprite anywhere on the screen, we could just type
+If we wanted to move the character sprite anywhere on the screen with scaling, we could just type
 
-```PLACE [Character] ([Up, Down, Left, Right])```
+```PLACE [Character] ([x, y, Scale-Height, Scale-Width])```
 
-So it would be:
+So if we were to place Alanis in the top left corner of the screen at 50px height and 20px width, we would write
 
-```PLACE [Alanis] (40,50,50,20)```
+```PLACE [Alanis] (0,0,50,20)```
+
+If we did not want to worry about scaling we could just write:
+
+```PLACE [Alanis] (0,0)```
 
 ###Checking if the Character exists
 
