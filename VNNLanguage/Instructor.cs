@@ -2,25 +2,23 @@
 using VNNLanguage.Model;
 using System;
 using VNNLanguage.Exceptions;
+using VNNMedia;
 
 namespace VNNLanguage
 {
     public class Instructor : IInstructor
     {
-        public Instructor()
-        {
+        private IContentManager contentManager;
 
+        public Instructor(IContentManager contentManager)
+        {
+            this.contentManager = contentManager;
         }
 
-        //TODO: FIX Issue #7 & Issue #8 first
-        public void AddCharacter(string friendlyName, byte[] image, Animation animation)
+        //TODO: FIX Issue #8 first
+        public void AddCharacter(string friendlyName, string spriteName, Animation animation)
         {
-            throw new NotImplementedException();
-        }
-
-        //TODO: FIX Issue #7 & Issue #8 first
-        public void AddCharacter(string friendlyName, byte[] image, Animation animation, int height, int width)
-        {
+            var image = contentManager.GetCharacterImage(friendlyName, spriteName.Replace("*", string.Empty));
             throw new NotImplementedException();
         }
 
@@ -34,9 +32,10 @@ namespace VNNLanguage
             CharacterState.Instance.ChangeCharacterName(friendlyName, displayName);
         }
 
-        public void ChangeCharacterSprite(string friendlyName, byte[] image)
+        public void ChangeCharacterSprite(string friendlyName, string spriteName)
         {
-            if(CharacterState.Instance.ChangeSprite(friendlyName, image))
+            var image = contentManager.GetCharacterImage(friendlyName, spriteName.Replace("*", string.Empty));
+            if (CharacterState.Instance.ChangeSprite(friendlyName, image))
             {
                 throw new NotImplementedException();
             }

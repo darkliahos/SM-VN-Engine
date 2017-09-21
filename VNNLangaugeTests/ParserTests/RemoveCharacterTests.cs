@@ -19,9 +19,8 @@ namespace VNNLangaugeTests.ParserTests
             //Arrange
             string command = "Remove [Jones]";
             var instructor = new Mock<IInstructor>();
-            var contentManager = new Mock<IContentManager>();
             instructor.Setup(i => i.RemoveCharacter(It.IsAny<string>(), Animation.FadeOut));
-            var parser = new DirtyParser(instructor.Object, contentManager.Object);
+            var parser = new DirtyParser(instructor.Object);
             //Act
             var result = parser.Parse(command);
             //Assert
@@ -36,9 +35,8 @@ namespace VNNLangaugeTests.ParserTests
             //Arrange
             string command = "Remove [Bastard Barret]";
             var instructor = new Mock<IInstructor>();
-            var contentManager = new Mock<IContentManager>();
             instructor.Setup(i => i.RemoveCharacter(It.IsAny<string>(), Animation.FadeOut));
-            var parser = new DirtyParser(instructor.Object, contentManager.Object);
+            var parser = new DirtyParser(instructor.Object);
             //Act
             var result = parser.Parse(command);
             //Assert

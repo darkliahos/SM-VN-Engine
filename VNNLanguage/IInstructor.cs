@@ -8,9 +8,6 @@ namespace VNNLanguage
     /// </summary>
     public interface IInstructor
     {
-        //This will need to be protected in the implementation
-        //List<Character> InscopeCharacters { get; set; }
-
         //This will also need to be protected 
         //byte[] CurrentBackground { get; set; }
 
@@ -28,17 +25,7 @@ namespace VNNLanguage
         /// <param name="friendlyName"></param>
         /// <param name="image"></param>
         /// <param name="animation"></param>
-        void AddCharacter(string friendlyName, byte[] image, Animation animation);
-
-        /// <summary>
-        /// This is designed to give the user more control where to place the character
-        /// </summary>
-        /// <param name="friendlyName"></param>
-        /// <param name="image"></param>
-        /// <param name="animation"></param>
-        /// <param name="height"></param>
-        /// <param name="width"></param>
-        void AddCharacter(string friendlyName, byte[] image, Animation animation, int height, int width);
+        void AddCharacter(string friendlyName, string spriteName, Animation animation);
 
         void ChangeCharacterDisplayName(string friendlyName, string displayName);
 
@@ -50,7 +37,7 @@ namespace VNNLanguage
 
         void RemoveCharacter(string friendlyName, Animation animation);
 
-        void ChangeCharacterSprite(string friendlyName, byte[] image);
+        void ChangeCharacterSprite(string friendlyName, string spriteName);
 
         void MoveCharacter(string friendlyName, Direction direction, int pixels);
 
