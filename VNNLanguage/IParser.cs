@@ -17,12 +17,10 @@ namespace VNNLanguage
     public class DirtyParser : IParser
     {
         IInstructor instructor;
-        IContentManager contentManager;
 
-        public DirtyParser(IInstructor instructor, IContentManager contentManager)
+        public DirtyParser(IInstructor instructor)
         {
             this.instructor = instructor;
-            this.contentManager = contentManager;
         }
 
         /// <summary>
@@ -52,8 +50,7 @@ namespace VNNLanguage
                 string characterName = GetPrimaryCharacterName(command);
                 string sprite = command.Substring(command.IndexOf("*"), command.Length - command.LastIndexOf("*") -1);
                 string animation = command.Substring(command.LastIndexOf("*")+ 1, command.Length - command.LastIndexOf("*") -1);
-                var image = contentManager.GetCharacterImage(characterName, sprite.Replace("*", string.Empty));
-                instructor.AddCharacter(characterName.Trim(), image, (Animation)Enum.Parse(typeof(Animation), animation.Replace(" ", string.Empty)));
+                instructor.AddCharacter(characterName.Trim(), sprite, (Animation)Enum.Parse(typeof(Animation), animation.Replace(" ", string.Empty)));
                 return true;
 
             }

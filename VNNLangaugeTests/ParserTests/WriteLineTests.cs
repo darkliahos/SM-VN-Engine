@@ -15,9 +15,8 @@ namespace VNNLangaugeTests
             //Arrange
             string command = "[Fucky The Dinosaur] SAYS I Like meat";
             var instructor = new Mock<IInstructor>();
-            var contentManager = new Mock<IContentManager>();
             instructor.Setup(i => i.WriteLine(It.IsAny<string>(), It.IsAny<string>()));
-            var parser = new DirtyParser(instructor.Object, contentManager.Object);
+            var parser = new DirtyParser(instructor.Object);
             //Act & Assert
             Assert.Throws<ParserException>(() => parser.Parse(command));
 
@@ -29,9 +28,8 @@ namespace VNNLangaugeTests
             //Arrange
             string command = "[Tinky Winky] SAYS \"Eh-oh\"";
             var instructor = new Mock<IInstructor>();
-            var contentManager = new Mock<IContentManager>();
             instructor.Setup(i => i.WriteLine(It.IsAny<string>(), It.IsAny<string>()));
-            var parser = new DirtyParser(instructor.Object, contentManager.Object);
+            var parser = new DirtyParser(instructor.Object);
             //Act
             var result = parser.Parse(command);
             //Assert
@@ -46,9 +44,8 @@ namespace VNNLangaugeTests
             //Arrange
             string command = "SAYS \"Your base belongs to us\"";
             var instructor = new Mock<IInstructor>();
-            var contentManager = new Mock<IContentManager>();
             instructor.Setup(i => i.WriteLine(It.IsAny<string>(), It.IsAny<string>()));
-            var parser = new DirtyParser(instructor.Object, contentManager.Object);
+            var parser = new DirtyParser(instructor.Object);
             //Act
             var result = parser.Parse(command);
             //Assert
@@ -63,8 +60,7 @@ namespace VNNLangaugeTests
             //Arrange
             string command = "[Ronan] SAYS ";
             var instructor = new Mock<IInstructor>();
-            var contentManager = new Mock<IContentManager>();
-            var parser = new DirtyParser(instructor.Object, contentManager.Object);
+            var parser = new DirtyParser(instructor.Object);
             //Act + Assert
             Assert.Throws<ParserException>(()=> parser.Parse(command));
 
@@ -76,9 +72,8 @@ namespace VNNLangaugeTests
             //Arrange
             string command = "[Tutty Monster] SAYS \"Harveer says I like cheese!\"";
             var instructor = new Mock<IInstructor>();
-            var contentManager = new Mock<IContentManager>();
             instructor.Setup(i => i.WriteLine(It.IsAny<string>(), It.IsAny<string>()));
-            var parser = new DirtyParser(instructor.Object, contentManager.Object);
+            var parser = new DirtyParser(instructor.Object);
             //Act
             var result = parser.Parse(command);
             //Assert

@@ -20,17 +20,15 @@ namespace VNNLangaugeTests.ParserTests
             //TODO: Do we want to denote sprites with stars?
             var command = "Add [Sam Bridge The Elder] *Happy* Fade In";
             var characterName = "Sam Bridge The Elder";
-            var fakeImage = new byte[1];
 
             var instructor = new Mock<IInstructor>();
             var contentManager = new Mock<IContentManager>();
-            instructor.Setup(i=> i.AddCharacter(It.IsAny<string>(), It.IsAny<byte[]>(), Animation.FadeIn));
-            contentManager.Setup(i => i.GetCharacterImage("Sam Bridge The Elder", "Happy")).Returns(fakeImage);
-            var parser = new DirtyParser(instructor.Object, contentManager.Object);
+            instructor.Setup(i=> i.AddCharacter(It.IsAny<string>(), It.IsAny<string>(), Animation.FadeIn));
+            var parser = new DirtyParser(instructor.Object);
             // Act
             var result = parser.Parse(command);
             // Assert
-            instructor.Verify(i => i.AddCharacter(characterName, It.IsAny<byte[]>(), Animation.FadeIn));
+            instructor.Verify(i => i.AddCharacter(characterName, It.IsAny<string>(), Animation.FadeIn));
             Assert.AreEqual(true, result);
         }
     }
