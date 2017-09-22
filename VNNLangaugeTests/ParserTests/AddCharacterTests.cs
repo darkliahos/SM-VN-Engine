@@ -18,7 +18,7 @@ namespace VNNLangaugeTests.ParserTests
         {
             // Arrange
             //TODO: Do we want to denote sprites with stars?
-            var command = "Add [Sam Bridge The Elder] *Happy* Fade In";
+            var command = "Add [Sam Bridge The Elder] Happy *FadeIn*";
             var characterName = "Sam Bridge The Elder";
 
             var instructor = new Mock<IInstructor>();
@@ -28,7 +28,7 @@ namespace VNNLangaugeTests.ParserTests
             // Act
             var result = parser.Parse(command);
             // Assert
-            instructor.Verify(i => i.AddCharacter(characterName, It.IsAny<string>(), Animation.FadeIn));
+            instructor.Verify(i => i.AddCharacter(characterName, "Happy", Animation.FadeIn));
             Assert.AreEqual(true, result);
         }
     }

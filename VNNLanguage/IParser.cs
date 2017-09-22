@@ -48,9 +48,10 @@ namespace VNNLanguage
             if(command.ContainsInsensitive("add"))
             {
                 string characterName = GetPrimaryCharacterName(command);
-                string sprite = command.Substring(command.IndexOf("*"), command.Length - command.LastIndexOf("*") -1);
-                string animation = command.Substring(command.LastIndexOf("*")+ 1, command.Length - command.LastIndexOf("*") -1);
-                instructor.AddCharacter(characterName.Trim(), sprite, (Animation)Enum.Parse(typeof(Animation), animation.Replace(" ", string.Empty)));
+                string sprite = RegexConstants.GetSprite.Match(command).Captures[0].Value.Trim();
+                string animation = RegexConstants.GetStuffInAstrix.Match(command).Captures[0].Value;
+                sprite = sprite.Substring(2, sprite.Length - 4);
+                instructor.AddCharacter(characterName.Trim(), sprite, (Animation)Enum.Parse(typeof(Animation), animation.Trim('*')));
                 return true;
 
             }
