@@ -49,6 +49,10 @@ namespace VNNLanguage
             {
                 string characterName = GetPrimaryCharacterName(command);
                 string sprite = RegexConstants.GetSprite.Match(command).Captures[0].Value.Trim();
+                if (string.IsNullOrEmpty(sprite) || sprite.Length < 4)
+                {
+                    throw new ParserException("Sprite was invalid");
+                }
                 string animation = RegexConstants.GetStuffInAstrix.Match(command).Captures[0].Value;
                 sprite = sprite.Substring(2, sprite.Length - 4);
                 instructor.AddCharacter(characterName.Trim(), sprite, (Animation)Enum.Parse(typeof(Animation), animation.Trim('*')));
