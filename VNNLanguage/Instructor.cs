@@ -15,10 +15,29 @@ namespace VNNLanguage
             this.contentManager = contentManager;
         }
 
-        //TODO: FIX Issue #8 first
         public void AddCharacter(string friendlyName, string spriteName, Animation animation)
         {
             var image = contentManager.GetCharacterImage(friendlyName, spriteName.Replace("*", string.Empty));
+            if (CharacterState.Instance.ShowCharacter(friendlyName))
+            {
+                CharacterState.Instance.ShowCharacter(friendlyName); //Show Character if someone is trying to add them in
+            }
+            else
+            {
+                var character = new Character
+                {
+                    CurrentSprite = image,
+                    FriendlyName = friendlyName,
+                    DisplayName = friendlyName, //TODO: What do we want to do to initliase this?
+                    Position = new Coordinate(300, 300),//TODO: Need to wait for the graphics engine to make it in before deciding this
+                    InScene = true, 
+                    SpriteHeight = 50,
+                    SpriteWidth = 50
+                };
+                CharacterState.Instance.AddCharacter(character);
+            }
+
+
             throw new NotImplementedException();
         }
 
