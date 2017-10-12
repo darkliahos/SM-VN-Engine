@@ -67,7 +67,25 @@ namespace VNNLanguage
                 return true;
             }
 
-            if(command.StartsWith("MOVE"))
+            if (command.ContainsInsensitive("show"))
+            {
+                string characterName = GetPrimaryCharacterName(command);
+                string animation = RegexConstants.GetStuffInAstrix.Match(command).Captures[0].Value;
+                instructor.ShowCharacter(characterName, (Animation)Enum.Parse(typeof(Animation), animation.Trim('*')));
+                return true;
+
+            }
+
+            if (command.ContainsInsensitive("hide"))
+            {
+                string characterName = GetPrimaryCharacterName(command);
+                string animation = RegexConstants.GetStuffInAstrix.Match(command).Captures[0].Value;
+                instructor.HideCharacter(characterName, (Animation)Enum.Parse(typeof(Animation), animation.Trim('*')));
+                return true;
+
+            }
+
+            if (command.StartsWith("MOVE"))
             {
                 var directionValues = Enum.GetValues(typeof(Direction)).Cast<Direction>().Select(d=> d.ToString());
                 string characterName = GetPrimaryCharacterName(command);
