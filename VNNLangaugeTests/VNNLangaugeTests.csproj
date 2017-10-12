@@ -54,6 +54,7 @@
     <Compile Include="ParserTests\MoveCharacterTests.cs" />
     <Compile Include="ParserTests\PlaceCharacterTests.cs" />
     <Compile Include="ParserTests\RemoveCharacterTests.cs" />
+    <Compile Include="ParserTests\ShowHideCharacterTests.cs" />
     <Compile Include="ParserTests\WriteLineTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
