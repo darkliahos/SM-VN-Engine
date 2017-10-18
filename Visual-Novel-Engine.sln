@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26403.7
+VisualStudioVersion = 15.0.26730.15
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VNNLanguage", "VNNLanguage\VNNLanguage.csproj", "{97DC807A-8C71-4860-97EB-CDF5ABC9493B}"
 EndProject
@@ -10,6 +10,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VNNLangaugeTests", "VNNLangaugeTests\VNNLangaugeTests.csproj", "{3F64C6FA-060A-4D8E-B3CC-887EFC157D89}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VNNMedia", "VNNMedia\VNNMedia.csproj", "{3F4F76BC-8F74-4C13-BACD-068605075A20}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VNNStart", "VNNStart\VNNStart.csproj", "{BDC85118-5B1E-44C5-B82F-97648BDC6796}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,11 +31,18 @@ Global
 		{3F4F76BC-8F74-4C13-BACD-068605075A20}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3F4F76BC-8F74-4C13-BACD-068605075A20}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3F4F76BC-8F74-4C13-BACD-068605075A20}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BDC85118-5B1E-44C5-B82F-97648BDC6796}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BDC85118-5B1E-44C5-B82F-97648BDC6796}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BDC85118-5B1E-44C5-B82F-97648BDC6796}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BDC85118-5B1E-44C5-B82F-97648BDC6796}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{3F64C6FA-060A-4D8E-B3CC-887EFC157D89} = {477BD317-25E1-4693-8E67-EF3293C387B3}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C0A28365-308C-4EC4-ADF3-72C673C2FAA5}
 	EndGlobalSection
 EndGlobal
