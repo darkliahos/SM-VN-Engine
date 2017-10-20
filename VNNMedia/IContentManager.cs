@@ -10,4 +10,12 @@ namespace VNNMedia
     {
         byte[] GetCharacterImage(string characterName, string expression);
     }
+
+    public class ContentManager : IContentManager
+    {
+        public byte[] GetCharacterImage(string characterName, string expression)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }
