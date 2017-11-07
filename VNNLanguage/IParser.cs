@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using VNNLanguage.Constants;
 using VNNLanguage.Exceptions;
 using VNNLanguage.Extensions;
-using VNNMedia;
 
 namespace VNNLanguage
 {
