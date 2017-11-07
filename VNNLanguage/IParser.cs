@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using VNNLanguage.Constants;
 using VNNLanguage.Exceptions;
@@ -9,6 +10,7 @@ namespace VNNLanguage
     public interface IParser
     {
         bool Parse(string command);
+        Dictionary<string, int> GetScenarioMarkers(string[] lines);
     }
 
     public class DirtyParser : IParser
@@ -18,6 +20,11 @@ namespace VNNLanguage
         public DirtyParser(IInstructor instructor)
         {
             this.instructor = instructor;
+        }
+
+        public Dictionary<string, int> GetScenarioMarkers(string[] lines)
+        {
+            return lines.Where(s => s.Contains("BEGIN SCENARIO")).ToDictionary(k => k, k => Array.IndexOf(lines, k));
         }
 
         /// <summary>

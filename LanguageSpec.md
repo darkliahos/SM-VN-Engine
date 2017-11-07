@@ -144,11 +144,11 @@ Jumping scenario allows us to jump from one place to another in the story, so lo
 
 To Declare a scenario, we can type:
 
-```Scenario "[Scenario Name]"```
+```BEGIN SCENARIO "[Scenario Name]"```
 
 So an example of this will be:
 
-```Scenario "Down by the bay"```
+```BEGIN SCENARIO "Down by the bay"```
 
 So to jump to a scenario it would just be:
 

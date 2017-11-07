@@ -57,14 +57,17 @@ namespace VNNStart
                 throw new FileNotFoundException("Start file is missing");
             }
 
-            foreach(var line in File.ReadAllLines(files.First(f=> f.EndsWith($"\\{startingFile}"))))
+            var startingFileLines = File.ReadAllLines(files.First(f => f.EndsWith($"\\{startingFile}")));
+            
+            foreach (var line in startingFileLines)
             {
                 parser.Parse(line);
             }
 
             foreach(var file in files.Where(f=> f != startingFile))
             {
-                foreach (var line in File.ReadAllLines(file))
+                var scenarioLines = File.ReadAllLines(file);
+                foreach (var line in scenarioLines)
                 {
                     parser.Parse(line);
                 }
