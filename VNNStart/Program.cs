@@ -6,23 +6,29 @@ using Newtonsoft.Json;
 using SharedModels;
 using System.Linq;
 using VNNLanguage.Model;
+using OpenTK;
+using VNNMedia;
 
 namespace VNNStart
 {
     class Program
     {
+
         static void Main(string[] args)
         {
+            bool debug = args[0] == "DEBUG";
             try
             {
-                bool debug = true; //Very Dirty, will remove and implement properly
                 var container = DiContainer.BuildContainer();
                 var dirtyParser = container.Resolve<IParser>();
-                Console.WriteLine("Reading Metadata file...");
+                //Console.WriteLine("Reading Metadata file...");
                 var metadata = GetMetadataInfo(debug);
-                GameState.Instance.SetupGameStateFromMetaData(metadata);
-                Console.WriteLine("Reading Scenario files...");
-                RunGameScripts(ref dirtyParser, metadata.StartFile);
+                GameState.Instance.SetupGameState(metadata, debug);
+                OpenTK.GameWindow window = new OpenTK.GameWindow(800, 600, new OpenTK.Graphics.GraphicsMode(32, 8, 0, 0));
+                Game game = new Game(window, container.Resolve<IContentManager>());
+                window.Run(1.0 / 60.0);
+                //Console.WriteLine("Reading Scenario files...");
+                //RunGameScripts(ref dirtyParser, metadata.StartFile);
             }
             catch(Exception error)
             {
