@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -87,7 +88,7 @@ namespace VNNLanguage.Model
             }
         }
 
-        public bool ChangeSprite(string friendlyName, byte[] sprite)
+        public bool ChangeSprite(string friendlyName, Bitmap sprite)
         {
             if (CharacterExists(friendlyName))
             {

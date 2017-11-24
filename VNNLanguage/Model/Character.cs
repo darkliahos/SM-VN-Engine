@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 
 namespace VNNLanguage
 {
@@ -14,7 +15,7 @@ namespace VNNLanguage
 
         public int SpriteWidth { get; set; }
 
-        public byte[] CurrentSprite { get; set; }
+        public Bitmap CurrentSprite { get; set; }
 
         public bool InScene { get; set; }
 
