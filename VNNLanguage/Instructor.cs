@@ -17,7 +17,7 @@ namespace VNNLanguage
 
         public void AddCharacter(string friendlyName, string spriteName, Animation animation)
         {
-            var image = contentManager.GetCharacterImage(friendlyName, spriteName.Replace("*", string.Empty));
+            var image = contentManager.GetCharacterImage(friendlyName, spriteName.Replace("*", string.Empty), GameState.Instance.GetImageFormat());
             if (CharacterState.Instance.ShowCharacter(friendlyName))
             {
                 CharacterState.Instance.ShowCharacter(friendlyName); //Show Character if someone is trying to add them in
@@ -36,9 +36,6 @@ namespace VNNLanguage
                 };
                 CharacterState.Instance.AddCharacter(character);
             }
-
-
-            throw new NotImplementedException();
         }
 
         public void ChangeBackground(byte[] image)
@@ -53,7 +50,7 @@ namespace VNNLanguage
 
         public void ChangeCharacterSprite(string friendlyName, string spriteName)
         {
-            var image = contentManager.GetCharacterImage(friendlyName, spriteName.Replace("*", string.Empty));
+            var image = contentManager.GetCharacterImage(friendlyName, spriteName.Replace("*", string.Empty), GameState.Instance.GetImageFormat());
             if (CharacterState.Instance.ChangeSprite(friendlyName, image))
             {
                 throw new NotImplementedException();
@@ -125,7 +122,8 @@ namespace VNNLanguage
 
         public void WriteLine(string text, string character)
         {
-            throw new NotImplementedException();
+            //TODO: Probably do something with this
+            Console.WriteLine($"{character}: {text}");
         }
     }
 

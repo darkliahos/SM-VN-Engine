@@ -5,6 +5,7 @@ using System.IO;
 using Newtonsoft.Json;
 using SharedModels;
 using System.Linq;
+using VNNLanguage.Model;
 
 namespace VNNStart
 {
@@ -12,7 +13,6 @@ namespace VNNStart
     {
         static void Main(string[] args)
         {
-            string gameTitle = "The Bastard Engine";
             try
             {
                 bool debug = true; //Very Dirty, will remove and implement properly
@@ -20,14 +20,14 @@ namespace VNNStart
                 var dirtyParser = container.Resolve<IParser>();
                 Console.WriteLine("Reading Metadata file...");
                 var metadata = GetMetadataInfo(debug);
-                gameTitle = metadata.Title;
+                GameState.Instance.SetupGameStateFromMetaData(metadata);
                 Console.WriteLine("Reading Scenario files...");
                 RunGameScripts(ref dirtyParser, metadata.StartFile);
             }
             catch(Exception error)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"{gameTitle} errored! {error.Message}");
+                Console.WriteLine($"{GameState.Instance.GetTitle()} errored! {error.Message}");
             }
             Console.ReadLine();
         }
@@ -64,7 +64,7 @@ namespace VNNStart
                 parser.Parse(line);
             }
 
-            foreach(var file in files.Where(f=> f != startingFile))
+            foreach(var file in files.Where(f=> !f.EndsWith(startingFile)))
             {
                 var scenarioLines = File.ReadAllLines(file);
                 foreach (var line in scenarioLines)

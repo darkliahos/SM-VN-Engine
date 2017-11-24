@@ -1,2 +1,2 @@
-﻿Add [Sam Bridge The Elder] Happy *FadeIn*
-[Sam Bridge The Elder] SAYS I Like meat
+﻿Add [Sam] Happy *FadeIn*
+[Sam] SAYS "I Like meat"

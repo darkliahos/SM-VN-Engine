@@ -1,8 +1,9 @@
 {
   "Title": "Demo",
-  "Author": "Sohail Nasir",
+  "Author": "Sohail",
   "Version": "1.0.0",
-  "DateGenerated": "2017-11-06T23:54:16.5850892Z",
+  "DateGenerated": "2017-11-24T10:03:48.585499Z",
   "VersionHash": "002101F8725E5C78D9F30D87F3FA4C87",
-  "StartFile": "Start"
+  "StartFile": "Start",
+  "PictureFormatType": 2
 }

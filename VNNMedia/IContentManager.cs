@@ -1,5 +1,7 @@
-﻿using System;
+﻿using SharedModels;
+using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -9,16 +11,18 @@ namespace VNNMedia
 {
     public interface IContentManager
     {
-        byte[] GetCharacterImage(string characterName, string expression);
+        Bitmap GetCharacterImage(string characterName, string expression, ImageFormatType imageFormatType);
 
         IEnumerable<string> ReadFile(string path);
     }
 
     public class ContentManager : IContentManager
     {
-        public byte[] GetCharacterImage(string characterName, string expression)
+        public Bitmap GetCharacterImage(string characterName, string expression, ImageFormatType imageFormatType)
         {
-            throw new NotImplementedException();
+            string ext = imageFormatType.ToString();
+            var characterPath = $"{Directory.GetCurrentDirectory()}\\Characters\\{characterName}";
+            return new Bitmap($"{characterPath}\\{expression}.{ext}");
         }
 
         public IEnumerable<string> ReadFile(string path)

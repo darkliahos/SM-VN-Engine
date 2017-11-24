@@ -15,5 +15,7 @@ namespace SharedModels
         public string VersionHash { get; set; }
 
         public string StartFile { get; set; }
+
+        public ImageFormatType PictureFormatType { get; set; }
     }
 }

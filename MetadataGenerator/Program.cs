@@ -18,7 +18,8 @@ namespace MetadataGenerator
             var generatedMetaDataFile = new Metadata
             {
                 DateGenerated = DateTime.UtcNow,
-                VersionHash = HashVersion()
+                VersionHash = HashVersion(),
+                PictureFormatType = ImageFormatType.PNG //Hardcode it to PNG for now
             };
 
             Console.BackgroundColor = ConsoleColor.Blue;
