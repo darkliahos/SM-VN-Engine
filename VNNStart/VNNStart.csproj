@@ -67,19 +67,19 @@
     <Content Include="Characters\Sam\Happy.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\download.png">
+    <Content Include="Assets\download.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\VN_bg.png">
+    <Content Include="Assets\VN_bg.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\VN_chara.png">
+    <Content Include="Assets\VN_chara.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\VN_speech.png">
+    <Content Include="Assets\VN_speech.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\VN_speech_head.png">
+    <Content Include="Assets\VN_speech_head.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Scenarios\Start.txt">
