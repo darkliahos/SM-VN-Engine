@@ -20,10 +20,11 @@ namespace VNNLanguage.Model
             state = new Game();
         }
 
-        public void SetupGameStateFromMetaData(Metadata metaData)
+        public void SetupGameState(Metadata metaData, bool debug)
         {
             state.Title = metaData.Title;
             state.ImageFormatType = metaData.PictureFormatType;
+            state.DebugMode = debug;
         }
 
         public string GetTitle()
@@ -35,7 +36,6 @@ namespace VNNLanguage.Model
         {
             return state.ImageFormatType;
         }
-
 
     }
 
