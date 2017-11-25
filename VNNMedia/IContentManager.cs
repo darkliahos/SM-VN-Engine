@@ -4,6 +4,7 @@ using System.Drawing;
 using System.IO;
 using OpenTK.Graphics.OpenGL;
 using System.Drawing.Imaging;
+using System;
 
 namespace VNNMedia
 {
@@ -11,9 +12,11 @@ namespace VNNMedia
     {
         Bitmap GetCharacterImage(string characterName, string expression, ImageFormatType imageFormatType);
 
+        Bitmap GetImageAsset(string fileName, ImageFormatType imageFormatType);
+
         IEnumerable<string> ReadFile(string path);
 
-        Texture2d LoadTexture(string filePath);
+        Texture2d LoadTexture(Bitmap bitmap);
     }
 
     public class ContentManager : IContentManager
@@ -22,21 +25,34 @@ namespace VNNMedia
         {
             string ext = imageFormatType.ToString();
             var characterPath = $"{Directory.GetCurrentDirectory()}\\Characters\\{characterName}";
+            if (!File.Exists(characterPath))
+            {
+                throw new ArgumentException($"{expression} missing for character {characterName}");
+            }
             return new Bitmap($"{characterPath}\\{expression}.{ext}");
         }
 
-        public Texture2d LoadTexture(string filePath)
+        public Bitmap GetImageAsset(string fileName, ImageFormatType imageFormatType)
         {
-            //TODO Change this to take in a bitmap, shouldn't need to give a shit about filepaths
-            Bitmap bitmap = new Bitmap(filePath);
+            string ext = imageFormatType.ToString();
+            var assetFilePath = $"{Directory.GetCurrentDirectory()}\\Assets\\{fileName}.{ext}";
+            if(!File.Exists(assetFilePath))
+            {
+                throw new ArgumentException($"{fileName}.{ext} is not present in the assets folder");
+            }
 
-            int id = GL.GenTexture();
+            return new Bitmap(assetFilePath);
+        }
+
+        public Texture2d LoadTexture(Bitmap bitmap)
+        {
+            var textureGen = GL.GenTexture();
 
             BitmapData bmpData = bitmap.LockBits(
                 new Rectangle(0, 0, bitmap.Width, bitmap.Height),
                 ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
-            GL.BindTexture(TextureTarget.Texture2D, id);
+            GL.BindTexture(TextureTarget.Texture2D, textureGen);
 
             GL.TexImage2D(TextureTarget.Texture2D, 0,
                 PixelInternalFormat.Rgba,
@@ -52,7 +68,7 @@ namespace VNNMedia
             GL.TexParameter(TextureTarget.Texture2D,
                 TextureParameterName.TextureMagFilter, (int)TextureMinFilter.Linear);
 
-            return new Texture2d(id, bitmap.Width, bitmap.Height);
+            return new Texture2d(textureGen, bitmap.Width, bitmap.Height);
         }
 
         public IEnumerable<string> ReadFile(string path)

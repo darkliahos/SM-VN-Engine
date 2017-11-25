@@ -3,6 +3,7 @@ using OpenTK.Graphics.OpenGL;
 using SharedModels;
 using System;
 using System.Drawing;
+using VNNLanguage.Model;
 using VNNMedia;
 
 namespace VNNStart
@@ -127,13 +128,13 @@ namespace VNNStart
 
         private void Window_Load(object sender, EventArgs e)
         {
-            Load_Image("download.png", ref texture);
+            Load_Image("download", ref texture);
 
-            Load_Image("VN_bg.png", ref bg);
-            Load_Image("VN_chara.png", ref chara); // create\set MAX_CHARAS_ON_SCREEN limit
-            Load_Image("VN_speech.png", ref speech);
-            Load_Image("VN_speech_head.png", ref speech_hd);
-            Load_Image("download.png", ref penguin);
+            Load_Image("VN_bg", ref bg);
+            Load_Image("VN_chara", ref chara); // create\set MAX_CHARAS_ON_SCREEN limit
+            Load_Image("VN_speech", ref speech);
+            Load_Image("VN_speech_head", ref speech_hd);
+            Load_Image("download", ref penguin);
         }
 
         private void Load_Image(string file, ref Texture2d t)
@@ -148,7 +149,7 @@ namespace VNNStart
             GL.Enable(EnableCap.AlphaTest);
             GL.AlphaFunc(AlphaFunction.Gequal, 0.5f);
 
-            t = contentManager.LoadTexture("Content/" + file);
+            t = contentManager.LoadTexture(contentManager.GetImageAsset(file, GameState.Instance.GetImageFormat()));
         }
 
         private void Render_setup()
