@@ -11,8 +11,6 @@ namespace VNNLanguage
         //This will also need to be protected 
         //byte[] CurrentBackground { get; set; }
 
-        void WriteLine(string text, string character);
-
         void JumpLine(int number);
 
         void CreateFork(IEnumerable<(string text, string forkHandlerName)>choices);

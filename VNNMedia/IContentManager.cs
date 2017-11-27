@@ -24,12 +24,12 @@ namespace VNNMedia
         public Bitmap GetCharacterImage(string characterName, string expression, ImageFormatType imageFormatType)
         {
             string ext = imageFormatType.ToString();
-            var characterPath = $"{Directory.GetCurrentDirectory()}\\Characters\\{characterName}";
+            var characterPath = $"{Directory.GetCurrentDirectory()}\\Characters\\{characterName}\\{expression}.{ext}";
             if (!File.Exists(characterPath))
             {
                 throw new ArgumentException($"{expression} missing for character {characterName}");
             }
-            return new Bitmap($"{characterPath}\\{expression}.{ext}");
+            return new Bitmap($"{characterPath}");
         }
 
         public Bitmap GetImageAsset(string fileName, ImageFormatType imageFormatType)

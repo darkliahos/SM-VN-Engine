@@ -16,6 +16,8 @@ namespace SharedModels
 
         public string StartFile { get; set; }
 
+        public string ScenarioExtension { get; set; }
+
         public ImageFormatType PictureFormatType { get; set; }
     }
 }

@@ -3,6 +3,9 @@ using OpenTK.Graphics.OpenGL;
 using SharedModels;
 using System;
 using System.Drawing;
+using System.IO;
+using System.Linq;
+using VNNLanguage;
 using VNNLanguage.Model;
 using VNNMedia;
 
@@ -12,12 +15,14 @@ namespace VNNStart
     {
         private readonly GameWindow window;
         private readonly IContentManager contentManager;
+        private readonly IParser parser;
         Texture2d texture, bg, chara, speech, speech_hd, penguin;
 
-        public Game(GameWindow window, IContentManager contentManager)
+        public Game(GameWindow window, IContentManager contentManager, IParser parser)
         {
             this.window = window;
             this.contentManager = contentManager;
+            this.parser = parser;
             window.Load += Window_Load;
             window.UpdateFrame += Window_UpdateFrame;
             window.RenderFrame += Window_RenderFrame;
@@ -26,6 +31,21 @@ namespace VNNStart
         private void Window_RenderFrame(object sender, FrameEventArgs e)
         {
             Render_setup();
+
+            var scenarioPath = $"{Directory.GetCurrentDirectory()}\\Scenarios";
+            string[] files = Directory.GetFiles(scenarioPath, $"*.{GameState.Instance.GetScenarioFileExtension()}");
+            string startingFile = GameState.Instance.GetStartFile();
+            if (!files.Any(f => f.EndsWith($"\\{startingFile}")))
+            {
+                throw new FileNotFoundException("Start file is missing");
+            }
+
+            var startingFileLines = File.ReadAllLines(files.First(f => f.EndsWith($"\\{startingFile}")));
+
+            foreach (var line in startingFileLines)
+            {
+                parser.Parse(line);
+            }
 
             // Render_ and Draw_ could be combined to create one method.
             Render_Image();
@@ -186,6 +206,33 @@ namespace VNNStart
                 Matrix4.CreateTranslation(transX, transY, transZ);
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadMatrix(ref modelViewMatrix);
+        }
+
+        public void RunGameScripts()
+        {
+            var scenarioPath = $"{Directory.GetCurrentDirectory()}\\Scenarios";
+            string[] files = Directory.GetFiles(scenarioPath, $"*.{GameState.Instance.GetScenarioFileExtension()}");
+            string startingFile = GameState.Instance.GetStartFile();
+            if (!files.Any(f => f.EndsWith($"\\{startingFile}")))
+            {
+                throw new FileNotFoundException("Start file is missing");
+            }
+
+            var startingFileLines = File.ReadAllLines(files.First(f => f.EndsWith($"\\{startingFile}")));
+
+            foreach (var line in startingFileLines)
+            {
+                parser.Parse(line);
+            }
+
+            foreach (var file in files.Where(f => !f.EndsWith(startingFile)))
+            {
+                var scenarioLines = File.ReadAllLines(file);
+                foreach (var line in scenarioLines)
+                {
+                    parser.Parse(line);
+                }
+            }
         }
     }
 }

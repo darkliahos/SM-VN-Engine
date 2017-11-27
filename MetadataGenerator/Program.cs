@@ -19,7 +19,8 @@ namespace MetadataGenerator
             {
                 DateGenerated = DateTime.UtcNow,
                 VersionHash = HashVersion(),
-                PictureFormatType = ImageFormatType.PNG //Hardcode it to PNG for now
+                PictureFormatType = ImageFormatType.PNG, //Hardcode it to PNG for now
+                ScenarioExtension = "txt"
             };
 
             Console.BackgroundColor = ConsoleColor.Blue;

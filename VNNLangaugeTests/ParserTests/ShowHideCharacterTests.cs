@@ -18,8 +18,10 @@ namespace VNNLangaugeTests.ParserTests
             //Act
             var result = parser.Parse(command);
             //Assert
-            Assert.AreEqual(true, result);
             mockInstructor.Verify(i => i.ShowCharacter("Jasmeet", Animation.FadeIn));
+            Assert.AreEqual("DrawImage", result.MethodName);
+            Assert.AreEqual("Jasmeet", result.Parameters[0]);
+            Assert.AreEqual(Animation.FadeIn, result.Parameters[1]);
         }
 
         [Test]
@@ -33,8 +35,10 @@ namespace VNNLangaugeTests.ParserTests
             //Act
             var result = parser.Parse(command);
             //Assert
-            Assert.AreEqual(true, result);
             mockInstructor.Verify(i => i.HideCharacter("Jasmeet", Animation.FadeOut));
+            Assert.AreEqual("WipeImage", result.MethodName);
+            Assert.AreEqual("Jasmeet", result.Parameters[0]);
+            Assert.AreEqual(Animation.FadeOut, result.Parameters[1]);
         }
     }
 }
