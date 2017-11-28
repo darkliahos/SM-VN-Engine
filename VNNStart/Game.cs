@@ -31,14 +31,14 @@ namespace VNNStart
             Render_Image();
             Draw_Image(bg);
 
-            Render_Image();
-            Draw_Image(chara);
+            Render_Image(1.0f, 1.0f, 1f, 400f, 100f, 0f, 0f);
+            Draw_Image(chara, chara.Width - 200, chara.Height - 200);
 
             Render_Image();
             Draw_Image(speech);
 
-            Render_Image();
-            Draw_Image(speech_hd);
+            Render_Image(1.5f, 1.5f, 1f, 0f, (window.Height - (453)), 0f, 0f);
+            Draw_Image(speech_hd, speech_hd.Width, speech_hd.Height);
 
             window.SwapBuffers();
         }
@@ -87,7 +87,7 @@ namespace VNNStart
 
         void Draw_Image(Texture2d t, Int32 width, Int32 height)
         {
-            GL.BindTexture(TextureTarget.Texture2D, texture.Id);
+            GL.BindTexture(TextureTarget.Texture2D, t.Id);
 
             GL.Begin(PrimitiveType.Triangles);
 
@@ -105,7 +105,7 @@ namespace VNNStart
 
         void Draw_Image(Texture2d t, Int32 width, Int32 height, float transparency)
         {
-            GL.BindTexture(TextureTarget.Texture2D, texture.Id);
+            GL.BindTexture(TextureTarget.Texture2D, t.Id);
 
             GL.Begin(PrimitiveType.Triangles);
 
