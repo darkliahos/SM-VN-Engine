@@ -21,14 +21,11 @@ namespace VNNStart
             {
                 var container = DiContainer.BuildContainer();
                 var dirtyParser = container.Resolve<IParser>();
-                //Console.WriteLine("Reading Metadata file...");
                 var metadata = GetMetadataInfo(debug);
                 GameState.Instance.SetupGameState(metadata, debug);
-                OpenTK.GameWindow window = new OpenTK.GameWindow(800, 600, new OpenTK.Graphics.GraphicsMode(32, 8, 0, 0));
-                Game game = new Game(window, container.Resolve<IContentManager>(), dirtyParser);
+                var window = new GameWindow(800, 600, new OpenTK.Graphics.GraphicsMode(32, 8, 0, 0));
+                var game = new Game(window, container.Resolve<IContentManager>(), dirtyParser);
                 window.Run(1.0 / 60.0);
-                //Console.WriteLine("Reading Scenario files...");
-                //RunGameScripts(ref dirtyParser, metadata.StartFile);
             }
             catch(Exception error)
             {
