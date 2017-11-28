@@ -2,8 +2,9 @@
   "Title": "Demo",
   "Author": "Sohail",
   "Version": "1.0.0",
-  "DateGenerated": "2017-11-24T10:03:48.585499Z",
+  "DateGenerated": "2017-11-27T14:13:26.7695882Z",
   "VersionHash": "002101F8725E5C78D9F30D87F3FA4C87",
   "StartFile": "Start",
+  "ScenarioExtension": "txt",
   "PictureFormatType": 2
 }
