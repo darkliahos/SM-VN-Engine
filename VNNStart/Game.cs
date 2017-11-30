@@ -52,7 +52,7 @@ namespace VNNStart
                 }
             }
 
-            // Render_ and Draw_ could be combined to create one method.
+            // Render and Draw could be combined to create one method.
             RenderImage();
             DrawImage(bg);
 
