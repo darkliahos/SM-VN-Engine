@@ -4,6 +4,9 @@ using OpenTK.Input;
 using SharedModels;
 using System;
 using System.Drawing;
+using System.IO;
+using System.Linq;
+using VNNLanguage;
 using VNNLanguage.Model;
 using VNNMedia;
 
@@ -13,40 +16,61 @@ namespace VNNStart
     {
         private readonly GameWindow window;
         private readonly IContentManager contentManager;
+        private readonly IParser parser;
         Texture2d texture, bg, chara, speech, speech_hd, penguin;
 
-        public Game(GameWindow window, IContentManager contentManager)
+        public Game(GameWindow window, IContentManager contentManager, IParser parser)
         {
             this.window = window;
             this.contentManager = contentManager;
-            window.Load += Window_Load;
-            window.UpdateFrame += Window_UpdateFrame;
-            window.RenderFrame += Window_RenderFrame;
+            this.parser = parser;
+            window.Load += WindowLoad;
+            window.UpdateFrame += WindowUpdateFrame;
+            window.RenderFrame += WindowRenderFrame;
         }
 
-        private void Window_RenderFrame(object sender, FrameEventArgs e)
+        private void WindowRenderFrame(object sender, FrameEventArgs e)
         {
-            Render_setup();
+            RenderSetup();
+
+            var scenarioPath = $"{Directory.GetCurrentDirectory()}\\Scenarios";
+            string[] files = Directory.GetFiles(scenarioPath, $"*.{GameState.Instance.GetScenarioFileExtension()}");
+            string startingFile = GameState.Instance.GetStartFile();
+            if (!files.Any(f => f.EndsWith($"\\{startingFile}")))
+            {
+                throw new FileNotFoundException("Start file is missing");
+            }
+
+            var startingFileLines = File.ReadAllLines(files.First(f => f.EndsWith($"\\{startingFile}")));
+
+            foreach (var line in startingFileLines)
+            {
+                var callBack = parser.Parse(line);
+                if(callBack != null)
+                {
+                    //TODO: Need to store these inside of a delegate
+                }
+            }
 
             // Render_ and Draw_ could be combined to create one method.
-            Render_Image();
-            Draw_Image(bg);
+            RenderImage();
+            DrawImage(bg);
 
-            Render_Image(1.0f, 1.0f, 1f, 400f, 100f, 0f, 0f);
-            Draw_Image(chara, chara.Width - 200, chara.Height - 200);
+            RenderImage(1.0f, 1.0f, 1f, 400f, 100f, 0f, 0f);
+            DrawImage(chara, chara.Width - 200, chara.Height - 200);
 
-            Render_Image();
-            Draw_Image(speech);
+            RenderImage();
+            DrawImage(speech);
 
-            Render_Image(1.5f, 1.5f, 1f, 0f, (window.Height - (453)), 0f, 0f);
-            Draw_Image(speech_hd, speech_hd.Width, speech_hd.Height);
+            RenderImage(1.5f, 1.5f, 1f, 0f, (window.Height - (453)), 0f, 0f);
+            DrawImage(speech_hd, speech_hd.Width, speech_hd.Height);
 
             window.SwapBuffers();
         }
 
         // see if you can change primitive type to quads / strips
 
-        void Draw_Image(Texture2d t)
+        void DrawImage(Texture2d t)
         {
             GL.BindTexture(TextureTarget.Texture2D, t.Id);
 
@@ -66,7 +90,7 @@ namespace VNNStart
             GL.End();
         }
 
-        void Draw_Image(Texture2d t, float transparency)
+        void DrawImage(Texture2d t, float transparency)
         {
             GL.BindTexture(TextureTarget.Texture2D, t.Id);
 
@@ -86,7 +110,7 @@ namespace VNNStart
             GL.End();
         }
 
-        void Draw_Image(Texture2d t, Int32 width, Int32 height)
+        void DrawImage(Texture2d t, Int32 width, Int32 height)
         {
             GL.BindTexture(TextureTarget.Texture2D, t.Id);
 
@@ -104,7 +128,7 @@ namespace VNNStart
             GL.End();
         }
 
-        void Draw_Image(Texture2d t, Int32 width, Int32 height, float transparency)
+        void DrawImage(Texture2d t, Int32 width, Int32 height, float transparency)
         {
             GL.BindTexture(TextureTarget.Texture2D, t.Id);
 
@@ -122,7 +146,7 @@ namespace VNNStart
             GL.End();
         }
 
-        private void Window_UpdateFrame(object sender, FrameEventArgs e)
+        private void WindowUpdateFrame(object sender, FrameEventArgs e)
         {
             MouseState mState = Mouse.GetCursorState();
             Point mousePos = window.PointToClient(new Point(mState.X, mState.Y));
@@ -132,18 +156,18 @@ namespace VNNStart
             }
         }
 
-        private void Window_Load(object sender, EventArgs e)
+        private void WindowLoad(object sender, EventArgs e)
         {
-            Load_Image("download", ref texture);
+            LoadImage("download", ref texture);
 
-            Load_Image("VN_bg", ref bg);
-            Load_Image("VN_chara", ref chara); // create\set MAX_CHARAS_ON_SCREEN limit
-            Load_Image("VN_speech", ref speech);
-            Load_Image("VN_speech_head", ref speech_hd);
-            Load_Image("download", ref penguin);
+            LoadImage("VN_bg", ref bg);
+            LoadImage("VN_chara", ref chara); // create\set MAX_CHARAS_ON_SCREEN limit
+            LoadImage("VN_speech", ref speech);
+            LoadImage("VN_speech_head", ref speech_hd);
+            LoadImage("download", ref penguin);
         }
 
-        private void Load_Image(string file, ref Texture2d t)
+        private void LoadImage(string file, ref Texture2d t)
         {
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
@@ -158,7 +182,7 @@ namespace VNNStart
             t = contentManager.LoadTexture(contentManager.GetImageAsset(file, GameState.Instance.GetImageFormat()));
         }
 
-        private void Render_setup()
+        private void RenderSetup()
         {
             GL.ClearColor(Color.Black);
             GL.Clear(ClearBufferMask.ColorBufferBit);
@@ -171,7 +195,7 @@ namespace VNNStart
         }
 
         //no scale, no translation, no rotation
-        private void Render_Image()
+        private void RenderImage()
         {
             Matrix4 modelViewMatrix =
                 Matrix4.CreateScale(1.0f, 1.0f, 1f) *
@@ -182,7 +206,7 @@ namespace VNNStart
             GL.LoadMatrix(ref modelViewMatrix);
         }
 
-        private void Render_Image(float scaleX, float scaleY, float scaleZ,
+        private void RenderImage(float scaleX, float scaleY, float scaleZ,
             float transX, float transY, float transZ,
             float rotateZ)
         {
@@ -192,6 +216,33 @@ namespace VNNStart
                 Matrix4.CreateTranslation(transX, transY, transZ);
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadMatrix(ref modelViewMatrix);
+        }
+
+        public void RunGameScripts()
+        {
+            var scenarioPath = $"{Directory.GetCurrentDirectory()}\\Scenarios";
+            string[] files = Directory.GetFiles(scenarioPath, $"*.{GameState.Instance.GetScenarioFileExtension()}");
+            string startingFile = GameState.Instance.GetStartFile();
+            if (!files.Any(f => f.EndsWith($"\\{startingFile}")))
+            {
+                throw new FileNotFoundException("Start file is missing");
+            }
+
+            var startingFileLines = File.ReadAllLines(files.First(f => f.EndsWith($"\\{startingFile}")));
+
+            foreach (var line in startingFileLines)
+            {
+                parser.Parse(line);
+            }
+
+            foreach (var file in files.Where(f => !f.EndsWith(startingFile)))
+            {
+                var scenarioLines = File.ReadAllLines(file);
+                foreach (var line in scenarioLines)
+                {
+                    parser.Parse(line);
+                }
+            }
         }
     }
 }

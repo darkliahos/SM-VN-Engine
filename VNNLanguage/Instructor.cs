@@ -119,12 +119,6 @@ namespace VNNLanguage
                 throw new NotImplementedException();
             }
         }
-
-        public void WriteLine(string text, string character)
-        {
-            //TODO: Probably do something with this
-            Console.WriteLine($"{character}: {text}");
-        }
     }
 
 }

@@ -1,9 +1,10 @@
 {
   "Title": "Demo",
-  "Author": "Me",
-  "Version": "1.2.0",
-  "DateGenerated": "2017-11-24T10:34:35.2228795Z",
+  "Author": "Sohail",
+  "Version": "1.0.0",
+  "DateGenerated": "2017-11-27T14:13:26.7695882Z",
   "VersionHash": "002101F8725E5C78D9F30D87F3FA4C87",
-  "StartFile": "Start",
+  "StartFile": "start",
+  "ScenarioExtension": "txt",
   "PictureFormatType": 2
 }

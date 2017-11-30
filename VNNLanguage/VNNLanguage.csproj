@@ -59,6 +59,7 @@
     <Compile Include="Enums\Direction.cs" />
     <Compile Include="IParser.cs" />
     <Compile Include="Model\GameState.cs" />
+    <Compile Include="Model\GameWindowInstruction.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

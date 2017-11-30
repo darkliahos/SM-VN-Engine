@@ -21,7 +21,12 @@ namespace VNNLangaugeTests.ParserTests
             var result = parser.Parse(command);
             //Assert
             instructor.Verify(i => i.PlaceCharacter("Vaporwave", 30, 30, 30, 90));
-            Assert.AreEqual(true, result);
+            Assert.AreEqual("DrawImage", result.MethodName);
+            Assert.AreEqual("Vaporwave", result.Parameters[0]);
+            Assert.AreEqual(30, result.Parameters[1]);
+            Assert.AreEqual(30, result.Parameters[2]);
+            Assert.AreEqual(30, result.Parameters[3]);
+            Assert.AreEqual(90, result.Parameters[4]);
         }
 
         [Test]
@@ -36,7 +41,10 @@ namespace VNNLangaugeTests.ParserTests
             var result = parser.Parse(command);
             //Assert
             instructor.Verify(i => i.PlaceCharacter("Vaporwave", 30, 30, 0, 0));
-            Assert.AreEqual(true, result);
+            Assert.AreEqual("DrawImage", result.MethodName);
+            Assert.AreEqual("Vaporwave", result.Parameters[0]);
+            Assert.AreEqual(30, result.Parameters[1]);
+            Assert.AreEqual(30, result.Parameters[2]);
         }
 
         [Test]
