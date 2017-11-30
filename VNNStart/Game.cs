@@ -1,5 +1,6 @@
 ﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using OpenTK.Input;
 using SharedModels;
 using System;
 using System.Drawing;
@@ -123,7 +124,12 @@ namespace VNNStart
 
         private void Window_UpdateFrame(object sender, FrameEventArgs e)
         {
-
+            MouseState mState = Mouse.GetCursorState();
+            Point mousePos = window.PointToClient(new Point(mState.X, mState.Y));
+            if (mState.LeftButton == ButtonState.Pressed)
+            {
+                System.Console.Out.WriteLine(mousePos.X + ", " + mousePos.Y);
+            }
         }
 
         private void Window_Load(object sender, EventArgs e)
