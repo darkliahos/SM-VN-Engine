@@ -64,7 +64,7 @@ namespace VNNLanguage
                 string animation = RegexConstants.GetStuffInAstrix.Match(command).Captures[0].Value;
                 sprite = sprite.Substring(2, sprite.Length - 4);
                 instructor.AddCharacter(characterName.Trim(), sprite, (Animation)Enum.Parse(typeof(Animation), animation.Trim('*')));
-                return null;
+                return new GameWindowInstruction("DrawCharacter", new object[] { characterName, sprite, (Animation)Enum.Parse(typeof(Animation), animation.Trim('*')) });
 
             }
 

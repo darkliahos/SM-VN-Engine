@@ -24,7 +24,7 @@ namespace VNNStart
                 var metadata = GetMetadataInfo(debug);
                 GameState.Instance.SetupGameState(metadata, debug);
                 var window = new GameWindow(800, 600, new OpenTK.Graphics.GraphicsMode(32, 8, 0, 0));
-                var game = new Game(window, container.Resolve<IContentManager>(), dirtyParser);
+                var game = new SceneWindow(window, container.Resolve<IContentManager>(), dirtyParser);
                 window.Run(1.0 / 60.0);
             }
             catch(Exception error)
