@@ -32,6 +32,7 @@ namespace VNNMedia
             return new Bitmap($"{characterPath}");
         }
 
+        [Obsolete("Plan to kill this as soon as the hardwired assets are gone")]
         public Bitmap GetImageAsset(string fileName, ImageFormatType imageFormatType)
         {
             string ext = imageFormatType.ToString();

@@ -12,14 +12,14 @@ using VNNMedia;
 
 namespace VNNStart
 {
-    class Game
+    public class SceneWindow
     {
         private readonly GameWindow window;
         private readonly IContentManager contentManager;
         private readonly IParser parser;
-        Texture2d texture, bg, chara, speech, speech_hd, penguin;
+        Texture2d bg, speech;
 
-        public Game(GameWindow window, IContentManager contentManager, IParser parser)
+        public SceneWindow(GameWindow window, IContentManager contentManager, IParser parser)
         {
             this.window = window;
             this.contentManager = contentManager;
@@ -33,44 +33,15 @@ namespace VNNStart
         {
             RenderSetup();
 
-            var scenarioPath = $"{Directory.GetCurrentDirectory()}\\Scenarios";
-            string[] files = Directory.GetFiles(scenarioPath, $"*.{GameState.Instance.GetScenarioFileExtension()}");
-            string startingFile = GameState.Instance.GetStartFile();
-            if (!files.Any(f => f.EndsWith($"\\{startingFile}")))
-            {
-                throw new FileNotFoundException("Start file is missing");
-            }
-
-            var startingFileLines = File.ReadAllLines(files.First(f => f.EndsWith($"\\{startingFile}")));
-
-            foreach (var line in startingFileLines)
-            {
-                var callBack = parser.Parse(line);
-                if(callBack != null)
-                {
-                    //TODO: Need to store these inside of a delegate
-                }
-            }
-
-            // Render and Draw could be combined to create one method.
             RenderImage();
-            DrawImage(bg);
+            DrawScene(bg);
 
-            RenderImage(1.0f, 1.0f, 1f, 400f, 100f, 0f, 0f);
-            DrawImage(chara, chara.Width - 200, chara.Height - 200);
-
-            RenderImage();
-            DrawImage(speech);
-
-            RenderImage(1.5f, 1.5f, 1f, 0f, (window.Height - (453)), 0f, 0f);
-            DrawImage(speech_hd, speech_hd.Width, speech_hd.Height);
+            RunScenario();
 
             window.SwapBuffers();
         }
 
-        // see if you can change primitive type to quads / strips
-
-        void DrawImage(Texture2d t)
+        private void DrawScene(Texture2d t)
         {
             GL.BindTexture(TextureTarget.Texture2D, t.Id);
 
@@ -78,8 +49,6 @@ namespace VNNStart
 
             GL.Color4(1f, 1f, 1f, 1f);
             GL.TexCoord2(0, 0); GL.Vertex2(0, 0);
-            // you are drawing the image only to these 
-            // co -ordinates, so you're technically pre-scaling it?
             GL.TexCoord2(1, 1); GL.Vertex2(window.Width, window.Height);
             GL.TexCoord2(0, 1); GL.Vertex2(0, window.Height);
 
@@ -90,51 +59,13 @@ namespace VNNStart
             GL.End();
         }
 
-        void DrawImage(Texture2d t, float transparency)
-        {
-            GL.BindTexture(TextureTarget.Texture2D, t.Id);
-
-            GL.Begin(PrimitiveType.Triangles);
-
-            GL.Color4(1f, 1f, 1f, transparency);
-            GL.TexCoord2(0, 0); GL.Vertex2(0, 0);
-            // you are drawing the image only to these 
-            // co -ordinates, so you're technically pre-scaling it?
-            GL.TexCoord2(1, 1); GL.Vertex2(window.Width, window.Height);
-            GL.TexCoord2(0, 1); GL.Vertex2(0, window.Height);
-
-            GL.TexCoord2(0, 0); GL.Vertex2(0, 0);
-            GL.TexCoord2(1, 0); GL.Vertex2(window.Width, 0);
-            GL.TexCoord2(1, 1); GL.Vertex2(window.Width, window.Height);
-
-            GL.End();
-        }
-
-        void DrawImage(Texture2d t, Int32 width, Int32 height)
+        void DrawCharacter(Texture2d t, Int32 width, Int32 height)
         {
             GL.BindTexture(TextureTarget.Texture2D, t.Id);
 
             GL.Begin(PrimitiveType.Triangles);
 
             GL.Color4(1f, 1f, 1f, 1f);
-            GL.TexCoord2(0, 0); GL.Vertex2(0, 0);
-            GL.TexCoord2(1, 1); GL.Vertex2(width, height);
-            GL.TexCoord2(0, 1); GL.Vertex2(0, height);
-
-            GL.TexCoord2(0, 0); GL.Vertex2(0, 0);
-            GL.TexCoord2(1, 0); GL.Vertex2(width, 0);
-            GL.TexCoord2(1, 1); GL.Vertex2(width, height);
-
-            GL.End();
-        }
-
-        void DrawImage(Texture2d t, Int32 width, Int32 height, float transparency)
-        {
-            GL.BindTexture(TextureTarget.Texture2D, t.Id);
-
-            GL.Begin(PrimitiveType.Triangles);
-
-            GL.Color4(1f, 1f, 1f, transparency);
             GL.TexCoord2(0, 0); GL.Vertex2(0, 0);
             GL.TexCoord2(1, 1); GL.Vertex2(width, height);
             GL.TexCoord2(0, 1); GL.Vertex2(0, height);
@@ -148,25 +79,22 @@ namespace VNNStart
 
         private void WindowUpdateFrame(object sender, FrameEventArgs e)
         {
-            MouseState mState = Mouse.GetCursorState();
-            Point mousePos = window.PointToClient(new Point(mState.X, mState.Y));
+            var mState = Mouse.GetCursorState();
+            var mousePos = window.PointToClient(new Point(mState.X, mState.Y));
             if (mState.LeftButton == ButtonState.Pressed)
             {
-                System.Console.Out.WriteLine(mousePos.X + ", " + mousePos.Y);
+                Console.WriteLine(mousePos.X + ", " + mousePos.Y);
             }
         }
 
         private void WindowLoad(object sender, EventArgs e)
         {
-            LoadImage("download", ref texture);
-
+            //TODO: Does this need to happen here?
             LoadImage("VN_bg", ref bg);
-            LoadImage("VN_chara", ref chara); // create\set MAX_CHARAS_ON_SCREEN limit
             LoadImage("VN_speech", ref speech);
-            LoadImage("VN_speech_head", ref speech_hd);
-            LoadImage("download", ref penguin);
         }
 
+        [Obsolete("This only used in the POC, this should go once the parser has been properly implemented")]
         private void LoadImage(string file, ref Texture2d t)
         {
             GL.Enable(EnableCap.Blend);
@@ -182,6 +110,28 @@ namespace VNNStart
             t = contentManager.LoadTexture(contentManager.GetImageAsset(file, GameState.Instance.GetImageFormat()));
         }
 
+        private Texture2d LoadImage(string character, string sprite, ImageType type)
+        {
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+
+            GL.Enable(EnableCap.DepthTest);
+            GL.DepthFunc(DepthFunction.Lequal);
+
+            GL.Enable(EnableCap.Texture2D);
+            GL.Enable(EnableCap.AlphaTest);
+            GL.AlphaFunc(AlphaFunction.Gequal, 0.5f);
+
+            switch(type)
+            {
+                case ImageType.Character:
+                    return contentManager.LoadTexture(contentManager.GetCharacterImage(character, sprite, GameState.Instance.GetImageFormat()));
+                default:
+                    throw new ArgumentOutOfRangeException($"Load Texture for {type} does not exist");
+            }
+
+            
+        }
         private void RenderSetup()
         {
             GL.ClearColor(Color.Black);
@@ -218,7 +168,8 @@ namespace VNNStart
             GL.LoadMatrix(ref modelViewMatrix);
         }
 
-        public void RunGameScripts()
+
+        private void RunScenario()
         {
             var scenarioPath = $"{Directory.GetCurrentDirectory()}\\Scenarios";
             string[] files = Directory.GetFiles(scenarioPath, $"*.{GameState.Instance.GetScenarioFileExtension()}");
@@ -232,15 +183,21 @@ namespace VNNStart
 
             foreach (var line in startingFileLines)
             {
-                parser.Parse(line);
-            }
-
-            foreach (var file in files.Where(f => !f.EndsWith(startingFile)))
-            {
-                var scenarioLines = File.ReadAllLines(file);
-                foreach (var line in scenarioLines)
+                var callBack = parser.Parse(line);
+                if (callBack != null)
                 {
-                    parser.Parse(line);
+                    switch (callBack.MethodName)
+                    {
+                        case "DrawCharacter":
+                            var character = LoadImage(callBack.Parameters[0].ToString(), callBack.Parameters[1].ToString(), ImageType.Character);
+                            RenderImage(1.0f, 1.0f, 1f, 200f, 50f, 0f, 0f);
+                            DrawCharacter(character, character.Width - 250, character.Height - 250);
+                            RenderImage();
+                            DrawScene(speech);
+                            RenderImage(1.5f, 1.5f, 1f, 0f, (window.Height - (173)), 0f, 0f);
+                            DrawCharacter(character, character.Width - 500, character.Height - 500);
+                            break;
+                    }
                 }
             }
         }
