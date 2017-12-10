@@ -136,6 +136,14 @@ namespace VNNLanguage
                 }
             }
 
+            if(command.StartsWith("CHANGE BACKGROUND"))
+            {
+                string sprite = command.Replace("CHANGE BACKGROUND", string.Empty).TrimStart();
+                GameState.Instance.SetBackground(sprite);
+                return new GameWindowInstruction("DrawScene", new object[] { sprite});
+
+            }
+
             throw new NotImplementedException();
         }
 

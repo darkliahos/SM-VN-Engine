@@ -49,6 +49,17 @@ namespace VNNLanguage.Model
             return state.ScenarioExtension;
         }
 
+        public void SetBackground(string background)
+        {
+            if(state.CurrentScenario == null)
+            {
+                state.CurrentScenario = new RunningScenario
+                {
+                    CurrentBackground = background
+                };
+            }
+        }
+
     }
 
     public class Game
@@ -62,5 +73,12 @@ namespace VNNLanguage.Model
         public string StartFile { get; set; }
 
         public string ScenarioExtension { get; set; }
+
+        public RunningScenario CurrentScenario { get; set; }
+    }
+
+    public class RunningScenario
+    {
+        public string CurrentBackground { get; set; }
     }
 }

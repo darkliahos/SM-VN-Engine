@@ -8,9 +8,6 @@ namespace VNNLanguage
     /// </summary>
     public interface IInstructor
     {
-        //This will also need to be protected 
-        //byte[] CurrentBackground { get; set; }
-
         void JumpLine(int number);
 
         void CreateFork(IEnumerable<(string text, string forkHandlerName)>choices);

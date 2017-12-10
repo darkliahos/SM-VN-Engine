@@ -12,6 +12,8 @@ namespace VNNMedia
     {
         Bitmap GetCharacterImage(string characterName, string expression, ImageFormatType imageFormatType);
 
+        Bitmap GetSceneImage(string sceneName, ImageFormatType imageFormatType);
+
         Bitmap GetImageAsset(string fileName, ImageFormatType imageFormatType);
 
         IEnumerable<string> ReadFile(string path);
@@ -43,6 +45,19 @@ namespace VNNMedia
             }
 
             return new Bitmap(assetFilePath);
+        }
+
+        public Bitmap GetSceneImage(string sceneName, ImageFormatType imageFormatType)
+        {
+            string ext = imageFormatType.ToString();
+            var sceneFilePath = $"{Directory.GetCurrentDirectory()}\\Scenes\\{sceneName}.{ext}";
+
+            if (!File.Exists(sceneFilePath))
+            {
+                throw new ArgumentException($"{sceneName} is missing");
+            }
+
+            return new Bitmap(sceneFilePath);
         }
 
         public Texture2d LoadTexture(Bitmap bitmap)
