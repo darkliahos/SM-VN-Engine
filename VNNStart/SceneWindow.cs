@@ -32,12 +32,7 @@ namespace VNNStart
         private void WindowRenderFrame(object sender, FrameEventArgs e)
         {
             RenderSetup();
-
-            RenderImage();
-            DrawScene(bg);
-
             RunScenario();
-
             window.SwapBuffers();
         }
 
@@ -90,7 +85,6 @@ namespace VNNStart
         private void WindowLoad(object sender, EventArgs e)
         {
             //TODO: Does this need to happen here?
-            LoadImage("VN_bg", ref bg);
             LoadImage("VN_speech", ref speech);
         }
 
@@ -126,6 +120,8 @@ namespace VNNStart
             {
                 case ImageType.Character:
                     return contentManager.LoadTexture(contentManager.GetCharacterImage(character, sprite, GameState.Instance.GetImageFormat()));
+                case ImageType.Scene:
+                    return contentManager.LoadTexture(contentManager.GetSceneImage(sprite, GameState.Instance.GetImageFormat()));
                 default:
                     throw new ArgumentOutOfRangeException($"Load Texture for {type} does not exist");
             }
@@ -196,6 +192,11 @@ namespace VNNStart
                             DrawScene(speech);
                             RenderImage(1.5f, 1.5f, 1f, 0f, (window.Height - (173)), 0f, 0f);
                             DrawCharacter(character, character.Width - 500, character.Height - 500);
+                            break;
+                        case "DrawScene":
+                            var scene = LoadImage(string.Empty, callBack.Parameters[0].ToString(), ImageType.Scene);
+                            RenderImage();
+                            DrawScene(scene);
                             break;
                     }
                 }

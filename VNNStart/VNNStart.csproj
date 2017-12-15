@@ -71,7 +71,7 @@
     <Content Include="Characters\Sam\Happy.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\VN_bg.png">
+    <Content Include="Scenes\test.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Characters\Sam\Serious.png">
@@ -103,9 +103,7 @@
       <Name>VNNMedia</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Scenes\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
