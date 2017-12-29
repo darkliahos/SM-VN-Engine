@@ -49,15 +49,32 @@ namespace VNNLanguage.Model
             return state.ScenarioExtension;
         }
 
-        public void SetBackground(string background)
+        public void SetCurrentBackground(string background)
         {
-            if(state.CurrentScenario == null)
+            GetRunningScenario().Background = background;
+        }
+
+        public void SetCurrentLine(int line)
+        {
+            GetRunningScenario().Line = line;
+        }
+
+        public int GetCurrentLine()
+        {
+            return GetRunningScenario().Line;
+        }
+
+        /// <summary>
+        /// This is a handy method to check if the running scenario is populated
+        /// </summary>
+        /// <returns>Returns a current scenario if there is one, if not it creates a new instance</returns>
+        private RunningScenario GetRunningScenario()
+        {
+            if (state.CurrentScenario == null)
             {
-                state.CurrentScenario = new RunningScenario
-                {
-                    CurrentBackground = background
-                };
+                state.CurrentScenario = new RunningScenario();
             }
+            return state.CurrentScenario;
         }
 
     }
@@ -75,10 +92,13 @@ namespace VNNLanguage.Model
         public string ScenarioExtension { get; set; }
 
         public RunningScenario CurrentScenario { get; set; }
+
     }
 
     public class RunningScenario
     {
-        public string CurrentBackground { get; set; }
+        public string Background { get; set; }
+
+        public int Line { get; set; }
     }
 }
