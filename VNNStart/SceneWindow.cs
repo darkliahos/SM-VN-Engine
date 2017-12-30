@@ -177,12 +177,9 @@ namespace VNNStart
 
             var startingFileLines = File.ReadAllLines(files.First(f => f.EndsWith($"\\{startingFile}")));
 
-            //for(int l = GameState.Instance.GetCurrentLine(); l < startingFileLines.Length;)
-            //{
-            foreach (var line in startingFileLines)
+            for (int l = GameState.Instance.GetCurrentLine(); l < startingFileLines.Length;)
             {
-                var callBack = parser.Parse(line);
-                //var callBack = parser.Parse(startingFileLines[l]);
+                var callBack = parser.Parse(startingFileLines[l]);
                 if (callBack != null)
                 {
                     switch (callBack.MethodName)
@@ -195,19 +192,22 @@ namespace VNNStart
                             DrawScene(speech);
                             RenderImage(1.5f, 1.5f, 1f, 0f, (window.Height - (173)), 0f, 0f);
                             DrawCharacter(character, character.Width - 500, character.Height - 500);
-                            //l++;
+                            l++;
                             break;
                         case "DrawScene":
                             var scene = LoadImage(string.Empty, callBack.Parameters[0].ToString(), ImageType.Scene);
                             RenderImage();
                             DrawScene(scene);
-                            //l++;
+                            l++;
                             break;
                         case "Jump":
-                            //l = GameState.Instance.GetCurrentLine();
+                            l = (GameState.Instance.GetCurrentLine() -1);
+                            break;
+                        case "WriteText":
+                            //TODO: text writing will live here
+                            l++;
                             break;
                     }
-                    //}
                 }
             }
         }
