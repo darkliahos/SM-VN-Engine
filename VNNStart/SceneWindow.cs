@@ -18,6 +18,7 @@ namespace VNNStart
         private readonly IContentManager contentManager;
         private readonly IParser parser;
         private Texture2d speech;
+        private KeyboardState lastKeyState;
 
         public SceneWindow(GameWindow window, IContentManager contentManager, IParser parser)
         {
@@ -80,6 +81,14 @@ namespace VNNStart
             {
                 Console.WriteLine(mousePos.X + ", " + mousePos.Y);
             }
+
+            var keyState = Keyboard.GetState();
+            if (keyState.IsKeyDown(Key.Enter) &&
+                lastKeyState.IsKeyUp(Key.Enter))
+            {
+                Console.WriteLine("Enter!");
+            }
+            lastKeyState = keyState;
         }
 
         private void WindowLoad(object sender, EventArgs e)
