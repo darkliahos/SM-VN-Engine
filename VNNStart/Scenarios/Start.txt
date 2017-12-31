@@ -1,3 +1,4 @@
 ﻿CHANGE BACKGROUND test
 [Sam] SAYS "I Like meat"
+JUMP 4
 Add [Sam] Happy *FadeIn*

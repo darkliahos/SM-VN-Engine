@@ -33,6 +33,7 @@ namespace VNNStart
         private void WindowRenderFrame(object sender, FrameEventArgs e)
         {
             RenderSetup();
+            //TODO MENU Load and interaction will live here
         }
 
         private void DrawScene(Texture2d t)
@@ -73,8 +74,6 @@ namespace VNNStart
 
         private void WindowUpdateFrame(object sender, FrameEventArgs e)
         {
-            RunScenario();
-            window.SwapBuffers();
             var mState = Mouse.GetCursorState();
             var mousePos = window.PointToClient(new Point(mState.X, mState.Y));
             if (mState.LeftButton == ButtonState.Pressed)
@@ -83,10 +82,11 @@ namespace VNNStart
             }
 
             var keyState = Keyboard.GetState();
-            if (keyState.IsKeyDown(Key.Enter) &&
-                lastKeyState.IsKeyUp(Key.Enter))
+            if (keyState.IsKeyDown(Key.Enter) && lastKeyState.IsKeyUp(Key.Enter))
             {
-                Console.WriteLine("Enter!");
+                //TODO: Some Game state handling will need to exist here
+                RunScenario();
+                window.SwapBuffers();
             }
             lastKeyState = keyState;
         }
