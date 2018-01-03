@@ -17,7 +17,7 @@ namespace VNNStart
         private readonly GameWindow window;
         private readonly IContentManager contentManager;
         private readonly IParser parser;
-        Texture2d bg, speech;
+        private Texture2d speech;
         private KeyboardState lastKeyState;
 
         public SceneWindow(GameWindow window, IContentManager contentManager, IParser parser)
@@ -33,8 +33,7 @@ namespace VNNStart
         private void WindowRenderFrame(object sender, FrameEventArgs e)
         {
             RenderSetup();
-            RunScenario();
-            window.SwapBuffers();
+            //TODO MENU Load and interaction will live here
         }
 
         private void DrawScene(Texture2d t)
@@ -83,10 +82,11 @@ namespace VNNStart
             }
 
             var keyState = Keyboard.GetState();
-            if (keyState.IsKeyDown(Key.Enter) &&
-                lastKeyState.IsKeyUp(Key.Enter))
+            if (keyState.IsKeyDown(Key.Enter) && lastKeyState.IsKeyUp(Key.Enter))
             {
-                Console.WriteLine("Enter!");
+                //TODO: Some Game state handling will need to exist here
+                RunScenario();
+                window.SwapBuffers();
             }
             lastKeyState = keyState;
         }
@@ -186,9 +186,9 @@ namespace VNNStart
 
             var startingFileLines = File.ReadAllLines(files.First(f => f.EndsWith($"\\{startingFile}")));
 
-            foreach (var line in startingFileLines)
+            for (int l = GameState.Instance.GetCurrentLine(); l < startingFileLines.Length;)
             {
-                var callBack = parser.Parse(line);
+                var callBack = parser.Parse(startingFileLines[l]);
                 if (callBack != null)
                 {
                     switch (callBack.MethodName)
@@ -201,11 +201,20 @@ namespace VNNStart
                             DrawScene(speech);
                             RenderImage(1.5f, 1.5f, 1f, 0f, (window.Height - (173)), 0f, 0f);
                             DrawCharacter(character, character.Width - 500, character.Height - 500);
+                            l++;
                             break;
                         case "DrawScene":
                             var scene = LoadImage(string.Empty, callBack.Parameters[0].ToString(), ImageType.Scene);
                             RenderImage();
                             DrawScene(scene);
+                            l++;
+                            break;
+                        case "Jump":
+                            l = (GameState.Instance.GetCurrentLine() -1);
+                            break;
+                        case "WriteText":
+                            //TODO: text writing will live here
+                            l++;
                             break;
                     }
                 }

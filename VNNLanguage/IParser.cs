@@ -139,9 +139,14 @@ namespace VNNLanguage
             if(command.StartsWith("CHANGE BACKGROUND"))
             {
                 string sprite = command.Replace("CHANGE BACKGROUND", string.Empty).TrimStart();
-                GameState.Instance.SetBackground(sprite);
+                GameState.Instance.SetCurrentBackground(sprite);
                 return new GameWindowInstruction("DrawScene", new object[] { sprite});
+            }
 
+            if(command.StartsWith("JUMP"))
+            {
+                GameState.Instance.SetCurrentLine(Convert.ToInt32(command.Replace("JUMP ", string.Empty)));
+                return new GameWindowInstruction("Jump", new object[0]);
             }
 
             throw new NotImplementedException();
