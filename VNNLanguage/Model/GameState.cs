@@ -49,6 +49,11 @@ namespace VNNLanguage.Model
             return state.ScenarioExtension;
         }
 
+        public string GetCurrentBackground()
+        {
+            return GetRunningScenario().Background;
+        }
+
         public void SetCurrentBackground(string background)
         {
             GetRunningScenario().Background = background;
@@ -64,6 +69,16 @@ namespace VNNLanguage.Model
             return GetRunningScenario().Line;
         }
 
+        public bool GetRedraw()
+        {
+            return GetRunningScenario().Redraw;
+        }
+
+        public void SetRedraw(bool redraw)
+        {
+            GetRunningScenario().Redraw = redraw;
+        }
+
         /// <summary>
         /// This is a handy method to check if the running scenario is populated
         /// </summary>
@@ -76,7 +91,6 @@ namespace VNNLanguage.Model
             }
             return state.CurrentScenario;
         }
-
     }
 
     public class Game
@@ -100,5 +114,7 @@ namespace VNNLanguage.Model
         public string Background { get; set; }
 
         public int Line { get; set; }
+
+        public bool Redraw { get; set; }
     }
 }

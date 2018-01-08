@@ -188,7 +188,15 @@ namespace VNNStart
 
             for (int l = GameState.Instance.GetCurrentLine(); l < startingFileLines.Length;)
             {
+                bool forceInput = false;
                 var callBack = parser.Parse(startingFileLines[l]);
+
+                if(GameState.Instance.GetRedraw())
+                {
+                    Drawbackground(GameState.Instance.GetCurrentBackground());
+                    //TODO: Redraw Character if need to
+                }
+
                 if (callBack != null)
                 {
                     switch (callBack.MethodName)
@@ -204,21 +212,35 @@ namespace VNNStart
                             l++;
                             break;
                         case "DrawScene":
-                            var scene = LoadImage(string.Empty, callBack.Parameters[0].ToString(), ImageType.Scene);
-                            RenderImage();
-                            DrawScene(scene);
+                            Drawbackground(callBack.Parameters[0].ToString());
                             l++;
                             break;
                         case "Jump":
+                            // Using a zero based array and JUMP returns a 1 based value 
                             l = (GameState.Instance.GetCurrentLine() -1);
                             break;
                         case "WriteText":
                             //TODO: text writing will live here
-                            l++;
+                            forceInput = true;
                             break;
                     }
                 }
+
+                if(forceInput)
+                {
+                    GameState.Instance.SetRedraw(true);
+                    //Store the next line in memory
+                    GameState.Instance.SetCurrentLine(l + 1);
+                    break;
+                }
             }
+        }
+
+        private void Drawbackground(string background)
+        {
+            var scene = LoadImage(string.Empty, background, ImageType.Scene);
+            RenderImage();
+            DrawScene(scene);
         }
     }
 }
