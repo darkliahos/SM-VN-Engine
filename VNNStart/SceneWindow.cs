@@ -195,6 +195,7 @@ namespace VNNStart
                 {
                     Drawbackground(GameState.Instance.GetCurrentBackground());
                     //TODO: Redraw Character if need to
+                    GameState.Instance.SetRedraw(false);
                 }
 
                 if (callBack != null)

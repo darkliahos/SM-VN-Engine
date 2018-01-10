@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
@@ -17,6 +18,11 @@ namespace VNNLanguage.Model
        {
             characters = new ConcurrentDictionary<Guid, Character>();
        }
+
+        public IEnumerable<Character> GetCharacterInScene()
+        {
+            return characters.Select(c=> c.Value).Where(c=> c.InScene).AsEnumerable();
+        }
 
         public bool CharacterExists(string friendlyName)
         {
