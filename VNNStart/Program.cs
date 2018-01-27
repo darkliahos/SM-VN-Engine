@@ -31,6 +31,12 @@ namespace VNNStart
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine($"{GameState.Instance.GetTitle()} errored! {error.Message}");
+
+                if(debug)
+                {
+                    Console.WriteLine(error.StackTrace);
+                }
+
             }
             Console.ReadLine();
         }

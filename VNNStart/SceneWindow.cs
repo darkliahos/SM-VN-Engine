@@ -54,7 +54,7 @@ namespace VNNStart
             GL.End();
         }
 
-        void DrawCharacter(Texture2d t, Int32 width, Int32 height)
+        void DrawCharacter(Texture2d t, int width, int height)
         {
             GL.BindTexture(TextureTarget.Texture2D, t.Id);
 
@@ -188,37 +188,70 @@ namespace VNNStart
 
             for (int l = GameState.Instance.GetCurrentLine(); l < startingFileLines.Length;)
             {
+                bool forceInput = false;
                 var callBack = parser.Parse(startingFileLines[l]);
+
+                if(GameState.Instance.GetRedraw())
+                {
+                    Drawbackground(GameState.Instance.GetCurrentBackground());
+                    var charactersInScene = GameState.Instance.GetCharacterInScene();
+                    foreach(var characterInScene in charactersInScene)
+                    {
+                        DrawCharacter(characterInScene.DisplayName, characterInScene.CurrentSprite);
+                    }
+                    //TODO: Redraw Character if need to
+                    GameState.Instance.SetRedraw(false);
+                }
+
                 if (callBack != null)
                 {
                     switch (callBack.MethodName)
                     {
                         case "DrawCharacter":
-                            var character = LoadImage(callBack.Parameters[0].ToString(), callBack.Parameters[1].ToString(), ImageType.Character);
-                            RenderImage(1.0f, 1.0f, 1f, 200f, 50f, 0f, 0f);
-                            DrawCharacter(character, character.Width - 250, character.Height - 250);
-                            RenderImage();
-                            DrawScene(speech);
-                            RenderImage(1.5f, 1.5f, 1f, 0f, (window.Height - (173)), 0f, 0f);
-                            DrawCharacter(character, character.Width - 500, character.Height - 500);
+                            DrawCharacter(callBack.Parameters[0].ToString(), callBack.Parameters[1].ToString());
                             l++;
                             break;
                         case "DrawScene":
-                            var scene = LoadImage(string.Empty, callBack.Parameters[0].ToString(), ImageType.Scene);
-                            RenderImage();
-                            DrawScene(scene);
+                            Drawbackground(callBack.Parameters[0].ToString());
                             l++;
                             break;
                         case "Jump":
+                            // Using a zero based array and JUMP returns a 1 based value 
                             l = (GameState.Instance.GetCurrentLine() -1);
                             break;
                         case "WriteText":
                             //TODO: text writing will live here
-                            l++;
+                            forceInput = true;
                             break;
                     }
                 }
+
+                if(forceInput)
+                {
+                    GameState.Instance.SetRedraw(true);
+                    //Store the next line in memory
+                    GameState.Instance.SetCurrentLine(l + 1);
+                    break;
+                }
             }
+        }
+
+        private void Drawbackground(string background)
+        {
+            var scene = LoadImage(string.Empty, background, ImageType.Scene);
+            RenderImage();
+            DrawScene(scene);
+        }
+
+        private void DrawCharacter(string characterName, string sprite)
+        {
+            var character = LoadImage(characterName, sprite, ImageType.Character);
+            RenderImage(1.0f, 1.0f, 1f, 200f, 50f, 0f, 0f);
+            DrawCharacter(character, character.Width - 250, character.Height - 250);
+            RenderImage();
+            DrawScene(speech);
+            RenderImage(1.5f, 1.5f, 1f, 0f, (window.Height - (173)), 0f, 0f);
+            DrawCharacter(character, character.Width - 500, character.Height - 500);
         }
     }
 }
