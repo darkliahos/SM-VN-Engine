@@ -54,7 +54,7 @@ namespace VNNStart
             GL.End();
         }
 
-        void DrawCharacter(Texture2d t, Int32 width, Int32 height)
+        void DrawCharacter(Texture2d t, int width, int height)
         {
             GL.BindTexture(TextureTarget.Texture2D, t.Id);
 
@@ -194,6 +194,11 @@ namespace VNNStart
                 if(GameState.Instance.GetRedraw())
                 {
                     Drawbackground(GameState.Instance.GetCurrentBackground());
+                    var charactersInScene = GameState.Instance.GetCharacterInScene();
+                    foreach(var characterInScene in charactersInScene)
+                    {
+                        DrawCharacter(characterInScene.DisplayName, characterInScene.CurrentSprite);
+                    }
                     //TODO: Redraw Character if need to
                     GameState.Instance.SetRedraw(false);
                 }
@@ -203,13 +208,7 @@ namespace VNNStart
                     switch (callBack.MethodName)
                     {
                         case "DrawCharacter":
-                            var character = LoadImage(callBack.Parameters[0].ToString(), callBack.Parameters[1].ToString(), ImageType.Character);
-                            RenderImage(1.0f, 1.0f, 1f, 200f, 50f, 0f, 0f);
-                            DrawCharacter(character, character.Width - 250, character.Height - 250);
-                            RenderImage();
-                            DrawScene(speech);
-                            RenderImage(1.5f, 1.5f, 1f, 0f, (window.Height - (173)), 0f, 0f);
-                            DrawCharacter(character, character.Width - 500, character.Height - 500);
+                            DrawCharacter(callBack.Parameters[0].ToString(), callBack.Parameters[1].ToString());
                             l++;
                             break;
                         case "DrawScene":
@@ -242,6 +241,17 @@ namespace VNNStart
             var scene = LoadImage(string.Empty, background, ImageType.Scene);
             RenderImage();
             DrawScene(scene);
+        }
+
+        private void DrawCharacter(string characterName, string sprite)
+        {
+            var character = LoadImage(characterName, sprite, ImageType.Character);
+            RenderImage(1.0f, 1.0f, 1f, 200f, 50f, 0f, 0f);
+            DrawCharacter(character, character.Width - 250, character.Height - 250);
+            RenderImage();
+            DrawScene(speech);
+            RenderImage(1.5f, 1.5f, 1f, 0f, (window.Height - (173)), 0f, 0f);
+            DrawCharacter(character, character.Width - 500, character.Height - 500);
         }
     }
 }

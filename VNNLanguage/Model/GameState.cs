@@ -87,34 +87,92 @@ namespace VNNLanguage.Model
         {
             if (state.CurrentScenario == null)
             {
-                state.CurrentScenario = new RunningScenario();
+                state.CurrentScenario = new RunningScenario {Characters = new System.Collections.Concurrent.ConcurrentDictionary<Guid, Character>() };
             }
             return state.CurrentScenario;
         }
-    }
 
-    public class Game
-    {
-        public ImageFormatType ImageFormatType { get; set; }
+        public IEnumerable<Character> GetCharacterInScene()
+        {
+            return GetRunningScenario().Characters.Select(c => c.Value).Where(c => c.InScene).AsEnumerable();
+        }
 
-        public string Title { get; set; }
+        public bool CharacterExists(string friendlyName)
+        {
+            return GetRunningScenario().Characters.Any(c => c.Value.FriendlyName == friendlyName);
+        }
 
-        public bool DebugMode { get; set; }
+        public bool AddCharacter(Character character)
+        {
+            var identifier = Guid.NewGuid();
+            character.Identifier = identifier;
+            return GetRunningScenario().Characters.TryAdd(identifier, character);
+        }
 
-        public string StartFile { get; set; }
+        public bool RemoveCharacter(string friendlyName)
+        {
+            if (CharacterExists(friendlyName))
+            {
+                var characterId = GetRunningScenario().Characters.First(c => c.Value.FriendlyName == friendlyName).Key;
+                return GetRunningScenario().Characters.TryRemove(characterId, out Character removedCharacter);
+            }
+            return false;
+        }
 
-        public string ScenarioExtension { get; set; }
+        public bool PlaceCharacter(string friendlyName, int x, int y, int height, int width)
+        {
+            if (CharacterExists(friendlyName))
+            {
+                var character = GetRunningScenario().Characters.First(c => c.Value.FriendlyName == friendlyName);
+                character.Value.Position.XAxis = x;
+                character.Value.Position.YAxis = y;
+                character.Value.SpriteHeight = height;
+                character.Value.SpriteWidth = width;
+                return true;
+            }
+            return false;
+        }
 
-        public RunningScenario CurrentScenario { get; set; }
+        public bool ShowCharacter(string friendlyName)
+        {
+            if (CharacterExists(friendlyName))
+            {
+                var character = GetRunningScenario().Characters.First(c => c.Value.FriendlyName == friendlyName);
+                character.Value.InScene = true;
+                return true;
+            }
+            return false;
+        }
 
-    }
+        public bool HideCharacter(string friendlyName)
+        {
+            if (CharacterExists(friendlyName))
+            {
+                var character = GetRunningScenario().Characters.First(c => c.Value.FriendlyName == friendlyName);
+                character.Value.InScene = false;
+                return true;
+            }
+            return false;
+        }
 
-    public class RunningScenario
-    {
-        public string Background { get; set; }
+        public void ChangeCharacterName(string friendlyName, string newDisplayName)
+        {
+            if (CharacterExists(friendlyName))
+            {
+                var character = GetRunningScenario().Characters.First(c => c.Value.FriendlyName == friendlyName);
+                character.Value.DisplayName = newDisplayName;
+            }
+        }
 
-        public int Line { get; set; }
-
-        public bool Redraw { get; set; }
+        public bool ChangeSprite(string friendlyName, string sprite)
+        {
+            if (CharacterExists(friendlyName))
+            {
+                var character = GetRunningScenario().Characters.First(c => c.Value.FriendlyName == friendlyName);
+                character.Value.CurrentSprite = sprite;
+                return true;
+            }
+            return false;
+        }
     }
 }

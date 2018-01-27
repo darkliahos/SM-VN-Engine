@@ -30,7 +30,10 @@ namespace VNNLangaugeTests.ParserTests
             var result = parser.Parse(command);
             // Assert
             instructor.Verify(i => i.AddCharacter(characterName, "Happy", Animation.FadeIn));
-            Assert.AreEqual(null, result);
+            Assert.AreEqual("DrawCharacter", result.MethodName);
+            Assert.AreEqual(characterName, result.Parameters[0]);
+            Assert.AreEqual("Happy", result.Parameters[1]);
+            Assert.AreEqual(Animation.FadeIn, result.Parameters[2]);
         }
 
         [Test]
