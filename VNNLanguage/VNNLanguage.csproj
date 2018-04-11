@@ -33,6 +33,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.ValueTuple, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ValueTuple.4.3.1\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
     </Reference>
@@ -49,7 +50,6 @@
     <Compile Include="Exceptions\DuplicateCharacterException.cs" />
     <Compile Include="Extensions\StringUtils.cs" />
     <Compile Include="Instructor.cs" />
-    <Compile Include="Model\CharacterState.cs" />
     <Compile Include="Model\Coordinate.cs" />
     <Compile Include="Enums\Animation.cs" />
     <Compile Include="Exceptions\ParserException.cs" />
@@ -57,12 +57,20 @@
     <Compile Include="IInstructor.cs" />
     <Compile Include="Enums\Direction.cs" />
     <Compile Include="IParser.cs" />
+    <Compile Include="Model\Game.cs" />
+    <Compile Include="Model\GameState.cs" />
+    <Compile Include="Model\GameWindowInstruction.cs" />
+    <Compile Include="Model\RunningScenario.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SharedModels\SharedModels.csproj">
+      <Project>{aaea9c41-1a34-4300-9b3f-513c546b8404}</Project>
+      <Name>SharedModels</Name>
+    </ProjectReference>
     <ProjectReference Include="..\VNNMedia\VNNMedia.csproj">
       <Project>{3F4F76BC-8F74-4C13-BACD-068605075A20}</Project>
       <Name>VNNMedia</Name>

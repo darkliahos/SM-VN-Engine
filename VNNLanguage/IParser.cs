@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using VNNLanguage.Constants;
 using VNNLanguage.Exceptions;
 using VNNLanguage.Extensions;
-using VNNMedia;
+using VNNLanguage.Model;
 
 namespace VNNLanguage
 {
     public interface IParser
     {
-        bool Parse(string command);
+        GameWindowInstruction Parse(string command);
+        Dictionary<string, int> GetScenarioMarkers(string[] lines);
     }
 
     public class DirtyParser : IParser
@@ -23,21 +23,29 @@ namespace VNNLanguage
             this.instructor = instructor;
         }
 
+        public Dictionary<string, int> GetScenarioMarkers(string[] lines)
+        {
+            return lines.Where(s => s.Contains("BEGIN SCENARIO")).ToDictionary(k => k, k => Array.IndexOf(lines, k));
+        }
+
         /// <summary>
         /// Does each line at a time
         /// </summary>
         /// <param name="command">One Command Line</param>
         /// <returns></returns>
-        public bool Parse(string command)
+        public GameWindowInstruction Parse(string command)
         {
             if(command.ContainsInsensitive("says"))
             {
                 string characterName = GetPrimaryCharacterName(command);
                 if(RegexConstants.GetStuffInQuotes.IsMatch(command))
                 {
+                    if(!string.IsNullOrEmpty(characterName))
+                    {
+                        instructor.CheckCharacterExists(characterName);
+                    }
                     var says = RegexConstants.GetStuffInQuotes.Match(command).Captures[0].Value;
-                    instructor.WriteLine(says.TrimStart('"').TrimEnd('"'), characterName);
-                    return true;
+                    return new GameWindowInstruction("WriteText", new object[] { characterName, says.TrimStart('"').TrimEnd('"') });
                 }
                 else
                 {
@@ -56,7 +64,7 @@ namespace VNNLanguage
                 string animation = RegexConstants.GetStuffInAstrix.Match(command).Captures[0].Value;
                 sprite = sprite.Substring(2, sprite.Length - 4);
                 instructor.AddCharacter(characterName.Trim(), sprite, (Animation)Enum.Parse(typeof(Animation), animation.Trim('*')));
-                return true;
+                return new GameWindowInstruction("DrawCharacter", new object[] { characterName, sprite, (Animation)Enum.Parse(typeof(Animation), animation.Trim('*')) });
 
             }
 
@@ -64,7 +72,7 @@ namespace VNNLanguage
             {
                 string characterName = GetPrimaryCharacterName(command);
                 instructor.RemoveCharacter(characterName, Animation.FadeOut);
-                return true;
+                return new GameWindowInstruction("WipeImage", new object[] { characterName, Animation.FadeOut });
             }
 
             if (command.ContainsInsensitive("show"))
@@ -72,7 +80,7 @@ namespace VNNLanguage
                 string characterName = GetPrimaryCharacterName(command);
                 string animation = RegexConstants.GetStuffInAstrix.Match(command).Captures[0].Value;
                 instructor.ShowCharacter(characterName, (Animation)Enum.Parse(typeof(Animation), animation.Trim('*')));
-                return true;
+                return new GameWindowInstruction("DrawImage", new object[] { characterName, (Animation)Enum.Parse(typeof(Animation), animation.Trim('*')) });
 
             }
 
@@ -81,7 +89,7 @@ namespace VNNLanguage
                 string characterName = GetPrimaryCharacterName(command);
                 string animation = RegexConstants.GetStuffInAstrix.Match(command).Captures[0].Value;
                 instructor.HideCharacter(characterName, (Animation)Enum.Parse(typeof(Animation), animation.Trim('*')));
-                return true;
+                return new GameWindowInstruction("WipeImage", new object[] { characterName, (Animation)Enum.Parse(typeof(Animation), animation.Trim('*')) });
 
             }
 
@@ -95,7 +103,7 @@ namespace VNNLanguage
 
                 var direction = command.FindAndGetKeywords(directionValues);
                 instructor.MoveCharacter(characterName, direction.ToEnum<Direction>(), Convert.ToInt32(moveBy));
-                return true;
+                return new GameWindowInstruction("DrawImage", new object[] { characterName, direction.ToEnum<Direction>(), Convert.ToInt32(moveBy) });
             }
 
             if(command.StartsWith("PLACE"))
@@ -109,7 +117,7 @@ namespace VNNLanguage
                     int y = int.TryParse(numericMatches[1].Value, out int yval) ? yval : throw new ParserException("Y was not defined properly");
 
                     instructor.PlaceCharacter(characterName, x, y);
-                    return true;
+                    return new GameWindowInstruction("DrawImage", new object[] { characterName, x, y });
                 }
 
                 if (numericMatches.Count == 4)
@@ -120,12 +128,25 @@ namespace VNNLanguage
                     int scaleWidth = int.TryParse(numericMatches[3].Value, out int xscaleVal) ? xscaleVal : throw new ParserException("Scale Width was not defined properly");
 
                     instructor.PlaceCharacter(characterName, x, y, scaleHeight, scaleWidth);
-                    return true;
+                    return new GameWindowInstruction("DrawImage", new object[] { characterName, x, y, scaleHeight, scaleWidth });
                 }
                 else
                 {
                     throw new ParserException("The number of values in the paramters is invalid");
                 }
+            }
+
+            if(command.StartsWith("CHANGE BACKGROUND"))
+            {
+                string sprite = command.Replace("CHANGE BACKGROUND", string.Empty).TrimStart();
+                GameState.Instance.SetCurrentBackground(sprite);
+                return new GameWindowInstruction("DrawScene", new object[] { sprite});
+            }
+
+            if(command.StartsWith("JUMP"))
+            {
+                GameState.Instance.SetCurrentLine(Convert.ToInt32(command.Replace("JUMP ", string.Empty)));
+                return new GameWindowInstruction("Jump", new object[0]);
             }
 
             throw new NotImplementedException();

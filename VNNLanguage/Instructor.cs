@@ -17,16 +17,17 @@ namespace VNNLanguage
 
         public void AddCharacter(string friendlyName, string spriteName, Animation animation)
         {
-            var image = contentManager.GetCharacterImage(friendlyName, spriteName.Replace("*", string.Empty));
-            if (CharacterState.Instance.ShowCharacter(friendlyName))
+            //TODO: Need to discuss this before killing this concept
+            //var image = contentManager.GetCharacterImage(friendlyName, spriteName.Replace("*", string.Empty), GameState.Instance.GetImageFormat());
+            if (GameState.Instance.ShowCharacter(friendlyName))
             {
-                CharacterState.Instance.ShowCharacter(friendlyName); //Show Character if someone is trying to add them in
+                GameState.Instance.ShowCharacter(friendlyName); //Show Character if someone is trying to add them in
             }
             else
             {
                 var character = new Character
                 {
-                    CurrentSprite = image,
+                    CurrentSprite = spriteName,
                     FriendlyName = friendlyName,
                     DisplayName = friendlyName, //TODO: What do we want to do to initliase this?
                     Position = new Coordinate(300, 300),//TODO: Need to wait for the graphics engine to make it in before deciding this
@@ -34,11 +35,8 @@ namespace VNNLanguage
                     SpriteHeight = 50,
                     SpriteWidth = 50
                 };
-                CharacterState.Instance.AddCharacter(character);
+                GameState.Instance.AddCharacter(character);
             }
-
-
-            throw new NotImplementedException();
         }
 
         public void ChangeBackground(byte[] image)
@@ -48,13 +46,12 @@ namespace VNNLanguage
 
         public void ChangeCharacterDisplayName(string friendlyName, string displayName)
         {
-            CharacterState.Instance.ChangeCharacterName(friendlyName, displayName);
+            GameState.Instance.ChangeCharacterName(friendlyName, displayName);
         }
 
         public void ChangeCharacterSprite(string friendlyName, string spriteName)
         {
-            var image = contentManager.GetCharacterImage(friendlyName, spriteName.Replace("*", string.Empty));
-            if (CharacterState.Instance.ChangeSprite(friendlyName, image))
+            if (GameState.Instance.ChangeSprite(friendlyName, spriteName))
             {
                 throw new NotImplementedException();
             }
@@ -62,7 +59,7 @@ namespace VNNLanguage
 
         public bool CheckCharacterExists(string friendlyName)
         {
-            return CharacterState.Instance.RemoveCharacter(friendlyName);
+            return GameState.Instance.CharacterExists(friendlyName);
         }
 
         public void CreateFork(IEnumerable<(string text, string forkHandlerName)> choices)
@@ -77,7 +74,7 @@ namespace VNNLanguage
 
         public void HideCharacter(string friendlyName, Animation animation)
         {
-            if (!CharacterState.Instance.HideCharacter(friendlyName))
+            if (!GameState.Instance.HideCharacter(friendlyName))
             {
                 throw new NotImplementedException();
             }
@@ -95,7 +92,7 @@ namespace VNNLanguage
 
         public void PlaceCharacter(string friendlyName, int x, int y, int scaleHeight = 0, int scaleWidth = 0)
         {
-            if(CharacterState.Instance.PlaceCharacter(friendlyName, x, y, scaleHeight, scaleWidth))
+            if(GameState.Instance.PlaceCharacter(friendlyName, x, y, scaleHeight, scaleWidth))
             {
                 throw new NotImplementedException();
             }
@@ -109,7 +106,7 @@ namespace VNNLanguage
 
         public void RemoveCharacter(string friendlyName, Animation animation)
         {
-            if(!CharacterState.Instance.RemoveCharacter(friendlyName))
+            if(!GameState.Instance.RemoveCharacter(friendlyName))
             {
                 throw new ArgumentNullException($"Failed to remove {friendlyName}");
             }
@@ -117,15 +114,10 @@ namespace VNNLanguage
 
         public void ShowCharacter(string friendlyName, Animation animation)
         {
-            if (!CharacterState.Instance.ShowCharacter(friendlyName))
+            if (!GameState.Instance.ShowCharacter(friendlyName))
             {
                 throw new NotImplementedException();
             }
-        }
-
-        public void WriteLine(string text, string character)
-        {
-            throw new NotImplementedException();
         }
     }
 

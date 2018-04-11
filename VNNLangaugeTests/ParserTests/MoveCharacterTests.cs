@@ -25,7 +25,10 @@ namespace VNNLangaugeTests.ParserTests
             var result = parser.Parse(command);
             //Assert
             instructor.Verify(i => i.MoveCharacter("Fucky", Direction.Left, 30));
-            Assert.AreEqual(true, result);
+            Assert.AreEqual("DrawImage", result.MethodName);
+            Assert.AreEqual("Fucky", result.Parameters[0]);
+            Assert.AreEqual(Direction.Left, result.Parameters[1]);
+            Assert.AreEqual(30, result.Parameters[2]);
         }
     }
 }

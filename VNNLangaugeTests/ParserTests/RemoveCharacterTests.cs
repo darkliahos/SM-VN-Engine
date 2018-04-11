@@ -25,7 +25,9 @@ namespace VNNLangaugeTests.ParserTests
             var result = parser.Parse(command);
             //Assert
             instructor.Verify(i => i.RemoveCharacter("Jones", Animation.FadeOut));
-            Assert.AreEqual(true, result);
+            Assert.AreEqual("WipeImage", result.MethodName);
+            Assert.AreEqual("Jones", result.Parameters[0]);
+            Assert.AreEqual(Animation.FadeOut, result.Parameters[1]);
 
         }
 
@@ -41,7 +43,9 @@ namespace VNNLangaugeTests.ParserTests
             var result = parser.Parse(command);
             //Assert
             instructor.Verify(i => i.RemoveCharacter("Bastard Barret", Animation.FadeOut));
-            Assert.AreEqual(true, result);
+            Assert.AreEqual("WipeImage", result.MethodName);
+            Assert.AreEqual("Bastard Barret", result.Parameters[0]);
+            Assert.AreEqual(Animation.FadeOut, result.Parameters[1]);
 
         }
 

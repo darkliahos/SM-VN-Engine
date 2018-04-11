@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.15
+VisualStudioVersion = 15.0.27004.2002
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VNNLanguage", "VNNLanguage\VNNLanguage.csproj", "{97DC807A-8C71-4860-97EB-CDF5ABC9493B}"
 EndProject
@@ -12,6 +12,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VNNMedia", "VNNMedia\VNNMedia.csproj", "{3F4F76BC-8F74-4C13-BACD-068605075A20}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VNNStart", "VNNStart\VNNStart.csproj", "{BDC85118-5B1E-44C5-B82F-97648BDC6796}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utils", "Utils", "{8585CF1F-3A70-450A-AD2D-1A84959C8D81}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetadataGenerator", "MetadataGenerator\MetadataGenerator.csproj", "{04538CCB-71EA-4E7E-8971-A8DBDFD8ACF0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedModels", "SharedModels\SharedModels.csproj", "{AAEA9C41-1A34-4300-9B3F-513C546B8404}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,12 +41,21 @@ Global
 		{BDC85118-5B1E-44C5-B82F-97648BDC6796}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BDC85118-5B1E-44C5-B82F-97648BDC6796}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BDC85118-5B1E-44C5-B82F-97648BDC6796}.Release|Any CPU.Build.0 = Release|Any CPU
+		{04538CCB-71EA-4E7E-8971-A8DBDFD8ACF0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{04538CCB-71EA-4E7E-8971-A8DBDFD8ACF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{04538CCB-71EA-4E7E-8971-A8DBDFD8ACF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{04538CCB-71EA-4E7E-8971-A8DBDFD8ACF0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AAEA9C41-1A34-4300-9B3F-513C546B8404}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AAEA9C41-1A34-4300-9B3F-513C546B8404}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AAEA9C41-1A34-4300-9B3F-513C546B8404}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AAEA9C41-1A34-4300-9B3F-513C546B8404}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{3F64C6FA-060A-4D8E-B3CC-887EFC157D89} = {477BD317-25E1-4693-8E67-EF3293C387B3}
+		{04538CCB-71EA-4E7E-8971-A8DBDFD8ACF0} = {8585CF1F-3A70-450A-AD2D-1A84959C8D81}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C0A28365-308C-4EC4-ADF3-72C673C2FAA5}
