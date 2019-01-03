@@ -5,11 +5,10 @@ A super simple engine that allows for scripting of Japanese style visual novel g
 
 ## A bit of an introduction
 
-This was started as a collaberation project at some point in 2012/2013 and some early progress was done on it, it was decided to revive this project from the dead and create something worthwhile
+This was started as a collaberation project at some point in 2012/2013 and some early progress was done on it, it was decided to revive this project from the dead and create something worthwhile. There are two projects, one is a web version in Electron (most of it is hardcoded), the other is a more complete engine using openTK, neither of them are finished and are probably pre-alpha. 
 
 ## Future of this repo
-
-Active work is being done on this repo now, the engine is far from being complete 
+Work on this repo is being shelved for now owing to other commitments, etc, but feel free to use the code and bits of it in your own projects
 
 Darkliahos
 12/05/17
