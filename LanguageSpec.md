@@ -8,6 +8,7 @@ v0.01 - Sohail Nasir - Initial draft of the language for the engine
 v0.02 - Sohail Nasir - Changed Remove character to make a bit more sense
 v0.03 - Sohail Nasir - Refined syntax following discussions
 v0.04 - Sohail Nasir - Forking a bit more defined and some typos are fixed.
+v0.05 - Sohail Nasir - Added positionsing
 
 ## Purpose of this document
 
@@ -54,11 +55,11 @@ If Debug throw an error, if final release then show sillouette to player.
 
 ### Adding Character to scene
 
-```Add [Character] [Sprite] *[Animation]*```
+```Add [Character] [Sprite] *[Animation]* ([position])```
 
 So an example of this would if we had a character called Alanis and we wanted to add Alanis to the scene and wanted to use an already created sprite with a fade in animation, we can do that with a line like this
 
-```Add [Alanis] Happy *Fade In*```
+```Add [Alanis] Happy *Fade In* (left)```
 
 So for the sprite "Happy" would be defined in a folder with the character name and with an image called "Happy.png"
 
@@ -80,11 +81,11 @@ If we want to bring back the character without having the readding the character
 
 We can just use 
 
-```Show [Character] *[Animation]*```
+```Show [Character] *[Animation]* ([position])```
 
 So for our example of Alanis, we could write: 
 
-```Show [Alanis] *Fade In*```
+```Show [Alanis] *Fade In* (Centre)```
 
 A more permanant route, if we want to completely remove the character out of the scene, we can do:
 
@@ -118,15 +119,15 @@ So it would be:
 
 If we wanted to move the character sprite anywhere on the screen with scaling, we could just type
 
-```PLACE [Character] ([x, y, Scale-Height, Scale-Width])```
+```PLACE [Character] ([x, y, Scale-Height, Scale-Width, position])```
 
 So if we were to place Alanis in the top left corner of the screen at 50px height and 20px width, we would write
 
-```PLACE [Alanis] (0,0,50,20)```
+```PLACE [Alanis] (0,0,50,20, right)```
 
 If we did not want to worry about scaling we could just write:
 
-```PLACE [Alanis] (0,0)```
+```PLACE [Alanis] (0,0, right)```
 
 ###Checking if the Character exists
 
