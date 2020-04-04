@@ -6,7 +6,6 @@ using Newtonsoft.Json;
 using SharedModels;
 using System.Linq;
 using VNNLanguage.Model;
-using OpenTK;
 using VNNMedia;
 
 namespace VNNStart
@@ -16,16 +15,20 @@ namespace VNNStart
 
         static void Main(string[] args)
         {
-            bool debug = args[0] == "DEBUG";
+            bool debug = false;
+
+            if (args.Length > 0)
+            {
+                debug = args[0] == "DEBUG";
+            }
+            
             try
             {
                 var container = DiContainer.BuildContainer();
                 var dirtyParser = container.Resolve<IParser>();
                 var metadata = GetMetadataInfo(debug);
                 GameState.Instance.SetupGameState(metadata, debug);
-                var window = new GameWindow(800, 600, new OpenTK.Graphics.GraphicsMode(32, 8, 0, 0));
-                var game = new SceneWindow(window, container.Resolve<IContentManager>(), dirtyParser);
-                window.Run(1.0 / 60.0);
+                var game = new SceneWindow(container.Resolve<IContentManager>(), dirtyParser);
             }
             catch(Exception error)
             {
