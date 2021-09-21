@@ -16,7 +16,7 @@ namespace VNNStart
 
         static void Main(string[] args)
         {
-            bool debug = args[0] == "DEBUG";
+            bool debug = args.Any() ? args[0] == "DEBUG" : false;
             try
             {
                 var container = DiContainer.BuildContainer();
