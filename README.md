@@ -13,20 +13,20 @@ Very slow progress will be made to get this fully functional to spec 0.05, feel 
 ## Implementations
 
 | Feature       | Dirty Parser  | Basic Instructor |
-| ------------- | ------------- ||
-| Writing a line | :heavy_check_mark:  ||
-| Character Add  |  :heavy_check_mark:   |:heavy_check_mark: |
-| Character Remove  |  :heavy_check_mark:   ||
-| Character Change Sprite  |  :x:   ||
-| Character Hide  |  :heavy_check_mark:   ||
-| Character Show  |  :heavy_check_mark:   ||
-| Character Move  |  :heavy_check_mark:   ||
-| Character Place  |  :heavy_check_mark:   ||
-| Jump Scenario  |  :heavy_check_mark:   ||
-| Change Background  |  :heavy_check_mark:   ||
-| Forking  |  :x:   ||
-| Sound  |  :x:   ||
-| Ending game  |   :heavy_check_mark:   ||
+| ------------- | ------------- | ------------- |
+| Writing a line | :heavy_check_mark:  |  |
+| Character Add  |  :heavy_check_mark:   |  :heavy_check_mark: |
+| Character Remove  |  :heavy_check_mark:   |   |
+| Character Change Sprite  |  :x:   |   |
+| Character Hide  |  :heavy_check_mark:   |   |
+| Character Show  |  :heavy_check_mark:   |   |
+| Character Move  |  :heavy_check_mark:   |   |
+| Character Place  |  :heavy_check_mark:   |    |
+| Jump Scenario  |  :heavy_check_mark:   |    |
+| Change Background  |  :heavy_check_mark:   |    |
+| Forking  |  :x:   |   |
+| Sound  |  :x:   |   |
+| Ending game  |   :heavy_check_mark:   |   |
 
 Darkliahos
 22/09/21
