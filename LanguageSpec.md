@@ -5,9 +5,13 @@ This is very much in draft at the moment, until this has been implemented in the
 ## Version history
 
 v0.01 - Sohail Nasir - Initial draft of the language for the engine
+
 v0.02 - Sohail Nasir - Changed Remove character to make a bit more sense
+
 v0.03 - Sohail Nasir - Refined syntax following discussions
+
 v0.04 - Sohail Nasir - Forking a bit more defined and some typos are fixed.
+
 v0.05 - Sohail Nasir - Added positionsing
 
 ## Purpose of this document
@@ -197,3 +201,10 @@ Sound still is somewhat not defined yet, so far some thoughts are
 If the game needs to end, ie: the user has finished the game or for effect you just feel like kicking the user, then it is a case of just writing:
 
 ```END STORY```
+
+# Implementations
+
+| Feature       | Dirty Parser  |
+| ------------- | ------------- |
+| Character Says | :heavy_check_mark:  |
+| Character Add  |  :heavy_check_mark:   |
