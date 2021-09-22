@@ -51,6 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ParserTests\AddCharacterTests.cs" />
+    <Compile Include="ParserTests\EndGameTests.cs" />
     <Compile Include="ParserTests\MoveCharacterTests.cs" />
     <Compile Include="ParserTests\PlaceCharacterTests.cs" />
     <Compile Include="ParserTests\RemoveCharacterTests.cs" />

@@ -218,4 +218,4 @@ If the game needs to end, ie: the user has finished the game or for effect you j
 | Change Background  |  :heavy_check_mark:   |
 | Forking  |  :x:   |
 | Sound  |  :x:   |
-| Ending game  |  :x:   |
+| Ending game  |   :heavy_check_mark:   |

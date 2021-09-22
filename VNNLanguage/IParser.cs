@@ -145,8 +145,16 @@ namespace VNNLanguage
 
             if(command.StartsWith("JUMP"))
             {
-                GameState.Instance.SetCurrentLine(Convert.ToInt32(command.Replace("JUMP ", string.Empty)));
+                var number = Convert.ToInt32(command.Replace("JUMP ", string.Empty));
+                GameState.Instance.SetCurrentLine(number);
+                instructor.JumpLine(number);
                 return new GameWindowInstruction("Jump", new object[0]);
+            }
+
+            if(command == "END STORY")
+            {
+                instructor.EndGame();
+                return new GameWindowInstruction("EndGame", new object[0]);
             }
 
             throw new NotImplementedException();
