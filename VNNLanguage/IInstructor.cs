@@ -32,7 +32,7 @@ namespace VNNLanguage
 
         void RemoveCharacter(string friendlyName, Animation animation);
 
-        void ChangeCharacterSprite(string friendlyName, string spriteName);
+        void ChangeCharacterSprite(string friendlyName, string spriteName, Animation animation);
 
         void MoveCharacter(string friendlyName, Direction direction, int pixels);
 

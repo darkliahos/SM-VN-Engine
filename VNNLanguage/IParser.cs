@@ -136,7 +136,20 @@ namespace VNNLanguage
                 }
             }
 
-            if(command.StartsWith("CHANGE BACKGROUND"))
+            if (command.StartsWith("CHANGE SPRITE"))
+            {
+                string sprite = RegexConstants.GetSprite.Match(command).Captures[0].Value.Trim();
+                if (string.IsNullOrEmpty(sprite) || sprite.Length < 4)
+                {
+                    throw new ParserException("Sprite was invalid");
+                }
+                string characterName = GetPrimaryCharacterName(command);
+                string animation = RegexConstants.GetStuffInAstrix.Match(command).Captures[0].Value;
+                instructor.ChangeCharacterSprite(characterName, sprite, (Animation)Enum.Parse(typeof(Animation), animation.Trim('*')));
+                return new GameWindowInstruction("DrawImage", new object[] { characterName, sprite, (Animation)Enum.Parse(typeof(Animation), animation.Trim('*')) });
+            }
+
+            if (command.StartsWith("CHANGE BACKGROUND"))
             {
                 string sprite = command.Replace("CHANGE BACKGROUND", string.Empty).TrimStart();
                 GameState.Instance.SetCurrentBackground(sprite);
