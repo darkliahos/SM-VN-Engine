@@ -49,7 +49,7 @@
     <Compile Include="Exceptions\CharacterException.cs" />
     <Compile Include="Exceptions\DuplicateCharacterException.cs" />
     <Compile Include="Extensions\StringUtils.cs" />
-    <Compile Include="Instructor.cs" />
+    <Compile Include="BasicInstructor.cs" />
     <Compile Include="Model\Coordinate.cs" />
     <Compile Include="Enums\Animation.cs" />
     <Compile Include="Exceptions\ParserException.cs" />

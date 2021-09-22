@@ -38,7 +38,7 @@ namespace VNNLanguage
 
         void PlaceCharacter(string friendlyName, int x, int y, int scaleHeight = 0, int scaleWidth= 0);
 
-        void PlaySound(byte[] sound);
+        void PlaySound(string file, bool loop);
 
         void EndGame();
 

@@ -25,7 +25,7 @@ Very slow progress will be made to get this fully functional to spec 0.05, feel 
 | Jump Scenario  |  :heavy_check_mark:   |    |
 | Change Background  |  :heavy_check_mark:   |    |
 | Forking  |  :x:   |   |
-| Sound  |  :x:   |   |
+| Sound  |  :heavy_check_mark:   | :x:  |
 | Ending game  |   :heavy_check_mark:   |   |
 
 Darkliahos

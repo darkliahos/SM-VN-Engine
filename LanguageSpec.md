@@ -12,7 +12,9 @@ v0.03 - Sohail Nasir - Refined syntax following discussions
 
 v0.04 - Sohail Nasir - Forking a bit more defined and some typos are fixed.
 
-v0.05 - Sohail Nasir - Added positionsing
+v0.05 - Sohail Nasir - Added positioning
+
+v0.05b = Sohail Nasir - Clarified Sound instruction set
 
 ## Purpose of this document
 
@@ -192,9 +194,11 @@ So if we have background called face.png, the command will be
 
 ### Sound
 
-Sound still is somewhat not defined yet, so far some thoughts are 
+Sound still is somewhat not defined yet, however for the first version of the language we will just allow a file to be played and looped
 
-```PLAY "Some.wav"```
+Single playback ```PLAY SOUND "Some.wav"``` 
+
+Looped playback ```PLAY SOUND LOOP "Some.wav"``` 
 
 ### Ending Game
 
@@ -202,4 +206,9 @@ If the game needs to end, ie: the user has finished the game or for effect you j
 
 ```END STORY```
 
+
+### Out of scope 
+
+- Video playback - Maybe for 0.01
+- Inner forking
 

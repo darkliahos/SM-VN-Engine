@@ -6,11 +6,11 @@ using VNNMedia;
 
 namespace VNNLanguage
 {
-    public class Instructor : IInstructor
+    public class BasicInstructor : IInstructor
     {
         private IContentManager contentManager;
 
-        public Instructor(IContentManager contentManager)
+        public BasicInstructor(IContentManager contentManager)
         {
             this.contentManager = contentManager;
         }
@@ -99,7 +99,7 @@ namespace VNNLanguage
             throw new ArgumentNullException($"Failed to place {friendlyName}");
         }
 
-        public void PlaySound(byte[] sound)
+        public void PlaySound(string fileName, bool loop)
         {
             throw new NotImplementedException();
         }

@@ -143,6 +143,14 @@ namespace VNNLanguage
                 return new GameWindowInstruction("DrawScene", new object[] { sprite});
             }
 
+            if(command.StartsWith("PLAY SOUND"))
+            {
+                bool loop = command.ContainsInsensitive("loop");
+                var file = RegexConstants.GetStuffInQuotes.Match(command).Captures[0].Value.Replace("\"", "");
+                instructor.PlaySound(file, loop);
+                return new GameWindowInstruction("PLAY SOUND", new object[] { file, loop });
+            }
+
             if(command.StartsWith("JUMP"))
             {
                 var number = Convert.ToInt32(command.Replace("JUMP ", string.Empty));
