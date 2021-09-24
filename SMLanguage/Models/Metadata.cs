@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SharedModels
+namespace SMLanguage.Models
 {
     public class Metadata
     {

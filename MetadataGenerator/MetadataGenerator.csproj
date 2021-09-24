@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SharedModels\SharedModels.csproj" />
+    <ProjectReference Include="..\SMLanguage\SMLanguage.csproj" />
   </ItemGroup>
 
 </Project>

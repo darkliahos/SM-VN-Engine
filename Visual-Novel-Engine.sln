@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27004.2002
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30611.23
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VNNLanguage", "VNNLanguage\VNNLanguage.csproj", "{97DC807A-8C71-4860-97EB-CDF5ABC9493B}"
 EndProject
@@ -15,9 +15,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VNNStart", "VNNStart\VNNSta
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utils", "Utils", "{8585CF1F-3A70-450A-AD2D-1A84959C8D81}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetadataGenerator", "MetadataGenerator\MetadataGenerator.csproj", "{04538CCB-71EA-4E7E-8971-A8DBDFD8ACF0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MetadataGenerator", "MetadataGenerator\MetadataGenerator.csproj", "{04538CCB-71EA-4E7E-8971-A8DBDFD8ACF0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedModels", "SharedModels\SharedModels.csproj", "{AAEA9C41-1A34-4300-9B3F-513C546B8404}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SMLanguage", "SMLanguage\SMLanguage.csproj", "{65D163BF-7427-4192-B721-59641B5D650E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,10 +45,10 @@ Global
 		{04538CCB-71EA-4E7E-8971-A8DBDFD8ACF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{04538CCB-71EA-4E7E-8971-A8DBDFD8ACF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{04538CCB-71EA-4E7E-8971-A8DBDFD8ACF0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AAEA9C41-1A34-4300-9B3F-513C546B8404}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AAEA9C41-1A34-4300-9B3F-513C546B8404}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AAEA9C41-1A34-4300-9B3F-513C546B8404}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AAEA9C41-1A34-4300-9B3F-513C546B8404}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65D163BF-7427-4192-B721-59641B5D650E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65D163BF-7427-4192-B721-59641B5D650E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65D163BF-7427-4192-B721-59641B5D650E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65D163BF-7427-4192-B721-59641B5D650E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

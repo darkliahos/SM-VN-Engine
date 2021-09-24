@@ -67,9 +67,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SharedModels\SharedModels.csproj">
-      <Project>{aaea9c41-1a34-4300-9b3f-513c546b8404}</Project>
-      <Name>SharedModels</Name>
+    <ProjectReference Include="..\SMLanguage\SMLanguage.csproj">
+      <Project>{65D163BF-7427-4192-B721-59641B5D650E}</Project>
+      <Name>SMLanguage</Name>
     </ProjectReference>
     <ProjectReference Include="..\VNNMedia\VNNMedia.csproj">
       <Project>{3F4F76BC-8F74-4C13-BACD-068605075A20}</Project>

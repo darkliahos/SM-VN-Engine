@@ -1,10 +1,11 @@
-﻿using SharedModels;
+﻿
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using OpenTK.Graphics.OpenGL;
 using System.Drawing.Imaging;
 using System;
+using SMLanguage.Models;
 
 namespace VNNMedia
 {

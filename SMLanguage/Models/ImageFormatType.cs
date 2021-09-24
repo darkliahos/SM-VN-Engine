@@ -1,4 +1,4 @@
-﻿namespace SharedModels
+﻿namespace SMLanguage.Models
 {
     public enum ImageFormatType
     {

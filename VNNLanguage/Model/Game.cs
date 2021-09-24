@@ -1,4 +1,4 @@
-﻿using SharedModels;
+﻿using SMLanguage.Models;
 
 namespace VNNLanguage.Model
 {
