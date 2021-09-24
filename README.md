@@ -17,7 +17,7 @@ Very slow progress will be made to get this fully functional to spec 0.05, feel 
 | Writing a line | :heavy_check_mark:  |  |
 | Character Add  |  :heavy_check_mark:   |  :heavy_check_mark: |
 | Character Remove  |  :heavy_check_mark:   |   |
-| Character Change Sprite  |  :x:   |   |
+| Character Change Sprite  |  :heavy_check_mark:  |  :x:   |
 | Character Hide  |  :heavy_check_mark:   |   |
 | Character Show  |  :heavy_check_mark:   |   |
 | Character Move  |  :heavy_check_mark:   |   |
@@ -26,7 +26,7 @@ Very slow progress will be made to get this fully functional to spec 0.05, feel 
 | Change Background  |  :heavy_check_mark:   |    |
 | Forking  |  :x:   |   |
 | Sound  |  :heavy_check_mark:   | :x:  |
-| Ending game  |   :heavy_check_mark:   |   |
+| Ending game  |   :heavy_check_mark:   |  :x: |
 
 Darkliahos
 22/09/21
