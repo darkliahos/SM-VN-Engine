@@ -49,7 +49,7 @@ namespace VNNLanguage
             GameState.Instance.ChangeCharacterName(friendlyName, displayName);
         }
 
-        public void ChangeCharacterSprite(string friendlyName, string spriteName)
+        public void ChangeCharacterSprite(string friendlyName, string spriteName, Animation animation)
         {
             if (GameState.Instance.ChangeSprite(friendlyName, spriteName))
             {

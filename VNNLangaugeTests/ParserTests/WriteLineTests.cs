@@ -13,7 +13,7 @@ namespace VNNLangaugeTests
         public void GivenTheSayCommandIsWithoutQuotes_ThenParserErrorShouldBeThrown()
         {
             //Arrange
-            string command = "[Fucky The Dinosaur] SAYS I Like meat";
+            string command = "[Ducky The Dinosaur] SAYS I Like meat";
             var instructor = new Mock<IInstructor>();
             instructor.Setup(i => i.CheckCharacterExists(It.IsAny<string>()));
             var parser = new DirtyParser(instructor.Object);
