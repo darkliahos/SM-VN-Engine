@@ -143,6 +143,7 @@ namespace VNNLanguage
                 {
                     throw new ParserException("Sprite was invalid");
                 }
+                sprite = sprite.Substring(2, sprite.Length - 4);
                 string characterName = GetPrimaryCharacterName(command);
                 string animation = RegexConstants.GetStuffInAstrix.Match(command).Captures[0].Value;
                 instructor.ChangeCharacterSprite(characterName, sprite, (Animation)Enum.Parse(typeof(Animation), animation.Trim('*')));
