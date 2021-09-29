@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants\RegexConstants.cs" />
+    <Compile Include="Enums\ScenarioStatus.cs" />
     <Compile Include="Exceptions\CharacterException.cs" />
     <Compile Include="Exceptions\DuplicateCharacterException.cs" />
     <Compile Include="Extensions\StringUtils.cs" />
@@ -60,7 +61,9 @@
     <Compile Include="Model\Game.cs" />
     <Compile Include="Model\GameState.cs" />
     <Compile Include="Model\GameWindowInstruction.cs" />
+    <Compile Include="Model\RanScenarios.cs" />
     <Compile Include="Model\RunningScenario.cs" />
+    <Compile Include="Exceptions\ScenarioNotRunningException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

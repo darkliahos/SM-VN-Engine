@@ -5,6 +5,9 @@ namespace VNNLanguage.Model
 {
     public class RunningScenario
     {
+        public  Guid Id { get; set; }
+        public string Name { get; set; }
+
         public string Background { get; set; }
 
         public int Line { get; set; }

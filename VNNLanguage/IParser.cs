@@ -167,10 +167,22 @@ namespace VNNLanguage
 
             if(command.StartsWith("JUMP"))
             {
-                var number = Convert.ToInt32(command.Replace("JUMP ", string.Empty));
-                GameState.Instance.SetCurrentLine(number);
-                instructor.JumpLine(number);
-                return new GameWindowInstruction("Jump", new object[0]);
+                var jumpResult = command.Replace("JUMP ", string.Empty);
+
+                if (jumpResult.StartsWith("SCENARIO"))
+                {
+                    var scenario = RegexConstants.GetStuffInQuotes.Match(command).Captures[0].Value.Replace("\"", "");
+                    instructor.JumpScenario(scenario);
+                    return new GameWindowInstruction("Jump", new object[] { scenario });
+                }
+                else
+                {
+                    var number = Convert.ToInt32(jumpResult);
+                    instructor.JumpLine(number);
+                    return new GameWindowInstruction("Jump", new object[0]);
+                }
+
+
             }
 
             if(command == "END STORY")

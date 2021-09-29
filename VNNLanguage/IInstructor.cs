@@ -10,6 +10,8 @@ namespace VNNLanguage
     {
         void JumpLine(int number);
 
+        void JumpScenario(string scenario);
+
         void CreateFork(IEnumerable<(string text, string forkHandlerName)>choices);
 
         void ChangeBackground(byte[] image);

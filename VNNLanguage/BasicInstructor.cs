@@ -82,6 +82,13 @@ namespace VNNLanguage
 
         public void JumpLine(int number)
         {
+            GameState.Instance.SetCurrentLine(number);
+            throw new NotImplementedException();
+        }
+
+        public void JumpScenario(string scenario)
+        {
+            GameState.Instance.JumpScenarios(scenario);
             throw new NotImplementedException();
         }
 
