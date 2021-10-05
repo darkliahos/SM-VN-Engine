@@ -176,7 +176,7 @@ FORK "I love cheese"
 JUMP "SCENARIO 1"
 FORK "No way, I am a married man"
 JUMP "SCENARIO 2"
-BEGIN FORK "Ask me later"
+FORK "Ask me later"
 JUMP "SCENARIO 3"
 END CHOICES
 ```
