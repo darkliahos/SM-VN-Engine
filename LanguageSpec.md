@@ -209,6 +209,6 @@ If the game needs to end, ie: the user has finished the game or for effect you j
 
 ### Out of scope 
 
-- Video playback - Maybe for 0.01
+- Video playback - Maybe for 0.10
 - Inner forking
 
