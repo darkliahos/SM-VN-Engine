@@ -165,7 +165,39 @@ namespace VNNLanguage
                 return new GameWindowInstruction("PLAY SOUND", new object[] { file, loop });
             }
 
-            if(command.StartsWith("JUMP"))
+            if(command.StartsWith("BEGIN CHOICES"))
+            {
+                var choiceId = Guid.NewGuid();
+                return new GameWindowInstruction("NEW CHOICE", new object[] { choiceId });
+            }
+
+            if (command.StartsWith("END CHOICES"))
+            {
+                throw new NotImplementedException();
+            }
+
+
+            if (command == "END STORY")
+            {
+                instructor.EndGame();
+                return new GameWindowInstruction("EndGame", new object[0]);
+            }
+
+            throw new NotImplementedException();
+        }
+
+        private string GetPrimaryCharacterName(string command)
+        {
+            if (RegexConstants.CharacterNameRegex.IsMatch(command))
+            {
+                return RegexConstants.CharacterNameRegex.Match(command).Captures[0].Value.TrimStart('[').TrimEnd(']');
+            }
+            return string.Empty;
+        }
+
+        private GameWindowInstruction TriggeredParse(string command)
+        {
+            if (command.StartsWith("JUMP"))
             {
                 var jumpResult = command.Replace("JUMP ", string.Empty);
 
@@ -181,26 +213,8 @@ namespace VNNLanguage
                     instructor.JumpLine(number);
                     return new GameWindowInstruction("Jump", new object[0]);
                 }
-
-
             }
-
-            if(command == "END STORY")
-            {
-                instructor.EndGame();
-                return new GameWindowInstruction("EndGame", new object[0]);
-            }
-
             throw new NotImplementedException();
-        }
-
-        private string GetPrimaryCharacterName(string command)
-        {
-            if(RegexConstants.CharacterNameRegex.IsMatch(command))
-            {
-                return RegexConstants.CharacterNameRegex.Match(command).Captures[0].Value.TrimStart('[').TrimEnd(']');
-            }
-            return string.Empty;
         }
     }
 }

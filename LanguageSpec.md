@@ -14,7 +14,9 @@ v0.04 - Sohail Nasir - Forking a bit more defined and some typos are fixed.
 
 v0.05 - Sohail Nasir - Added positioning
 
-v0.05b = Sohail Nasir - Clarified Sound instruction set
+v0.05b - Sohail Nasir - Clarified Sound instruction set
+
+v0.05c - Sohail Nasir - Modified Forking Declaration to include the question rather trying to infer it from the previous line
 
 ## Purpose of this document
 
@@ -165,13 +167,13 @@ So to jump to a scenario it would just be:
 
 Forking allows for multiple scenarios in a scene, they can be small diversions which merge into a story branch or for more complex branching can transfer to other scenes or even end the game all together. 
 
-Forking can be written with scenarios embedded inside of a forking statment, however this can result in spaghetti code but good for beginners or they can be written to point to scenarios.
+Forking can be written with scenarios embedded inside of a forking statment.
 
 So if we had a fork in which we needed the user to make a decision and execute scenarios based on what the user decided then we come up with this:
 
 ```
-[Alanis] SAYS "Would you like cheese?"
 BEGIN CHOICES
+QUESTION "Do you like cheese?"
 FORK "I love cheese"
 JUMP "SCENARIO 1"
 FORK "No way, I am a married man"
@@ -180,7 +182,7 @@ BEGIN FORK "Ask me later"
 JUMP "SCENARIO 3"
 END CHOICES
 ```
-This will be limited to 4 forks for the time being however if advances are made and there is a demand than it could be increased. 
+This will be limited to 3 forks for the time being however if advances are made and there is a demand than it could be increased. 
 
 ### Background Management
 
@@ -209,6 +211,6 @@ If the game needs to end, ie: the user has finished the game or for effect you j
 
 ### Out of scope 
 
-- Video playback - Maybe for 0.01
+- Video playback - Maybe for 0.1.0
 - Inner forking
 

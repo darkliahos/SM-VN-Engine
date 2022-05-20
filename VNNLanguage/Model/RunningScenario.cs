@@ -15,5 +15,10 @@ namespace VNNLanguage.Model
         public bool Redraw { get; set; }
 
         public ConcurrentDictionary<Guid, Character> Characters;
+
+        public ChoiceSelector CurrentChoiceSelector { get; set; }
+
+        //TODO: Tree idea, maybe we can store a running tally of choices made
+
     }
 }
