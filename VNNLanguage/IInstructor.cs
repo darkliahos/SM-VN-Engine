@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System;
 
 
 namespace VNNLanguage
@@ -12,7 +12,13 @@ namespace VNNLanguage
 
         void JumpScenario(string scenario);
 
-        void CreateFork(IEnumerable<(string text, string forkHandlerName)>choices);
+        void CreateFork(Guid currentGuid);
+
+        void AddChoice(string choice);
+
+        void SetForkQuestion(string question);
+
+        void ShowChoices();
 
         void ChangeBackground(byte[] image);
 

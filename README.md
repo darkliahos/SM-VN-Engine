@@ -14,7 +14,7 @@ Very slow progress will be made to get this fully functional to spec 0.05, feel 
 
 | Feature       | Dirty Parser  | Basic Instructor |
 | ------------- | ------------- | ------------- |
-| Writing a line | :heavy_check_mark:  |  |
+| Writing a line | :heavy_check_mark:  | :x: |
 | Character Add  |  :heavy_check_mark:   |  :heavy_check_mark: |
 | Character Remove  |  :heavy_check_mark:   |   |
 | Character Change Sprite  |  :heavy_check_mark:  |  :x:   |
@@ -24,7 +24,7 @@ Very slow progress will be made to get this fully functional to spec 0.05, feel 
 | Character Place  |  :heavy_check_mark:   |    |
 | Jump Scenario  |  :heavy_check_mark:   |    |
 | Change Background  |  :heavy_check_mark:   |    |
-| Forking  |  :x:   |   |
+| Forking  |  :heavy_check_mark:    | :x:  |
 | Sound  |  :heavy_check_mark:   | :x:  |
 | Ending game  |   :heavy_check_mark:   |  :x: |
 

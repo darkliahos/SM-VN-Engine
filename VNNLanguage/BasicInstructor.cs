@@ -39,6 +39,11 @@ namespace VNNLanguage
             }
         }
 
+        public void AddChoice(string choice)
+        {
+            GameState.Instance.AddChoice(choice);
+        }
+
         public void ChangeBackground(byte[] image)
         {
             throw new NotImplementedException();
@@ -62,9 +67,9 @@ namespace VNNLanguage
             return GameState.Instance.CharacterExists(friendlyName);
         }
 
-        public void CreateFork(IEnumerable<(string text, string forkHandlerName)> choices)
+        public void CreateFork(Guid currentGuid)
         {
-            throw new NotImplementedException();
+            GameState.Instance.CreateChoice(currentGuid);
         }
 
         public void EndGame()
@@ -119,12 +124,22 @@ namespace VNNLanguage
             }
         }
 
+        public void SetForkQuestion(string question)
+        {
+            GameState.Instance.SetChoiceQuestion(question);
+        }
+
         public void ShowCharacter(string friendlyName, Animation animation)
         {
             if (!GameState.Instance.ShowCharacter(friendlyName))
             {
                 throw new NotImplementedException();
             }
+        }
+
+        public void ShowChoices()
+        {
+            throw new NotImplementedException();
         }
     }
 

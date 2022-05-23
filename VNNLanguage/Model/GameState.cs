@@ -13,6 +13,7 @@ namespace VNNLanguage.Model
 
         public static GameState Instance { get { return gameState.Value; } }
 
+        // This is encased here to stop multiple things writing to it
         private static Game state;
 
         public GameState()
@@ -201,6 +202,28 @@ namespace VNNLanguage.Model
                 return true;
             }
             return false;
+        }
+
+        public void CreateChoice(Guid id)
+        {
+            // TODO: Worth storing these at some stage
+
+            // Purge previous choice selector
+            GetRunningScenario().CurrentChoiceSelector.Question = "";
+            GetRunningScenario().CurrentChoiceSelector.Choices = new Dictionary<string, int>();
+
+            // Overwrite the id
+            GetRunningScenario().CurrentChoiceSelector.Id = id;
+        }
+
+        public void SetChoiceQuestion(string question)
+        {
+           GetRunningScenario().CurrentChoiceSelector.Question = question;
+        }
+
+        public void AddChoice(string key)
+        {
+            GetRunningScenario().CurrentChoiceSelector.Choices.Add(key, GetCurrentLine() + 1);
         }
     }
 }

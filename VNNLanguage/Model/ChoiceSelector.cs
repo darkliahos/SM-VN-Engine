@@ -9,6 +9,6 @@ namespace VNNLanguage.Model
 
         public string Question { get; set; }
 
-        public Dictionary<string, string> Choices { get; set; }
+        public Dictionary<string, int> Choices { get; set; }
     }
 }

@@ -171,9 +171,21 @@ namespace VNNLanguage
                 return new GameWindowInstruction("NEW CHOICE", new object[] { choiceId });
             }
 
+            if (command.StartsWith("QUESTION"))
+            {
+                var questionTest = command.Remove(0, 9).Replace("\"", "");
+                return new GameWindowInstruction("CHOICE SET QUESTION", new object[] { questionTest });
+            }
+
+            if (command.StartsWith("FORK"))
+            {
+                var fork = command.Remove(0, 5).Replace("\"", ""); ;
+                return new GameWindowInstruction("ADD CHOICE", new object[] { fork });
+            }
+
             if (command.StartsWith("END CHOICES"))
             {
-                throw new NotImplementedException();
+                return new GameWindowInstruction("DISPLAY CHOICE", new object[] {  });
             }
 
 
@@ -182,6 +194,7 @@ namespace VNNLanguage
                 instructor.EndGame();
                 return new GameWindowInstruction("EndGame", new object[0]);
             }
+
 
             throw new NotImplementedException();
         }
