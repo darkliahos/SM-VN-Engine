@@ -165,30 +165,69 @@ namespace VNNLanguage
                 return new GameWindowInstruction("PLAY SOUND", new object[] { file, loop });
             }
 
-            if(command.StartsWith("JUMP"))
+            if(command.StartsWith("BEGIN CHOICES"))
             {
-                var number = Convert.ToInt32(command.Replace("JUMP ", string.Empty));
-                GameState.Instance.SetCurrentLine(number);
-                instructor.JumpLine(number);
-                return new GameWindowInstruction("Jump", new object[0]);
+                var choiceId = Guid.NewGuid();
+                return new GameWindowInstruction("NEW CHOICE", new object[] { choiceId });
             }
 
-            if(command == "END STORY")
+            if (command.StartsWith("QUESTION"))
+            {
+                var questionTest = command.Remove(0, 9).Replace("\"", "");
+                return new GameWindowInstruction("CHOICE SET QUESTION", new object[] { questionTest });
+            }
+
+            if (command.StartsWith("FORK"))
+            {
+                var fork = command.Remove(0, 5).Replace("\"", ""); ;
+                return new GameWindowInstruction("ADD CHOICE", new object[] { fork });
+            }
+
+            if (command.StartsWith("END CHOICES"))
+            {
+                return new GameWindowInstruction("DISPLAY CHOICE", new object[] {  });
+            }
+
+
+            if (command == "END STORY")
             {
                 instructor.EndGame();
                 return new GameWindowInstruction("EndGame", new object[0]);
             }
+
 
             throw new NotImplementedException();
         }
 
         private string GetPrimaryCharacterName(string command)
         {
-            if(RegexConstants.CharacterNameRegex.IsMatch(command))
+            if (RegexConstants.CharacterNameRegex.IsMatch(command))
             {
                 return RegexConstants.CharacterNameRegex.Match(command).Captures[0].Value.TrimStart('[').TrimEnd(']');
             }
             return string.Empty;
+        }
+
+        private GameWindowInstruction TriggeredParse(string command)
+        {
+            if (command.StartsWith("JUMP"))
+            {
+                var jumpResult = command.Replace("JUMP ", string.Empty);
+
+                if (jumpResult.StartsWith("SCENARIO"))
+                {
+                    var scenario = RegexConstants.GetStuffInQuotes.Match(command).Captures[0].Value.Replace("\"", "");
+                    instructor.JumpScenario(scenario);
+                    return new GameWindowInstruction("Jump", new object[] { scenario });
+                }
+                else
+                {
+                    var number = Convert.ToInt32(jumpResult);
+                    instructor.JumpLine(number);
+                    return new GameWindowInstruction("Jump", new object[0]);
+                }
+            }
+            throw new NotImplementedException();
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using SMLanguage.Models;
+using System.Collections.Generic;
 
 namespace VNNLanguage.Model
 {
@@ -16,5 +17,8 @@ namespace VNNLanguage.Model
 
         public RunningScenario CurrentScenario { get; set; }
 
+        public List<RanScenario> PreviousScenarios { get; set; }
+
     }
+
 }

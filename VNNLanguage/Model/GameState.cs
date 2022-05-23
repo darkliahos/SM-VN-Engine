@@ -13,6 +13,7 @@ namespace VNNLanguage.Model
 
         public static GameState Instance { get { return gameState.Value; } }
 
+        // This is encased here to stop multiple things writing to it
         private static Game state;
 
         public GameState()
@@ -79,6 +80,12 @@ namespace VNNLanguage.Model
             GetRunningScenario().Redraw = redraw;
         }
 
+        public void JumpScenarios(string name)
+        {
+            TeardownCurrentScenario(ScenarioStatus.Ejected);
+            SetupScenario(name);
+        }
+
         /// <summary>
         /// This is a handy method to check if the running scenario is populated
         /// </summary>
@@ -87,9 +94,31 @@ namespace VNNLanguage.Model
         {
             if (state.CurrentScenario == null)
             {
-                state.CurrentScenario = new RunningScenario {Characters = new System.Collections.Concurrent.ConcurrentDictionary<Guid, Character>() };
+                throw new ScenarioNotRunningException();
             }
             return state.CurrentScenario;
+        }
+
+        private void TeardownCurrentScenario(ScenarioStatus status)
+        {
+            var _scenario = GetRunningScenario();
+            state.PreviousScenarios.Add(new RanScenario {
+                Id = _scenario.Id, 
+                Name = _scenario.Name,
+                Status = status,
+                LastRunNumber = _scenario.Line
+            });
+            state.CurrentScenario = null;
+        }
+
+        private RunningScenario SetupScenario(string name)
+        {
+            return new RunningScenario
+            {
+                Id = Guid.NewGuid(),
+                Name = name,
+                Characters = new System.Collections.Concurrent.ConcurrentDictionary<Guid, Character>(),
+            };
         }
 
         public IEnumerable<Character> GetCharacterInScene()
@@ -173,6 +202,28 @@ namespace VNNLanguage.Model
                 return true;
             }
             return false;
+        }
+
+        public void CreateChoice(Guid id)
+        {
+            // TODO: Worth storing these at some stage
+
+            // Purge previous choice selector
+            GetRunningScenario().CurrentChoiceSelector.Question = "";
+            GetRunningScenario().CurrentChoiceSelector.Choices = new Dictionary<string, int>();
+
+            // Overwrite the id
+            GetRunningScenario().CurrentChoiceSelector.Id = id;
+        }
+
+        public void SetChoiceQuestion(string question)
+        {
+           GetRunningScenario().CurrentChoiceSelector.Question = question;
+        }
+
+        public void AddChoice(string key)
+        {
+            GetRunningScenario().CurrentChoiceSelector.Choices.Add(key, GetCurrentLine() + 1);
         }
     }
 }
