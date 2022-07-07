@@ -1,4 +1,4 @@
-﻿namespace VNNLanguage.Model
+﻿namespace SMLanguage.Models
 {
     public class GameWindowInstruction
     {
@@ -6,7 +6,7 @@
 
         public object[] Parameters { get; set; }
 
-        public GameWindowInstruction(string methodName, object[]parameters)
+        public GameWindowInstruction(string methodName, object[] parameters)
         {
             this.MethodName = methodName;
             this.Parameters = parameters;

@@ -1,19 +1,19 @@
-﻿using System.Collections.Generic;
-using VNNLanguage.Model;
-using System;
-using VNNLanguage.Exceptions;
-using VNNMedia;
+﻿using System;
+using SMLanguage.Models;
+using SMLanguage.Enums;
 
-namespace VNNLanguage
+namespace SMLanguage
 {
     public class BasicInstructor : IInstructor
     {
-        private IContentManager contentManager;
+        /*
+         * TODO: Need to move VNN Media to standard
+         * private IContentManager contentManager;
 
         public BasicInstructor(IContentManager contentManager)
         {
             this.contentManager = contentManager;
-        }
+        }*/
 
         public void AddCharacter(string friendlyName, string spriteName, Animation animation)
         {

@@ -1,7 +1,7 @@
 ﻿using Moq;
 using NUnit.Framework;
-using VNNLanguage;
-using VNNLanguage.Exceptions;
+using SMLanguage;
+using SMLanguage.Exceptions;
 using VNNMedia;
 
 namespace VNNLangaugeTests.ParserTests

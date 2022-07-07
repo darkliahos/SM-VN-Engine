@@ -95,10 +95,6 @@
       <Project>{65D163BF-7427-4192-B721-59641B5D650E}</Project>
       <Name>SMLanguage</Name>
     </ProjectReference>
-    <ProjectReference Include="..\VNNLanguage\VNNLanguage.csproj">
-      <Project>{97dc807a-8c71-4860-97eb-cdf5abc9493b}</Project>
-      <Name>VNNLanguage</Name>
-    </ProjectReference>
     <ProjectReference Include="..\VNNMedia\VNNMedia.csproj">
       <Project>{3f4f76bc-8f74-4c13-bacd-068605075a20}</Project>
       <Name>VNNMedia</Name>

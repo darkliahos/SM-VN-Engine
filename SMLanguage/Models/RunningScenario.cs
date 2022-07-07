@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Concurrent;
 
-namespace VNNLanguage.Model
+namespace SMLanguage.Models
 {
     public class RunningScenario
     {
-        public  Guid Id { get; set; }
+        public Guid Id { get; set; }
         public string Name { get; set; }
 
         public string Background { get; set; }

@@ -1,13 +1,12 @@
 ﻿using System;
 using Autofac;
-using VNNLanguage;
 using System.IO;
 using Newtonsoft.Json;
 using System.Linq;
-using VNNLanguage.Model;
 using OpenTK;
 using VNNMedia;
 using SMLanguage.Models;
+using SMLanguage;
 
 namespace VNNStart
 {

@@ -1,12 +1,13 @@
 ﻿using Moq;
 using NUnit.Framework;
+using SMLanguage;
+using SMLanguage.Enums;
+using SMLanguage.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using VNNLanguage;
-using VNNLanguage.Exceptions;
 using VNNMedia;
 
 namespace VNNLangaugeTests.ParserTests

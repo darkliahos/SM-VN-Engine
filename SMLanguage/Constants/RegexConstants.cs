@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace VNNLanguage.Constants
+namespace SMLanguage.Constants
 {
     public static class RegexConstants
     {

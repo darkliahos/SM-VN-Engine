@@ -65,9 +65,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\VNNLanguage\VNNLanguage.csproj">
-      <Project>{97dc807a-8c71-4860-97eb-cdf5abc9493b}</Project>
-      <Name>VNNLanguage</Name>
+    <ProjectReference Include="..\SMLanguage\SMLanguage.csproj">
+      <Project>{65D163BF-7427-4192-B721-59641B5D650E}</Project>
+      <Name>SMLanguage</Name>
     </ProjectReference>
     <ProjectReference Include="..\VNNMedia\VNNMedia.csproj">
       <Project>{3F4F76BC-8F74-4C13-BACD-068605075A20}</Project>

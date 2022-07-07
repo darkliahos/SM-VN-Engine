@@ -1,4 +1,4 @@
-﻿namespace VNNLanguage
+﻿namespace SMLanguage.Enums
 {
     public enum Animation
     {

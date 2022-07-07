@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace VNNLanguage.Model
+namespace SMLanguage.Models
 {
     public class ChoiceSelector
     {

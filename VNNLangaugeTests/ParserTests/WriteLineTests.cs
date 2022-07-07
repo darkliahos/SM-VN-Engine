@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
 using Moq;
-using VNNLanguage;
-using VNNLanguage.Exceptions;
+using SMLanguage;
+using SMLanguage.Exceptions;
 using VNNMedia;
 
 namespace VNNLangaugeTests

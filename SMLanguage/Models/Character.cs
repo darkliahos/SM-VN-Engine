@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Drawing;
 
-namespace VNNLanguage
+namespace SMLanguage.Models
 {
     public class Character
     {
@@ -21,5 +20,4 @@ namespace VNNLanguage
 
         public Guid Identifier { get; set; }
     }
-
 }
