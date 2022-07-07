@@ -1,13 +1,12 @@
 ﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
+using SMLanguage;
 using SMLanguage.Models;
 using System;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using VNNLanguage;
-using VNNLanguage.Model;
 using VNNMedia;
 
 namespace VNNStart

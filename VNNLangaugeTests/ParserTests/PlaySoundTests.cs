@@ -1,6 +1,6 @@
 ﻿using Moq;
 using NUnit.Framework;
-using VNNLanguage;
+using SMLanguage;
 
 namespace VNNLangaugeTests.ParserTests
 {

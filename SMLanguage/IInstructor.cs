@@ -1,7 +1,8 @@
-﻿using System;
+﻿using SMLanguage.Enums;
+using System;
 
 
-namespace VNNLanguage
+namespace SMLanguage
 {
     /// <summary>
     /// These are for commands that will be features that will underpin the engine

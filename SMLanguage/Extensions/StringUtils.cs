@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
-namespace VNNLanguage.Extensions
+namespace SMLanguage.Extensions
 {
     public static class StringUtils
     {

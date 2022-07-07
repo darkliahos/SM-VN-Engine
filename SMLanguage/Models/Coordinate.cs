@@ -1,4 +1,4 @@
-﻿namespace VNNLanguage
+﻿namespace SMLanguage.Models
 {
     public class Coordinate
     {
@@ -14,4 +14,5 @@
 
 
     }
+
 }

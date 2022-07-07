@@ -1,7 +1,6 @@
-﻿using SMLanguage.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace VNNLanguage.Model
+namespace SMLanguage.Models
 {
     public class Game
     {
@@ -20,5 +19,4 @@ namespace VNNLanguage.Model
         public List<RanScenario> PreviousScenarios { get; set; }
 
     }
-
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace VNNLanguage.Exceptions
+namespace SMLanguage.Exceptions
 {
     public class CharacterException:Exception
     {
