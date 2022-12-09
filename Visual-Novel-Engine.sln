@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MetadataGenerator", "Metada
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SMLanguage", "SMLanguage\SMLanguage.csproj", "{65D163BF-7427-4192-B721-59641B5D650E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMStart", "SMStart\SMStart.csproj", "{2F8FA866-CBB2-481A-A6E6-AA5049B04ED5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,6 +45,10 @@ Global
 		{65D163BF-7427-4192-B721-59641B5D650E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{65D163BF-7427-4192-B721-59641B5D650E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{65D163BF-7427-4192-B721-59641B5D650E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F8FA866-CBB2-481A-A6E6-AA5049B04ED5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F8FA866-CBB2-481A-A6E6-AA5049B04ED5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F8FA866-CBB2-481A-A6E6-AA5049B04ED5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F8FA866-CBB2-481A-A6E6-AA5049B04ED5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
