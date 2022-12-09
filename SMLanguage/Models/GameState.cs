@@ -41,6 +41,11 @@ namespace SMLanguage.Models
             return state.Title;
         }
 
+        public static bool IsDebug()
+        {
+            return state.DebugMode;
+        }
+
         public ImageFormatType GetImageFormat()
         {
             return state.ImageFormatType;
@@ -105,7 +110,7 @@ namespace SMLanguage.Models
             return state.CurrentScenario;
         }
 
-        private void TeardownCurrentScenario(ScenarioStatus status)
+        public void TeardownCurrentScenario(ScenarioStatus status)
         {
             var _scenario = GetRunningScenario();
             state.PreviousScenarios.Add(new RanScenario
@@ -118,7 +123,7 @@ namespace SMLanguage.Models
             state.CurrentScenario = null;
         }
 
-        private RunningScenario SetupScenario(string name)
+        public RunningScenario SetupScenario(string name)
         {
             return new RunningScenario
             {
@@ -153,6 +158,11 @@ namespace SMLanguage.Models
                 return GetRunningScenario().Characters.TryRemove(characterId, out Character removedCharacter);
             }
             return false;
+        }
+
+        public void RemoveAllCharacters()
+        {
+            GetRunningScenario().Characters = new System.Collections.Concurrent.ConcurrentDictionary<Guid, Character>();
         }
 
         public bool PlaceCharacter(string friendlyName, int x, int y, int height, int width)
@@ -231,6 +241,11 @@ namespace SMLanguage.Models
         public void AddChoice(string key)
         {
             GetRunningScenario().CurrentChoiceSelector.Choices.Add(key, GetCurrentLine() + 1);
+        }
+
+        private Character GetCharacter(string friendlyName)
+        {
+            return GetRunningScenario().Characters.Values.SingleOrDefault(c => c.FriendlyName == friendlyName);
         }
     }
 }

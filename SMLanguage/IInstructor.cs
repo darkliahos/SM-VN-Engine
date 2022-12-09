@@ -21,8 +21,6 @@ namespace SMLanguage
 
         void ShowChoices();
 
-        void ChangeBackground(byte[] image);
-
         /// <summary>
         /// This will add the character to the centre of the screen by default
         /// </summary>
@@ -49,7 +47,7 @@ namespace SMLanguage
 
         void PlaySound(string file, bool loop);
 
-        void EndGame();
+        void GameOver();
 
     }
 

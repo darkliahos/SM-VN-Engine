@@ -16,17 +16,17 @@ Very slow progress will be made to get this fully functional to spec 0.05, feel 
 | ------------- | ------------- | ------------- |
 | Writing a line | :heavy_check_mark:  | :x: |
 | Character Add  |  :heavy_check_mark:   |  :heavy_check_mark: |
-| Character Remove  |  :heavy_check_mark:   |   |
+| Character Remove  |  :heavy_check_mark:   | :heavy_check_mark:  |
 | Character Change Sprite  |  :heavy_check_mark:  |  :x:   |
-| Character Hide  |  :heavy_check_mark:   |   |
-| Character Show  |  :heavy_check_mark:   |   |
+| Character Hide  |  :heavy_check_mark:   |  :heavy_check_mark: |
+| Character Show  |  :heavy_check_mark:   |  :heavy_check_mark: |
 | Character Move  |  :heavy_check_mark:   |   |
-| Character Place  |  :heavy_check_mark:   |    |
-| Jump Scenario  |  :heavy_check_mark:   |    |
-| Change Background  |  :heavy_check_mark:   |    |
+| Character Place  |  :heavy_check_mark:   |  :heavy_check_mark:  |
+| Jump Scenario  |  :heavy_check_mark:   |  :heavy_check_mark:  |
+| Change Background  |  :heavy_check_mark:   | :heavy_check_mark:   |
 | Forking  |  :heavy_check_mark:    | :x:  |
-| Sound  |  :heavy_check_mark:   | :x:  |
-| Ending game  |   :heavy_check_mark:   |  :x: |
+| Sound  |  :heavy_check_mark:   | Blocked  |
+| Ending game  |   :heavy_check_mark:   |  :heavy_check_mark: |
 
 Darkliahos
 22/09/21

@@ -1,19 +1,27 @@
 ﻿using System;
 using SMLanguage.Models;
 using SMLanguage.Enums;
+using System.Xml.Linq;
 
 namespace SMLanguage
 {
     public class BasicInstructor : IInstructor
     {
-        /*
-         * TODO: Need to move VNN Media to standard
-         * private IContentManager contentManager;
+        private readonly IAlertHandler alertHandler;
 
-        public BasicInstructor(IContentManager contentManager)
+        /*
+* TODO: Need to move VNN Media to standard
+* private IContentManager contentManager;
+
+public BasicInstructor(IContentManager contentManager)
+{
+this.contentManager = contentManager;
+}*/
+
+        public BasicInstructor(IAlertHandler alertHandler)
         {
-            this.contentManager = contentManager;
-        }*/
+            this.alertHandler = alertHandler;
+        }
 
         public void AddCharacter(string friendlyName, string spriteName, Animation animation)
         {
@@ -44,11 +52,6 @@ namespace SMLanguage
             GameState.Instance.AddChoice(choice);
         }
 
-        public void ChangeBackground(byte[] image)
-        {
-            throw new NotImplementedException();
-        }
-
         public void ChangeCharacterDisplayName(string friendlyName, string displayName)
         {
             GameState.Instance.ChangeCharacterName(friendlyName, displayName);
@@ -58,7 +61,7 @@ namespace SMLanguage
         {
             if (GameState.Instance.ChangeSprite(friendlyName, spriteName))
             {
-                throw new NotImplementedException();
+                GameState.Instance.SetRedraw(true);
             }
         }
 
@@ -72,23 +75,26 @@ namespace SMLanguage
             GameState.Instance.CreateChoice(currentGuid);
         }
 
-        public void EndGame()
+        public void GameOver()
         {
-            throw new NotImplementedException();
+            GameState.Instance.TeardownCurrentScenario(ScenarioStatus.Ended);
+            GameState.Instance.SetupScenario("GameOver");
+            GameState.Instance.SetCurrentBackground("GameOver");
+            GameState.Instance.SetRedraw(true);
         }
 
         public void HideCharacter(string friendlyName, Animation animation)
         {
             if (!GameState.Instance.HideCharacter(friendlyName))
             {
-                throw new NotImplementedException();
+                alertHandler.ShowUserError(friendlyName+ " may not exist, unable to hide character");
             }
+            GameState.Instance.SetRedraw(true);
         }
 
         public void JumpLine(int number)
         {
             GameState.Instance.SetCurrentLine(number);
-            throw new NotImplementedException();
         }
 
         public void JumpScenario(string scenario)
@@ -106,13 +112,14 @@ namespace SMLanguage
         {
             if(GameState.Instance.PlaceCharacter(friendlyName, x, y, scaleHeight, scaleWidth))
             {
-                throw new NotImplementedException();
+                GameState.Instance.SetRedraw(true);
             }
             throw new ArgumentNullException($"Failed to place {friendlyName}");
         }
 
         public void PlaySound(string fileName, bool loop)
         {
+            // TODO: Milestone 2
             throw new NotImplementedException();
         }
 
@@ -122,6 +129,7 @@ namespace SMLanguage
             {
                 throw new ArgumentNullException($"Failed to remove {friendlyName}");
             }
+            GameState.Instance.SetRedraw(true);
         }
 
         public void SetForkQuestion(string question)
@@ -133,7 +141,7 @@ namespace SMLanguage
         {
             if (!GameState.Instance.ShowCharacter(friendlyName))
             {
-                throw new NotImplementedException();
+                alertHandler.ShowUserError("Unable to show" + friendlyName + ", character may not exist");
             }
         }
 
