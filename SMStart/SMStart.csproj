@@ -1,0 +1,61 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Assets\VN_speech.png" />
+    <None Remove="Characters\Sam\DELETEME.txt" />
+    <None Remove="Characters\Sam\Happy.png" />
+    <None Remove="Characters\Sam\Serious.png" />
+    <None Remove="Metadata.json" />
+    <None Remove="Scenarios\Start.txt" />
+    <None Remove="Scenes\test.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\VN_speech.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Characters\Sam\DELETEME.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Characters\Sam\Happy.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Characters\Sam\Serious.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Metadata.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scenarios\Start.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scenes\test.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Autofac" Version="6.5.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+    <PackageReference Include="OpenTK.Windowing.Desktop" Version="4.7.5" />
+    <PackageReference Include="OpenTK.Windowing.GraphicsLibraryFramework" Version="4.7.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SMLanguage\SMLanguage.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Scenarios\DELETEME">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

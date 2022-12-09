@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "SMStart": {
+      "commandName": "Project",
+      "commandLineArgs": "DEBUG"
+    }
+  }
+}
