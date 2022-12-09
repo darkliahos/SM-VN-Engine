@@ -16,10 +16,12 @@ namespace VNNStart
         static void Main(string[] args)
         {
             bool debug = args.Any() ? args[0] == "DEBUG" : false;
+            var container = DiContainer.BuildContainer();
+            var dirtyParser = container.Resolve<IParser>();
+            var alertHandler = container.Resolve<IAlertHandler>();
+
             try
             {
-                var container = DiContainer.BuildContainer();
-                var dirtyParser = container.Resolve<IParser>();
                 var metadata = GetMetadataInfo(debug);
                 GameState.Instance.SetupGameState(metadata, debug);
                 var window = new GameWindow(800, 600, new OpenTK.Graphics.GraphicsMode(32, 8, 0, 0));
@@ -28,14 +30,7 @@ namespace VNNStart
             }
             catch(Exception error)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"{GameState.Instance.GetTitle()} errored! {error.Message}");
-
-                if(debug)
-                {
-                    Console.WriteLine(error.StackTrace);
-                }
-
+                alertHandler.ShowError(error);
             }
             Console.ReadLine();
         }

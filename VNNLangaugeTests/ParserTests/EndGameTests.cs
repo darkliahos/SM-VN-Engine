@@ -17,13 +17,13 @@ namespace VNNLangaugeTests.ParserTests
         {
             string command = "END STORY";
             var instructor = new Mock<IInstructor>();
-            instructor.Setup(i => i.EndGame());
+            instructor.Setup(i => i.GameOver());
 
             var parser = new DirtyParser(instructor.Object);
 
             var result = parser.Parse(command);
 
-            instructor.Verify(i => i.EndGame());
+            instructor.Verify(i => i.GameOver());
 
             Assert.AreEqual("EndGame", result.MethodName);
 

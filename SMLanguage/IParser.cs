@@ -214,7 +214,7 @@ namespace SMLanguage
 
             if (command == "END STORY")
             {
-                instructor.EndGame();
+                instructor.GameOver();
                 return new GameWindowInstruction("EndGame", new object[0]);
             }
 
