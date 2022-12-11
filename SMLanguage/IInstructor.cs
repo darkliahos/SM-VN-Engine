@@ -7,7 +7,7 @@ namespace SMLanguage
     /// <summary>
     /// These are for commands that will be features that will underpin the engine
     /// </summary>
-    public interface IInstructor
+    public interface IStateManager
     {
         void JumpLine(int number);
 

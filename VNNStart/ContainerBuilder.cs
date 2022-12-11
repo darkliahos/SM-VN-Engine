@@ -17,7 +17,7 @@ namespace VNNStart
         {
             var builder = new ContainerBuilder();
             builder.RegisterType<DirtyParser>().As<IParser>();
-            builder.RegisterType<BasicInstructor>().As<IInstructor>();
+            builder.RegisterType<StateManager>().As<IStateManager>();
             builder.RegisterType<ContentManager>().As<IContentManager>();
             builder.RegisterType<ConsoleAlertHandler>().As<IAlertHandler>();
             return builder.Build();

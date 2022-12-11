@@ -18,9 +18,9 @@ namespace SMLanguage
 
     public class DirtyParser : IParser
     {
-        IInstructor instructor;
+        IStateManager instructor;
 
-        public DirtyParser(IInstructor instructor)
+        public DirtyParser(IStateManager instructor)
         {
             this.instructor = instructor;
         }

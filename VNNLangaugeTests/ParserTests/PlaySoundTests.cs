@@ -11,7 +11,7 @@ namespace VNNLangaugeTests.ParserTests
         public void GivenThatWeArePlayingANonLoopedSound()
         {
             string command = "PLAY SOUND \"X.wav\"";
-            var instructor = new Mock<IInstructor>();
+            var instructor = new Mock<IStateManager>();
             instructor.Setup(i => i.PlaySound(It.IsAny<string>(), It.IsAny<bool>()));
 
             var parser = new DirtyParser(instructor.Object);
@@ -29,7 +29,7 @@ namespace VNNLangaugeTests.ParserTests
         public void GivenThatWeArePlayingALoopedSound()
         {
             string command = "PLAY SOUND LOOP \"X.wav\"";
-            var instructor = new Mock<IInstructor>();
+            var instructor = new Mock<IStateManager>();
             instructor.Setup(i => i.PlaySound(It.IsAny<string>(), It.IsAny<bool>()));
 
             var parser = new DirtyParser(instructor.Object);
