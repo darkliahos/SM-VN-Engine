@@ -16,7 +16,7 @@ namespace VNNLangaugeTests.ParserTests
         public void GivenWeAreEndingThisStory_InstructorWillEndTheGame()
         {
             string command = "END STORY";
-            var instructor = new Mock<IInstructor>();
+            var instructor = new Mock<IStateManager>();
             instructor.Setup(i => i.GameOver());
 
             var parser = new DirtyParser(instructor.Object);

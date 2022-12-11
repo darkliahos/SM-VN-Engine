@@ -14,7 +14,7 @@ namespace VNNLangaugeTests
         {
             //Arrange
             string command = "[Ducky The Dinosaur] SAYS I Like meat";
-            var instructor = new Mock<IInstructor>();
+            var instructor = new Mock<IStateManager>();
             instructor.Setup(i => i.CheckCharacterExists(It.IsAny<string>()));
             var parser = new DirtyParser(instructor.Object);
             //Act & Assert
@@ -27,7 +27,7 @@ namespace VNNLangaugeTests
         {
             //Arrange
             string command = "[Tinky Winky] SAYS \"Eh-oh\"";
-            var instructor = new Mock<IInstructor>();
+            var instructor = new Mock<IStateManager>();
             instructor.Setup(i => i.CheckCharacterExists(It.IsAny<string>()));
             var parser = new DirtyParser(instructor.Object);
             //Act
@@ -45,7 +45,7 @@ namespace VNNLangaugeTests
         {
             //Arrange
             string command = "SAYS \"Your base belongs to us\"";
-            var instructor = new Mock<IInstructor>();
+            var instructor = new Mock<IStateManager>();
             instructor.Setup(i => i.CheckCharacterExists(It.IsAny<string>()));
             var parser = new DirtyParser(instructor.Object);
             //Act
@@ -62,7 +62,7 @@ namespace VNNLangaugeTests
         {
             //Arrange
             string command = "[Ronan] SAYS ";
-            var instructor = new Mock<IInstructor>();
+            var instructor = new Mock<IStateManager>();
             var parser = new DirtyParser(instructor.Object);
             //Act + Assert
             Assert.Throws<ParserException>(()=> parser.Parse(command));
@@ -74,7 +74,7 @@ namespace VNNLangaugeTests
         {
             //Arrange
             string command = "[Tutty Monster] SAYS \"Harveer says I like cheese!\"";
-            var instructor = new Mock<IInstructor>();
+            var instructor = new Mock<IStateManager>();
             instructor.Setup(i => i.CheckCharacterExists(It.IsAny<string>()));
             var parser = new DirtyParser(instructor.Object);
             //Act

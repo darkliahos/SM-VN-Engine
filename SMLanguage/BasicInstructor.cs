@@ -5,7 +5,7 @@ using System.Xml.Linq;
 
 namespace SMLanguage
 {
-    public class BasicInstructor : IInstructor
+    public class StateManager : IStateManager
     {
         private readonly IAlertHandler alertHandler;
 
@@ -18,7 +18,7 @@ public BasicInstructor(IContentManager contentManager)
 this.contentManager = contentManager;
 }*/
 
-        public BasicInstructor(IAlertHandler alertHandler)
+        public StateManager(IAlertHandler alertHandler)
         {
             this.alertHandler = alertHandler;
         }

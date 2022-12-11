@@ -23,7 +23,7 @@ namespace VNNLangaugeTests.ParserTests
             var command = "Add [Sam Bridge The Elder] Happy *FadeIn*";
             var characterName = "Sam Bridge The Elder";
 
-            var instructor = new Mock<IInstructor>();
+            var instructor = new Mock<IStateManager>();
             var contentManager = new Mock<IContentManager>();
             instructor.Setup(i=> i.AddCharacter(It.IsAny<string>(), It.IsAny<string>(), Animation.FadeIn));
             var parser = new DirtyParser(instructor.Object);
@@ -45,7 +45,7 @@ namespace VNNLangaugeTests.ParserTests
             var command = "Add [Sam Bridge The Elder] *FadeIn* Happy";
 
 
-            var instructor = new Mock<IInstructor>();
+            var instructor = new Mock<IStateManager>();
             var contentManager = new Mock<IContentManager>();
             instructor.Setup(i => i.AddCharacter(It.IsAny<string>(), It.IsAny<string>(), Animation.FadeIn));
             var parser = new DirtyParser(instructor.Object);

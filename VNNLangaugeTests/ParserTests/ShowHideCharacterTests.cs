@@ -13,7 +13,7 @@ namespace VNNLangaugeTests.ParserTests
         {
             //Arrange
             string command = "Show [Jasmeet] *FadeIn*";
-            var mockInstructor = new Mock<IInstructor>();
+            var mockInstructor = new Mock<IStateManager>();
             mockInstructor.Setup(i => i.ShowCharacter("Jasmeet", Animation.FadeIn));
             var parser = new DirtyParser(mockInstructor.Object);
             //Act
@@ -30,7 +30,7 @@ namespace VNNLangaugeTests.ParserTests
         {
             //Arrange
             string command = "Hide [Jasmeet] *FadeOut*";
-            var mockInstructor = new Mock<IInstructor>();
+            var mockInstructor = new Mock<IStateManager>();
             mockInstructor.Setup(i => i.HideCharacter("Jasmeet", Animation.FadeOut));
             var parser = new DirtyParser(mockInstructor.Object);
             //Act

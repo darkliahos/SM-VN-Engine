@@ -14,7 +14,7 @@ namespace VNNLangaugeTests.ParserTests
         {
             //Arrange
             string command = "PLACE [Vaporwave] (30,30,30,90)";
-            var instructor = new Mock<IInstructor>();
+            var instructor = new Mock<IStateManager>();
             instructor.Setup(i => i.PlaceCharacter("Vaporwave", 30, 30, 30, 90));
             var parser = new DirtyParser(instructor.Object);
             //Act
@@ -34,7 +34,7 @@ namespace VNNLangaugeTests.ParserTests
         {
             //Arrange
             string command = "PLACE [Vaporwave] (30,30-)";
-            var instructor = new Mock<IInstructor>();
+            var instructor = new Mock<IStateManager>();
             instructor.Setup(i => i.PlaceCharacter("Vaporwave", 30, 30, 0, 0));
             var parser = new DirtyParser(instructor.Object);
             //Act
@@ -52,7 +52,7 @@ namespace VNNLangaugeTests.ParserTests
         {
             //Arrange
             string command = "PLACE [Vaporwave] (390)";
-            var instructor = new Mock<IInstructor>();
+            var instructor = new Mock<IStateManager>();
             var parser = new DirtyParser(instructor.Object);
             //Act
             Assert.Throws<ParserException>(() => parser.Parse(command));
@@ -63,7 +63,7 @@ namespace VNNLangaugeTests.ParserTests
         {
             //Arrange
             string command = "PLACE [Vaporwave]";
-            var instructor = new Mock<IInstructor>();
+            var instructor = new Mock<IStateManager>();
             var parser = new DirtyParser(instructor.Object);
             //Act
             Assert.Throws<ParserException>(() => parser.Parse(command));

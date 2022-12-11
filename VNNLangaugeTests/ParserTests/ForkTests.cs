@@ -16,7 +16,7 @@ namespace VNNLangaugeTests.ParserTests
         public void GivenWeAreSettingAQuestion()
         {
             string command = "QUESTION \"Do you like cheese?\"";
-            var instructor = new Mock<IInstructor>();
+            var instructor = new Mock<IStateManager>();
 
             var parser = new DirtyParser(instructor.Object);
             var result = parser.Parse(command);
@@ -30,7 +30,7 @@ namespace VNNLangaugeTests.ParserTests
         public void GivenWeAreSettingAChoice()
         {
             string command = "FORK \"Yes\"";
-            var instructor = new Mock<IInstructor>();
+            var instructor = new Mock<IStateManager>();
 
             var parser = new DirtyParser(instructor.Object);
             var result = parser.Parse(command);
