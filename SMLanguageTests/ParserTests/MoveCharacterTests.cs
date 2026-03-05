@@ -1,15 +1,10 @@
 ﻿using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using NUnit.Framework.Internal;
 using SMLanguage;
-using VNNMedia;
 using SMLanguage.Enums;
 
-namespace VNNLangaugeTests.ParserTests
+namespace SMLanguageTests.ParserTests
 {
     [TestFixture]
     public class MoveCharacterTests
@@ -26,10 +21,10 @@ namespace VNNLangaugeTests.ParserTests
             var result = parser.Parse(command);
             //Assert
             instructor.Verify(i => i.MoveCharacter("Ducky", Direction.Left, 30));
-            Assert.AreEqual("DrawImage", result.MethodName);
-            Assert.AreEqual("Ducky", result.Parameters[0]);
-            Assert.AreEqual(Direction.Left, result.Parameters[1]);
-            Assert.AreEqual(30, result.Parameters[2]);
+            Assert.Equals("DrawImage", result.MethodName);
+            Assert.Equals("Ducky", result.Parameters[0]);
+            Assert.Equals(Direction.Left, result.Parameters[1]);
+            Assert.Equals(30, result.Parameters[2]);
         }
 
         [Test]
@@ -44,10 +39,10 @@ namespace VNNLangaugeTests.ParserTests
             var result = parser.Parse(command);
             //Assert
             instructor.Verify(i => i.ChangeCharacterSprite("Ducky", "Sad", Animation.FadeOut));
-            Assert.AreEqual("DrawImage", result.MethodName);
-            Assert.AreEqual("Ducky", result.Parameters[0]);
-            Assert.AreEqual("Sad", result.Parameters[1]);
-            Assert.AreEqual(Animation.FadeOut, result.Parameters[2]);
+            Assert.Equals("DrawImage", result.MethodName);
+            Assert.Equals("Ducky", result.Parameters[0]);
+            Assert.Equals("Sad", result.Parameters[1]);
+            Assert.Equals(Animation.FadeOut, result.Parameters[2]);
         }
     }
 }

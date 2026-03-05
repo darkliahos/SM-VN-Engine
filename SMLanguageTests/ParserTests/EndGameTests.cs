@@ -1,13 +1,8 @@
 ﻿using NUnit.Framework;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SMLanguage;
 
-namespace VNNLangaugeTests.ParserTests
+namespace SMLanguageTests.ParserTests
 {
     [TestFixture]
     public class EndGameTests
@@ -25,7 +20,7 @@ namespace VNNLangaugeTests.ParserTests
 
             instructor.Verify(i => i.GameOver());
 
-            Assert.AreEqual("EndGame", result.MethodName);
+            Assert.Equals("EndGame", result.MethodName);
 
         }
     }

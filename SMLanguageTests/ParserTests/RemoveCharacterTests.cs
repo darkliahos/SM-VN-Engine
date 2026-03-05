@@ -1,15 +1,9 @@
 ﻿using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SMLanguage;
-using VNNMedia;
 using SMLanguage.Enums;
 
-namespace VNNLangaugeTests.ParserTests
+namespace SMLanguageTests.ParserTests
 {
     [TestFixture]
     public class RemoveCharacterTests
@@ -26,9 +20,9 @@ namespace VNNLangaugeTests.ParserTests
             var result = parser.Parse(command);
             //Assert
             instructor.Verify(i => i.RemoveCharacter("Jones", Animation.FadeOut));
-            Assert.AreEqual("WipeImage", result.MethodName);
-            Assert.AreEqual("Jones", result.Parameters[0]);
-            Assert.AreEqual(Animation.FadeOut, result.Parameters[1]);
+            Assert.Equals("WipeImage", result.MethodName);
+            Assert.Equals("Jones", result.Parameters[0]);
+            Assert.Equals(Animation.FadeOut, result.Parameters[1]);
 
         }
 
@@ -44,9 +38,9 @@ namespace VNNLangaugeTests.ParserTests
             var result = parser.Parse(command);
             //Assert
             instructor.Verify(i => i.RemoveCharacter("Bastard Barret", Animation.FadeOut));
-            Assert.AreEqual("WipeImage", result.MethodName);
-            Assert.AreEqual("Bastard Barret", result.Parameters[0]);
-            Assert.AreEqual(Animation.FadeOut, result.Parameters[1]);
+            Assert.Equals("WipeImage", result.MethodName);
+            Assert.Equals("Bastard Barret", result.Parameters[0]);
+            Assert.Equals(Animation.FadeOut, result.Parameters[1]);
 
         }
 

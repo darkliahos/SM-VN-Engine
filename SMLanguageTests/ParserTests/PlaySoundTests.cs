@@ -2,7 +2,7 @@
 using NUnit.Framework;
 using SMLanguage;
 
-namespace VNNLangaugeTests.ParserTests
+namespace SMLanguageTests.ParserTests
 {
     [TestFixture]
     public class PlaySoundTests
@@ -19,9 +19,9 @@ namespace VNNLangaugeTests.ParserTests
 
             instructor.Verify(i => i.PlaySound("X.wav", false));
 
-            Assert.AreEqual("PLAY SOUND", result.MethodName);
-            Assert.AreEqual("X.wav", result.Parameters[0]);
-            Assert.AreEqual(false, result.Parameters[1]);
+            Assert.Equals("PLAY SOUND", result.MethodName);
+            Assert.Equals("X.wav", result.Parameters[0]);
+            Assert.Equals(false, result.Parameters[1]);
 
         }
 
@@ -37,9 +37,9 @@ namespace VNNLangaugeTests.ParserTests
 
             instructor.Verify(i => i.PlaySound("X.wav", true));
 
-            Assert.AreEqual("PLAY SOUND", result.MethodName);
-            Assert.AreEqual("X.wav", result.Parameters[0]);
-            Assert.AreEqual(true, result.Parameters[1]);
+            Assert.Equals("PLAY SOUND", result.MethodName);
+            Assert.Equals("X.wav", result.Parameters[0]);
+            Assert.Equals(true, result.Parameters[1]);
 
         }
     }

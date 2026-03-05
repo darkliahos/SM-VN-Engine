@@ -2,9 +2,8 @@
 using NUnit.Framework;
 using SMLanguage;
 using SMLanguage.Exceptions;
-using VNNMedia;
 
-namespace VNNLangaugeTests.ParserTests
+namespace SMLanguageTests.ParserTests
 {
     [TestFixture]
     public class PlaceCharacterTests
@@ -21,12 +20,12 @@ namespace VNNLangaugeTests.ParserTests
             var result = parser.Parse(command);
             //Assert
             instructor.Verify(i => i.PlaceCharacter("Vaporwave", 30, 30, 30, 90));
-            Assert.AreEqual("DrawImage", result.MethodName);
-            Assert.AreEqual("Vaporwave", result.Parameters[0]);
-            Assert.AreEqual(30, result.Parameters[1]);
-            Assert.AreEqual(30, result.Parameters[2]);
-            Assert.AreEqual(30, result.Parameters[3]);
-            Assert.AreEqual(90, result.Parameters[4]);
+            Assert.Equals("DrawImage", result.MethodName);
+            Assert.Equals("Vaporwave", result.Parameters[0]);
+            Assert.Equals(30, result.Parameters[1]);
+            Assert.Equals(30, result.Parameters[2]);
+            Assert.Equals(30, result.Parameters[3]);
+            Assert.Equals(90, result.Parameters[4]);
         }
 
         [Test]
@@ -41,10 +40,10 @@ namespace VNNLangaugeTests.ParserTests
             var result = parser.Parse(command);
             //Assert
             instructor.Verify(i => i.PlaceCharacter("Vaporwave", 30, 30, 0, 0));
-            Assert.AreEqual("DrawImage", result.MethodName);
-            Assert.AreEqual("Vaporwave", result.Parameters[0]);
-            Assert.AreEqual(30, result.Parameters[1]);
-            Assert.AreEqual(30, result.Parameters[2]);
+            Assert.Equals("DrawImage", result.MethodName);
+            Assert.Equals("Vaporwave", result.Parameters[0]);
+            Assert.Equals(30, result.Parameters[1]);
+            Assert.Equals(30, result.Parameters[2]);
         }
 
         [Test]

@@ -2,9 +2,8 @@
 using Moq;
 using SMLanguage;
 using SMLanguage.Exceptions;
-using VNNMedia;
 
-namespace VNNLangaugeTests
+namespace SMLanguageTests.ParserTests
 {
     [TestFixture]
     public class WriteLineTests
@@ -34,9 +33,9 @@ namespace VNNLangaugeTests
             var result = parser.Parse(command);
             //Assert
             instructor.Verify(i => i.CheckCharacterExists("Tinky Winky"));
-            Assert.AreEqual("WriteText", result.MethodName);
-            Assert.AreEqual("Tinky Winky", result.Parameters[0]);
-            Assert.AreEqual("Eh-oh", result.Parameters[1]);
+            Assert.Equals("WriteText", result.MethodName);
+            Assert.Equals("Tinky Winky", result.Parameters[0]);
+            Assert.Equals("Eh-oh", result.Parameters[1]);
 
         }
 
@@ -51,9 +50,9 @@ namespace VNNLangaugeTests
             //Act
             var result = parser.Parse(command);
             //Assert
-            Assert.AreEqual("WriteText", result.MethodName);
-            Assert.AreEqual(string.Empty, result.Parameters[0]);
-            Assert.AreEqual("Your base belongs to us", result.Parameters[1]);
+            Assert.Equals("WriteText", result.MethodName);
+            Assert.Equals(string.Empty, result.Parameters[0]);
+            Assert.Equals("Your base belongs to us", result.Parameters[1]);
 
         }
 
@@ -81,9 +80,9 @@ namespace VNNLangaugeTests
             var result = parser.Parse(command);
             //Assert
             instructor.Verify(i => i.CheckCharacterExists("Tutty Monster"));
-            Assert.AreEqual("WriteText", result.MethodName);
-            Assert.AreEqual("Tutty Monster", result.Parameters[0]);
-            Assert.AreEqual("Harveer says I like cheese!", result.Parameters[1]);
+            Assert.Equals("WriteText", result.MethodName);
+            Assert.Equals("Tutty Monster", result.Parameters[0]);
+            Assert.Equals("Harveer says I like cheese!", result.Parameters[1]);
         }
     }
 }

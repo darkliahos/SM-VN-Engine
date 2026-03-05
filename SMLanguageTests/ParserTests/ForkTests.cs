@@ -1,13 +1,8 @@
 ﻿using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SMLanguage;
 
-namespace VNNLangaugeTests.ParserTests
+namespace SMLanguageTests.ParserTests
 {
     [TestFixture]
     public class ForkTests
@@ -21,8 +16,8 @@ namespace VNNLangaugeTests.ParserTests
             var parser = new DirtyParser(instructor.Object);
             var result = parser.Parse(command);
 
-            Assert.AreEqual("CHOICE SET QUESTION", result.MethodName);
-            Assert.AreEqual("Do you like cheese?", result.Parameters[0]);
+            Assert.Equals("CHOICE SET QUESTION", result.MethodName);
+            Assert.Equals("Do you like cheese?", result.Parameters[0]);
 
         }
 
@@ -35,8 +30,8 @@ namespace VNNLangaugeTests.ParserTests
             var parser = new DirtyParser(instructor.Object);
             var result = parser.Parse(command);
 
-            Assert.AreEqual("ADD CHOICE", result.MethodName);
-            Assert.AreEqual("Yes", result.Parameters[0]);
+            Assert.Equals("ADD CHOICE", result.MethodName);
+            Assert.Equals("Yes", result.Parameters[0]);
 
         }
 

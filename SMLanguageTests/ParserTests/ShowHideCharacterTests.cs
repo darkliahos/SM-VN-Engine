@@ -3,7 +3,7 @@ using NUnit.Framework;
 using SMLanguage;
 using SMLanguage.Enums;
 
-namespace VNNLangaugeTests.ParserTests
+namespace SMLanguageTests.ParserTests
 {
     [TestFixture]
     public class ShowHideCharacterTests
@@ -20,9 +20,9 @@ namespace VNNLangaugeTests.ParserTests
             var result = parser.Parse(command);
             //Assert
             mockInstructor.Verify(i => i.ShowCharacter("Jasmeet", Animation.FadeIn));
-            Assert.AreEqual("DrawImage", result.MethodName);
-            Assert.AreEqual("Jasmeet", result.Parameters[0]);
-            Assert.AreEqual(Animation.FadeIn, result.Parameters[1]);
+            Assert.Equals("DrawImage", result.MethodName);
+            Assert.Equals("Jasmeet", result.Parameters[0]);
+            Assert.Equals(Animation.FadeIn, result.Parameters[1]);
         }
 
         [Test]
@@ -37,9 +37,9 @@ namespace VNNLangaugeTests.ParserTests
             var result = parser.Parse(command);
             //Assert
             mockInstructor.Verify(i => i.HideCharacter("Jasmeet", Animation.FadeOut));
-            Assert.AreEqual("WipeImage", result.MethodName);
-            Assert.AreEqual("Jasmeet", result.Parameters[0]);
-            Assert.AreEqual(Animation.FadeOut, result.Parameters[1]);
+            Assert.Equals("WipeImage", result.MethodName);
+            Assert.Equals("Jasmeet", result.Parameters[0]);
+            Assert.Equals(Animation.FadeOut, result.Parameters[1]);
         }
     }
 }
