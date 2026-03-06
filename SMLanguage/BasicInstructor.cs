@@ -1,32 +1,13 @@
 ﻿using System;
 using SMLanguage.Models;
 using SMLanguage.Enums;
-using System.Xml.Linq;
 
 namespace SMLanguage
 {
-    public class StateManager : IStateManager
+    public class StateManager(IAlertHandler alertHandler) : IStateManager
     {
-        private readonly IAlertHandler alertHandler;
-
-        /*
-* TODO: Need to move VNN Media to standard
-* private IContentManager contentManager;
-
-public BasicInstructor(IContentManager contentManager)
-{
-this.contentManager = contentManager;
-}*/
-
-        public StateManager(IAlertHandler alertHandler)
-        {
-            this.alertHandler = alertHandler;
-        }
-
         public void AddCharacter(string friendlyName, string spriteName, Animation animation)
         {
-            //TODO: Need to discuss this before killing this concept
-            //var image = contentManager.GetCharacterImage(friendlyName, spriteName.Replace("*", string.Empty), GameState.Instance.GetImageFormat());
             if (GameState.Instance.ShowCharacter(friendlyName))
             {
                 GameState.Instance.ShowCharacter(friendlyName); //Show Character if someone is trying to add them in

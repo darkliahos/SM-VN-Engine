@@ -49,6 +49,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SMContent\SMContent.csproj" />
     <ProjectReference Include="..\SMLanguage\SMLanguage.csproj" />
   </ItemGroup>
 
