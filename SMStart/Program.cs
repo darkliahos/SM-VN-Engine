@@ -1,6 +1,7 @@
-﻿// See https://aka.ms/new-console-template for more information
 using Autofac;
+using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
+using SMContent;
 using SMLanguage;
 using SMLanguage.Models;
 using SMStart;
@@ -14,26 +15,24 @@ class Program
         var container = DiContainer.BuildContainer();
         var dirtyParser = container.Resolve<IParser>();
         var alertHandler = container.Resolve<IAlertHandler>();
+        var pictureManager = container.Resolve<IPictureManager>();
         try
         {
             var metadata = GetMetadataInfo(debug);
             GameState.Instance.SetupGameState(metadata, debug);
 
-            using Stage stage = new(800, 600, metadata.Title, dirtyParser);
-            stage.Run();
-
-
+            using var game = new Stage(dirtyParser, pictureManager, metadata.Title);
+            game.Run();
         }
         catch (Exception error)
         {
             alertHandler.ShowError(error);
         }
-        Console.ReadLine();
     }
 
     private static Metadata GetMetadataInfo(bool debug)
     {
-        var path = $"{Directory.GetCurrentDirectory()}\\Metadata.json";
+        var path = Path.Combine(Directory.GetCurrentDirectory(), "Metadata.json");
 
         if (!File.Exists(path))
         {
@@ -41,8 +40,6 @@ class Program
             throw new FileNotFoundException(errorMessage);
         }
 
-        //TODO: Need to do some validation on version hashing but that will be later
-
-        return JsonConvert.DeserializeObject<Metadata>(File.ReadAllText(path));
+        return JsonConvert.DeserializeObject<Metadata>(File.ReadAllText(path))!;
     }
 }

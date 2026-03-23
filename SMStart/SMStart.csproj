@@ -43,9 +43,8 @@
 
   <ItemGroup>
     <PackageReference Include="Autofac" Version="9.0.0" />
+    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
-    <PackageReference Include="OpenTK.Windowing.Desktop" Version="4.7.5" />
-    <PackageReference Include="OpenTK.Windowing.GraphicsLibraryFramework" Version="4.7.5" />
   </ItemGroup>
 
   <ItemGroup>

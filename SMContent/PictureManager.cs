@@ -1,4 +1,3 @@
-﻿using OpenTK.Graphics.OpenGL;
 using SMLanguage.Models;
 using StbImageSharp;
 
@@ -9,21 +8,21 @@ namespace SMContent
         public ImageResult LoadCharacterImage(string characterName, string expression, ImageFormatType imageFormatType)
         {
             var ext = imageFormatType.ToString();
-            var characterPath = $"{Directory.GetCurrentDirectory()}\\Characters\\{characterName}\\{expression}.{ext}";
+            var characterPath = Path.Combine(Directory.GetCurrentDirectory(), "Characters", characterName, $"{expression}.{ext}");
             return LoadImage(characterPath);
         }
 
         public ImageResult LoadSceneImage(string sceneName, ImageFormatType imageFormat)
         {
             string ext = imageFormat.ToString();
-            var sceneFilePath = $"{Directory.GetCurrentDirectory()}\\Scenes\\{sceneName}.{ext}";
+            var sceneFilePath = Path.Combine(Directory.GetCurrentDirectory(), "Scenes", $"{sceneName}.{ext}");
             return LoadImage(sceneFilePath);
         }
 
         public ImageResult LoadSystemImage(string fileName, ImageFormatType imageFormatType)
         {
             var ext = imageFormatType.ToString();
-            var assetFilePath = $"{Directory.GetCurrentDirectory()}\\Assets\\{fileName}.{ext}";
+            var assetFilePath = Path.Combine(Directory.GetCurrentDirectory(), "Assets", $"{fileName}.{ext}");
             return LoadImage(assetFilePath);
         }
 

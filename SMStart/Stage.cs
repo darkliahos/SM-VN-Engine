@@ -1,97 +1,121 @@
-﻿using OpenTK.Windowing.Common;
-using OpenTK.Windowing.Desktop;
-using OpenTK.Windowing.GraphicsLibraryFramework;
-using SMLanguage.Models;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+using SMContent;
 using SMLanguage;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using SMLanguage.Models;
 
 namespace SMStart
 {
-    public class Stage : GameWindow
+    public class Stage : Microsoft.Xna.Framework.Game
     {
-        private readonly IParser parser;
+        private readonly IParser _parser;
+        private readonly IPictureManager _pictureManager;
+        private readonly TextureRenderer _renderer;
+        private GraphicsDeviceManager _graphics;
+        private readonly List<Texture2D> _textures = new();
+        private Texture2D? _backgroundTexture;
+        private string? _currentBackground;
+        private KeyboardState _previousKeyboard;
+        private MouseState _previousMouse;
 
-        public Stage(int width, int height, string title, IParser parser) : base(GameWindowSettings.Default, new NativeWindowSettings() { Size = (height, width), Title = title})
+        public Stage(IParser parser, IPictureManager pictureManager, string title)
         {
-            this.parser = parser;
+            _parser = parser;
+            _pictureManager = pictureManager;
+            _graphics = new GraphicsDeviceManager(this);
+            Content.RootDirectory = Directory.GetCurrentDirectory();
+            _graphics.PreferredBackBufferWidth = 800;
+            _graphics.PreferredBackBufferHeight = 600;
+            Window.Title = title;
+            _renderer = new TextureRenderer(this);
         }
 
-        protected override void OnUpdateFrame(FrameEventArgs args)
+        protected override void LoadContent()
         {
-            base.OnUpdateFrame(args);
+            base.LoadContent();
+            var spriteImage = _pictureManager.LoadSystemImage("sprite", GameState.Instance.GetImageFormat());
+            _textures.Add(TextureRenderer.CreateTexture(GraphicsDevice, spriteImage));
+        }
 
-            MouseState mouseState = MouseState;
-            KeyboardState keyboardState = KeyboardState;
+        protected override void Update(GameTime gameTime)
+        {
+            base.Update(gameTime);
 
-            if(keyboardState.IsKeyDown(Keys.Enter))
+            var keyboardState = Keyboard.GetState();
+            var mouseState = Mouse.GetState();
+
+            if (keyboardState.IsKeyDown(Keys.Enter) && !_previousKeyboard.IsKeyDown(Keys.Enter))
             {
                 RunScenario();
-                SwapBuffers();
             }
 
             if (keyboardState.IsKeyDown(Keys.Escape))
             {
-                Close();
+                Exit();
             }
 
-            if(mouseState.IsAnyButtonDown)
+            if (mouseState.LeftButton == ButtonState.Pressed && _previousMouse.LeftButton == ButtonState.Released)
             {
                 RunScenario();
-                SwapBuffers();
+            }
+
+            _previousKeyboard = keyboardState;
+            _previousMouse = mouseState;
+        }
+
+        protected override void Draw(GameTime gameTime)
+        {
+            base.Draw(gameTime);
+            GraphicsDevice.Clear(Microsoft.Xna.Framework.Color.Black);
+
+            if (GameState.Instance.GetRedraw())
+            {
+                _renderer.Begin();
+                DrawBackground(GameState.Instance.GetCurrentBackground());
+                var charactersInScene = GameState.Instance.GetCharacterInScene();
+                foreach (var characterInScene in charactersInScene)
+                {
+                    DrawCharacter(characterInScene.DisplayName, characterInScene.CurrentSprite);
+                }
+                _renderer.End();
+                GameState.Instance.SetRedraw(false);
             }
         }
 
-        protected void RunScenario()
+        private void RunScenario()
         {
-            var scenarioPath = $"{Directory.GetCurrentDirectory()}\\Scenarios";
+            var scenarioPath = Path.Combine(Directory.GetCurrentDirectory(), "Scenarios");
             string[] files = Directory.GetFiles(scenarioPath, $"*.{GameState.Instance.GetScenarioFileExtension()}");
             string startingFile = GameState.Instance.GetStartFile();
-            if (!files.Any(f => f.EndsWith($"\\{startingFile}")))
+            if (!files.Any(f => f.EndsWith(Path.Combine(scenarioPath, startingFile))))
             {
                 throw new FileNotFoundException("Start file is missing");
             }
 
-            var startingFileLines = File.ReadAllLines(files.First(f => f.EndsWith($"\\{startingFile}")));
+            var startingFileLines = File.ReadAllLines(files.First(f => f.EndsWith(Path.Combine(scenarioPath, startingFile))));
 
             for (int l = GameState.Instance.GetCurrentLine(); l < startingFileLines.Length;)
             {
                 bool forceInput = false;
-                var callBack = parser.Parse(startingFileLines[l]);
-
-                if (GameState.Instance.GetRedraw())
-                {
-                    Drawbackground(GameState.Instance.GetCurrentBackground());
-                    var charactersInScene = GameState.Instance.GetCharacterInScene();
-                    foreach (var characterInScene in charactersInScene)
-                    {
-                        DrawCharacter(characterInScene.DisplayName, characterInScene.CurrentSprite);
-                    }
-                    //TODO: Redraw Character if need to
-                    GameState.Instance.SetRedraw(false);
-                }
+                var callBack = _parser.Parse(startingFileLines[l]);
 
                 if (callBack != null)
                 {
                     switch (callBack.MethodName)
                     {
                         case "DrawCharacter":
-                            DrawCharacter(callBack.Parameters[0].ToString(), callBack.Parameters[1].ToString());
+                            DrawCharacter(callBack.Parameters[0].ToString()!, callBack.Parameters[1].ToString()!);
                             l++;
                             break;
                         case "DrawScene":
-                            Drawbackground(callBack.Parameters[0].ToString());
+                            GameState.Instance.SetCurrentBackground(callBack.Parameters[0].ToString()!);
                             l++;
                             break;
                         case "Jump":
-                            // Using a zero based array and JUMP returns a 1 based value 
-                            l = (GameState.Instance.GetCurrentLine() - 1);
+                            l = GameState.Instance.GetCurrentLine() - 1;
                             break;
                         case "WriteText":
-                            //TODO: text writing will live here
                             forceInput = true;
                             break;
                     }
@@ -100,21 +124,47 @@ namespace SMStart
                 if (forceInput)
                 {
                     GameState.Instance.SetRedraw(true);
-                    //Store the next line in memory
                     GameState.Instance.SetCurrentLine(l + 1);
+                    break;
+                }
+
+                if (l >= startingFileLines.Length)
+                {
                     break;
                 }
             }
         }
-        private void Drawbackground(string background)
+
+        private void DrawBackground(string background)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrEmpty(background)) return;
+
+            if (_currentBackground == background && _backgroundTexture != null)
+            {
+                return;
+            }
+
+            _backgroundTexture?.Dispose();
+            var image = _pictureManager.LoadSceneImage(background, GameState.Instance.GetImageFormat());
+            _backgroundTexture = TextureRenderer.CreateTexture(GraphicsDevice, image);
+            _currentBackground = background;
+
+            _renderer.DrawBackground(_backgroundTexture, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
         }
 
         private void DrawCharacter(string characterName, string sprite)
         {
-            throw new NotImplementedException();
         }
 
+        protected override void UnloadContent()
+        {
+            base.UnloadContent();
+            _renderer.Dispose();
+            _backgroundTexture?.Dispose();
+            foreach (var texture in _textures)
+            {
+                texture.Dispose();
+            }
+        }
     }
 }
