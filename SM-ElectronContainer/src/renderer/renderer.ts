@@ -1,4 +1,5 @@
 import * as PIXI from 'pixi.js';
+import {Animation} from "../enums/Animation"
 
 export interface ElectronAPI {
   getMetadata: () => Promise<any>;
@@ -28,16 +29,6 @@ declare global {
   interface Window {
     electronAPI: ElectronAPI;
   }
-}
-
-export enum AnimationType {
-  None = 0,
-  FadeIn = 1,
-  FadeOut = 2,
-  SlideLeft = 3,
-  SlideRight = 4,
-  SlideUp = 5,
-  SlideDown = 6,
 }
 
 export class PixiRenderer {
@@ -177,15 +168,15 @@ export class PixiRenderer {
     });
 
     window.electronAPI.onShowCharacter((characterName: string, animation: number) => {
-      this.showCharacter(characterName, animation as AnimationType);
+      this.showCharacter(characterName, animation as Animation);
     });
 
     window.electronAPI.onHideCharacter((characterName: string, animation: number) => {
-      this.hideCharacter(characterName, animation as AnimationType);
+      this.hideCharacter(characterName, animation as Animation);
     });
 
     window.electronAPI.onRemoveCharacter((characterName: string, animation: number) => {
-      this.removeCharacter(characterName, animation as AnimationType);
+      this.removeCharacter(characterName, animation as Animation);
     });
 
     window.electronAPI.onShowChoices((choices: { text: string; line: number }[]) => {
@@ -209,7 +200,7 @@ export class PixiRenderer {
     }
   }
 
-  public loadBackground(name: string, animation: AnimationType = AnimationType.FadeIn): void {
+  public loadBackground(name: string, animation: Animation = Animation.FadeIn): void {
     if (this.backgrounds.has(name)) {
       const sprite = this.backgrounds.get(name)!;
       this.displayBackground(sprite, animation);
@@ -234,7 +225,7 @@ export class PixiRenderer {
     img.src = `../Scenes/${name}.png`;
   }
 
-  private displayBackground(sprite: PIXI.Sprite, animation: AnimationType): void {
+  private displayBackground(sprite: PIXI.Sprite, animation: Animation): void {
     if (this.currentBackground) {
       this.backgroundContainer!.removeChild(this.currentBackground);
     }
@@ -244,10 +235,10 @@ export class PixiRenderer {
     this.currentBackground = sprite;
 
     switch (animation) {
-      case AnimationType.FadeIn:
+      case Animation.FadeIn:
         this.fadeIn(sprite);
         break;
-      case AnimationType.None:
+      case Animation.None:
       default:
         sprite.alpha = 1;
         break;
@@ -282,11 +273,11 @@ export class PixiRenderer {
     img.src = `../Characters/${name}/${spriteName}.png`;
   }
 
-  public removeCharacter(name: string, animation: AnimationType = AnimationType.FadeOut): void {
+  public removeCharacter(name: string, animation: Animation = Animation.FadeOut): void {
     const sprite = this.displayedCharacters.get(name);
     if (!sprite) return;
 
-    if (animation === AnimationType.FadeOut) {
+    if (animation === Animation.FadeOut) {
       this.fadeOut(sprite, () => {
         this.characterContainer!.removeChild(sprite);
         this.displayedCharacters.delete(name);
@@ -297,7 +288,7 @@ export class PixiRenderer {
     }
   }
 
-  public showCharacter(name: string, animation: AnimationType = AnimationType.FadeIn): void {
+  public showCharacter(name: string, animation: Animation = Animation.FadeIn): void {
     const sprite = this.characters.get(name);
     if (!sprite) return;
 
@@ -308,14 +299,14 @@ export class PixiRenderer {
     }
 
     switch (animation) {
-      case AnimationType.FadeIn:
+      case Animation.FadeIn:
         this.fadeIn(sprite);
         break;
-      case AnimationType.SlideLeft:
+      case Animation.SlideLeft:
         sprite.x = -sprite.width;
         this.slideIn(sprite, 'left');
         break;
-      case AnimationType.SlideRight:
+      case Animation.SlideRight:
         sprite.x = window.innerWidth + sprite.width;
         this.slideIn(sprite, 'right');
         break;
@@ -325,12 +316,12 @@ export class PixiRenderer {
     }
   }
 
-  public hideCharacter(name: string, animation: AnimationType = AnimationType.FadeOut): void {
+  public hideCharacter(name: string, animation: Animation = Animation.FadeOut): void {
     const sprite = this.displayedCharacters.get(name);
     if (!sprite) return;
 
     switch (animation) {
-      case AnimationType.FadeOut:
+      case Animation.FadeOut:
         this.fadeOut(sprite, () => {
           this.characterContainer!.removeChild(sprite);
           this.displayedCharacters.delete(name);
