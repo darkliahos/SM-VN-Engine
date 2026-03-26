@@ -1,29 +1,7 @@
 import * as PIXI from 'pixi.js';
 import {Animation} from "../enums/Animation"
+import {ElectronAPI} from "../main/preload"
 
-export interface ElectronAPI {
-  getMetadata: () => Promise<any>;
-  parseCommand: (command: string) => Promise<any>;
-  runScenario: () => Promise<void>;
-  setCurrentBackground: (background: string) => Promise<void>;
-  drawBackground: (background: string) => Promise<void>;
-  drawCharacter: (characterName: string, sprite: string) => Promise<void>;
-  showError: (error: string) => Promise<void>;
-  showCharacter: (characterName: string, animation: number) => Promise<void>;
-  hideCharacter: (characterName: string, animation: number) => Promise<void>;
-  removeCharacter: (characterName: string, animation: number) => Promise<void>;
-  showChoices: (choices: { text: string; line: number }[]) => Promise<void>;
-  onDrawBackground: (callback: (background: string) => void) => void;
-  onDrawCharacter: (callback: (characterName: string, sprite: string) => void) => void;
-  onShowError: (callback: (error: string) => void) => void;
-  onInputRequired: (callback: () => void) => void;
-  onWriteText: (callback: (character: string, text: string) => void) => void;
-  onEndGame: (callback: () => void) => void;
-  onShowCharacter: (callback: (characterName: string, animation: number) => void) => void;
-  onHideCharacter: (callback: (characterName: string, animation: number) => void) => void;
-  onRemoveCharacter: (callback: (characterName: string, animation: number) => void) => void;
-  onShowChoices: (callback: (choices: { text: string; line: number }[]) => void) => void;
-}
 
 declare global {
   interface Window {
