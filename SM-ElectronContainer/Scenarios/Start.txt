@@ -1,7 +1,8 @@
-﻿CHANGE BACKGROUND test
-[Sam] SAYS "I Like meat"
-JUMP 4
+﻿SAYS "Today is going to be good day and the peril of life must be forgiven"
+SAYS "This is where my story starts"
+CHANGE BACKGROUND test
 Add [Sam] Happy *FadeIn*
 [Sam] SAYS "I would love a sega megadrive"
 [Sam] SAYS "Death be on you traitor"
-Hide [Sam]
+Hide [Sam] *FadeOut*
+END STORY
