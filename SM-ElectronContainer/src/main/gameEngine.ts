@@ -118,6 +118,12 @@ export class GameEngine {
       case 'EndGame':
         this.mainWindow?.webContents.send('end-game');
         break;
+      case 'WipeImage':
+        this.mainWindow?.webContents.send('hide-character', instruction.Parameters[0], instruction.Parameters[1]);
+        break;
+      case 'DrawImage':
+        this.mainWindow?.webContents.send('show-character', instruction.Parameters[0], instruction.Parameters[1]);
+        break;
       case 'NEW CHOICE':
       case 'CHOICE SET QUESTION':
       case 'ADD CHOICE':

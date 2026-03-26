@@ -126,7 +126,7 @@ export class PixiRenderer {
     });
 
     window.electronAPI.onDrawCharacter((characterName: string, sprite: string) => {
-      this.loadCharacter(characterName, sprite);
+      this.loadCharacter(characterName, sprite, Animation.FadeIn);
     });
 
     window.electronAPI.onWriteText((character: string, text: string) => {
@@ -223,7 +223,7 @@ export class PixiRenderer {
     }
   }
 
-  public loadCharacter(name: string, spriteName: string): void {
+  public loadCharacter(name: string, spriteName: string, animation: Animation = Animation.FadeIn): void {
     if (this.displayedCharacters.has(name)) {
       return;
     }
@@ -239,8 +239,7 @@ export class PixiRenderer {
         sprite.scale.set(1);
 
         this.characters.set(name, sprite);
-        this.displayedCharacters.set(name, sprite);
-        this.characterContainer!.addChild(sprite);
+        this.showCharacter(name, animation);
       } catch (e) {
         console.error(`Failed to create texture for character: ${name}/${spriteName}`, e);
       }
