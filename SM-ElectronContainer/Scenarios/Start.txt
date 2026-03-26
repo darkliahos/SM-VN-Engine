@@ -3,6 +3,7 @@ SAYS "This is where my story starts"
 CHANGE BACKGROUND test
 Add [Sam] Happy *FadeIn*
 [Sam] SAYS "I would love a sega megadrive"
+MOVE SAM 40px
 [Sam] SAYS "Death be on you traitor"
 Hide [Sam] *FadeOut*
-END STORY
+SAYS "Maybe the world is not so bad"
