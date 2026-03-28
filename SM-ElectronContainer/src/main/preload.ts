@@ -21,6 +21,7 @@ export interface ElectronAPI {
   onWriteText: (callback: (character: string, text: string) => void) => void;
   onEndGame: (callback: () => void) => void;
   onShowCharacter: (callback: (characterName: string, animation: number) => void) => void;
+  onChangeSprite: (callback: (characterName: string, sprite: string) => void) => void;
   onHideCharacter: (callback: (characterName: string, animation: number) => void) => void;
   onRemoveCharacter: (callback: (characterName: string, animation: number) => void) => void;
   onShowChoices: (callback: (choices: { text: string; line: number }[]) => void) => void;
@@ -60,6 +61,9 @@ const electronAPI: ElectronAPI = {
   },
   onShowCharacter: (callback: (characterName: string, animation: number) => void) => {
     ipcRenderer.on('show-character', (_event, characterName, animation) => callback(characterName, animation));
+  },
+  onChangeSprite: (callback: (characterName: string, sprite: string) => void) => {
+    ipcRenderer.on('change-sprite', (_event, characterName, sprite) => callback(characterName, sprite));
   },
   onHideCharacter: (callback: (characterName: string, animation: number) => void) => {
     ipcRenderer.on('hide-character', (_event, characterName, animation) => callback(characterName, animation));

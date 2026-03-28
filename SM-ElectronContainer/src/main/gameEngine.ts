@@ -122,7 +122,7 @@ export class GameEngine {
         this.mainWindow?.webContents.send('hide-character', instruction.Parameters[0], instruction.Parameters[1]);
         break;
       case 'DrawImage':
-        this.mainWindow?.webContents.send('show-character', instruction.Parameters[0], instruction.Parameters[1]);
+        this.mainWindow?.webContents.send('change-sprite', instruction.Parameters[0], instruction.Parameters[1]);
         break;
       case 'NEW CHOICE':
       case 'CHOICE SET QUESTION':

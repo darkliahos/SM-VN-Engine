@@ -216,20 +216,19 @@ export class DirtyParser implements IParser {
   }
 
   private parseChangeSprite(command: string): GameWindowInstruction {
-    const spriteMatch = command.match(RegexConstants.GetSprite);
+    const spriteMatch = command.match(/\]\s*(\w+)\s*\*/);
     
     if (!spriteMatch) {
       throw new ParserException('Unable to process command, check syntax', command);
     }
 
-    let sprite = spriteMatch[1].trim();
+    const sprite = spriteMatch[1].trim();
     if (!sprite) {
       throw new ParserException('Unable to parse sprite name', command);
     }
     
     const animationMatch = command.match(RegexConstants.GetStuffInAstrix);
     const animationStr = animationMatch ? animationMatch[1] : 'None';
-    sprite = sprite.substring(1, sprite.length - 1);
     const characterName = this.getPrimaryCharacterName(command);
     const animation = Animation[animationStr.trim() as keyof typeof Animation];
     

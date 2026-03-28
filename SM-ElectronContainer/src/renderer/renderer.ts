@@ -150,6 +150,10 @@ export class PixiRenderer {
       this.showCharacter(characterName, animation as Animation);
     });
 
+    window.electronAPI.onChangeSprite((characterName: string, spriteName: string) => {
+      this.changeCharacterSprite(characterName, spriteName);
+    });
+
     window.electronAPI.onHideCharacter((characterName: string, animation: number) => {
       this.hideCharacter(characterName, animation as Animation);
     });
@@ -284,7 +288,8 @@ export class PixiRenderer {
       }
     };
     img.onerror = () => {
-      console.error(`Failed to load character: ${name}/${spriteName}`);
+      console.error(`Character sprite not found: ../Characters/${name}/${spriteName}.png`);
+      window.electronAPI.showError(`Character sprite not found: ${name}/${spriteName}`);
     };
     img.src = `../Characters/${name}/${spriteName}.png`;
   }
@@ -348,6 +353,47 @@ export class PixiRenderer {
         this.displayedCharacters.delete(name);
         break;
     }
+  }
+
+  public changeCharacterSprite(name: string, spriteName: string): void {
+    console.log('changeCharacterSprite called:', name, spriteName);
+    console.log('Available characters:', Array.from(this.characters.keys()));
+    
+    const sprite = this.characters.get(name);
+    console.log('Found sprite:', sprite);
+    if (!sprite) return;
+
+    const img = new Image();
+    img.onload = () => {
+      try {
+        console.log('Image loaded, updating texture for', name, spriteName);
+        const texture = PIXI.Texture.from(img);
+        sprite.texture = texture;
+
+        const targetHeight = window.innerHeight * 0.8;
+        const scale = targetHeight / sprite.texture.height;
+        sprite.scale.set(scale);
+
+        const spacing = window.innerWidth * 0.05;
+        const spriteWidth = sprite.texture.width * scale;
+        const screenPosition = (sprite as any).screenPosition ?? 1;
+
+        if (screenPosition === Position.Left) {
+          sprite.x = window.innerWidth * 0.1;
+        } else if (screenPosition === Position.Right) {
+          sprite.x = window.innerWidth * 0.9 - spriteWidth;
+        } else {
+          sprite.x = (window.innerWidth - spriteWidth) / 2;
+        }
+      } catch (e) {
+        console.error(`Failed to change sprite for ${name}/${spriteName}`, e);
+      }
+    };
+    img.onerror = () => {
+      console.error(`Sprite not found: ../Characters/${name}/${spriteName}.png`);
+      window.electronAPI.showError(`Sprite not found: ${name}/${spriteName}`);
+    };
+    img.src = `../Characters/${name}/${spriteName}.png`;
   }
 
   private fitSpriteToScreen(sprite: PIXI.Sprite): void {
