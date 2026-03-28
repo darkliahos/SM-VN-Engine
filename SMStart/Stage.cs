@@ -76,7 +76,7 @@ namespace SMStart
                 var charactersInScene = GameState.Instance.GetCharacterInScene();
                 foreach (var characterInScene in charactersInScene)
                 {
-                    DrawCharacter(characterInScene.DisplayName, characterInScene.CurrentSprite);
+                    DrawCharacter(characterInScene.DisplayName, characterInScene.CurrentSprite, characterInScene.ScreenPosition);
                 }
                 _renderer.End();
                 GameState.Instance.SetRedraw(false);
@@ -105,7 +105,7 @@ namespace SMStart
                     switch (callBack.MethodName)
                     {
                         case "DrawCharacter":
-                            DrawCharacter(callBack.Parameters[0].ToString()!, callBack.Parameters[1].ToString()!);
+                            DrawCharacter(callBack.Parameters[0].ToString()!, callBack.Parameters[1].ToString()!, callBack.Parameters.Length > 3 ? Convert.ToInt32(callBack.Parameters[3]) : 1);
                             l++;
                             break;
                         case "DrawScene":
@@ -152,8 +152,33 @@ namespace SMStart
             _renderer.DrawBackground(_backgroundTexture, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
         }
 
-        private void DrawCharacter(string characterName, string sprite)
+        private void DrawCharacter(string characterName, string sprite, int screenPosition = 1)
         {
+            var characterImage = _pictureManager.LoadCharacterImage(characterName, sprite, GameState.Instance.GetImageFormat());
+            var characterTexture = TextureRenderer.CreateTexture(GraphicsDevice, characterImage);
+
+            float targetHeight = _graphics.PreferredBackBufferHeight * 0.8f;
+            float scale = targetHeight / characterImage.Height;
+
+            float spacing = _graphics.PreferredBackBufferWidth * 0.05f;
+            float spriteWidth = characterImage.Width * scale;
+
+            float x;
+            if (screenPosition == 0)
+            {
+                x = _graphics.PreferredBackBufferWidth * 0.1f;
+            }
+            else if (screenPosition == 2)
+            {
+                x = _graphics.PreferredBackBufferWidth * 0.9f - spriteWidth;
+            }
+            else
+            {
+                x = (_graphics.PreferredBackBufferWidth - spriteWidth) / 2;
+            }
+            float y = _graphics.PreferredBackBufferHeight - (characterImage.Height * scale);
+
+            _renderer.Draw(characterTexture, new Vector2(x, y), Color.White, scale);
         }
 
         protected override void UnloadContent()

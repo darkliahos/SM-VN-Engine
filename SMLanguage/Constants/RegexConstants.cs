@@ -10,5 +10,6 @@ namespace SMLanguage.Constants
         public static Regex GetRoundBracketNumbers = new Regex(@"([0-9\.]+)");
         public static Regex GetStuffInAstrix = new Regex(@"\*(.*?)\*");
         public static Regex GetSprite = new Regex(@"\](.*?)\*");
+        public static Regex GetPosition = new Regex(@"\((left|right|centre|center)\)", RegexOptions.IgnoreCase);
     }
 }

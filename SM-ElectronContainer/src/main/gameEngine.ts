@@ -101,7 +101,7 @@ export class GameEngine {
   private async executeInstruction(instruction: any): Promise<void> {
     switch (instruction.MethodName) {
       case 'DrawCharacter':
-        this.mainWindow?.webContents.send('draw-character', instruction.Parameters[0], instruction.Parameters[1]);
+        this.mainWindow?.webContents.send('draw-character', instruction.Parameters[0], instruction.Parameters[1], instruction.Parameters[3] ?? 1);
         break;
       case 'DrawScene':
         GameState.getInstance().setCurrentBackground(instruction.Parameters[0]);
@@ -141,7 +141,7 @@ export class GameEngine {
 
     const characters = GameState.getInstance().getCharactersInScene();
     for (const character of characters) {
-      this.mainWindow?.webContents.send('draw-character', character.FriendlyName, character.CurrentSprite);
+      this.mainWindow?.webContents.send('draw-character', character.FriendlyName, character.CurrentSprite, character.ScreenPosition);
     }
   }
 

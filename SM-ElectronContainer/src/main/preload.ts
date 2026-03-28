@@ -6,7 +6,7 @@ export interface ElectronAPI {
   runScenario: () => Promise<void>;
   setCurrentBackground: (background: string) => Promise<void>;
   drawBackground: (background: string) => Promise<void>;
-  drawCharacter: (characterName: string, sprite: string) => Promise<void>;
+  drawCharacter: (characterName: string, sprite: string, position: number) => Promise<void>;
   showError: (error: string) => Promise<void>;
   showCharacter: (characterName: string, animation: number) => Promise<void>;
   hideCharacter: (characterName: string, animation: number) => Promise<void>;
@@ -15,7 +15,7 @@ export interface ElectronAPI {
   loadSceneImage: (name: string) => Promise<Buffer | null>;
   loadCharacterImage: (characterName: string, sprite: string) => Promise<Buffer | null>;
   onDrawBackground: (callback: (background: string) => void) => void;
-  onDrawCharacter: (callback: (characterName: string, sprite: string) => void) => void;
+  onDrawCharacter: (callback: (characterName: string, sprite: string, position: number) => void) => void;
   onShowError: (callback: (error: string) => void) => void;
   onInputRequired: (callback: () => void) => void;
   onWriteText: (callback: (character: string, text: string) => void) => void;
@@ -32,7 +32,7 @@ const electronAPI: ElectronAPI = {
   runScenario: () => ipcRenderer.invoke('run-scenario'),
   setCurrentBackground: (background: string) => ipcRenderer.invoke('set-current-background', background),
   drawBackground: (background: string) => ipcRenderer.invoke('draw-background', background),
-  drawCharacter: (characterName: string, sprite: string) => ipcRenderer.invoke('draw-character', characterName, sprite),
+  drawCharacter: (characterName: string, sprite: string, position: number) => ipcRenderer.invoke('draw-character', characterName, sprite, position),
   showError: (error: string) => ipcRenderer.invoke('show-error', error),
   showCharacter: (characterName: string, animation: number) => ipcRenderer.invoke('show-character', characterName, animation),
   hideCharacter: (characterName: string, animation: number) => ipcRenderer.invoke('hide-character', characterName, animation),
@@ -43,8 +43,8 @@ const electronAPI: ElectronAPI = {
   onDrawBackground: (callback: (background: string) => void) => {
     ipcRenderer.on('draw-background', (_event, background) => callback(background));
   },
-  onDrawCharacter: (callback: (characterName: string, sprite: string) => void) => {
-    ipcRenderer.on('draw-character', (_event, characterName, sprite) => callback(characterName, sprite));
+  onDrawCharacter: (callback: (characterName: string, sprite: string, position: number) => void) => {
+    ipcRenderer.on('draw-character', (_event, characterName, sprite, position) => callback(characterName, sprite, position));
   },
   onShowError: (callback: (error: string) => void) => {
     ipcRenderer.on('show-error', (_event, error) => callback(error));

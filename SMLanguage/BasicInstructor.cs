@@ -6,7 +6,7 @@ namespace SMLanguage
 {
     public class StateManager(IAlertHandler alertHandler) : IStateManager
     {
-        public void AddCharacter(string friendlyName, string spriteName, Animation animation)
+        public void AddCharacter(string friendlyName, string spriteName, Animation animation, int screenPosition = 1)
         {
             if (GameState.Instance.ShowCharacter(friendlyName))
             {
@@ -22,7 +22,8 @@ namespace SMLanguage
                     Position = new Coordinate(300, 300),//TODO: Need to wait for the graphics engine to make it in before deciding this
                     InScene = true, 
                     SpriteHeight = 50,
-                    SpriteWidth = 50
+                    SpriteWidth = 50,
+                    ScreenPosition = screenPosition
                 };
                 GameState.Instance.AddCharacter(character);
             }

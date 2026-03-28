@@ -27,7 +27,7 @@ namespace SMLanguage
         /// <param name="friendlyName"></param>
         /// <param name="image"></param>
         /// <param name="animation"></param>
-        void AddCharacter(string friendlyName, string spriteName, Animation animation);
+        void AddCharacter(string friendlyName, string spriteName, Animation animation, int screenPosition = 1);
 
         void ChangeCharacterDisplayName(string friendlyName, string displayName);
 

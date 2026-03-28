@@ -9,4 +9,5 @@ export class Character {
   public SpriteWidth: number = 50;
   public CurrentSprite: string = '';
   public InScene: boolean = false;
+  public ScreenPosition: number = 1; // 0 = Left, 1 = Centre, 2 = Right
 }

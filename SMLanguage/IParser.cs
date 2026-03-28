@@ -65,8 +65,19 @@ namespace SMLanguage
                 }
                 string animation = RegexConstants.GetStuffInAstrix.Match(command).Captures[0].Value;
                 sprite = sprite.Substring(2, sprite.Length - 4);
-                instructor.AddCharacter(characterName.Trim(), sprite, (Animation)Enum.Parse(typeof(Animation), animation.Trim('*')));
-                return new GameWindowInstruction("DrawCharacter", new object[] { characterName, sprite, (Animation)Enum.Parse(typeof(Animation), animation.Trim('*')) });
+                
+                int screenPosition = 1;
+                var positionMatch = RegexConstants.GetPosition.Match(command);
+                if (positionMatch.Success)
+                {
+                    string pos = positionMatch.Groups[1].Value.ToLower();
+                    if (pos == "left") screenPosition = 0;
+                    else if (pos == "right") screenPosition = 2;
+                    else if (pos == "centre" || pos == "center") screenPosition = 1;
+                }
+                
+                instructor.AddCharacter(characterName.Trim(), sprite, (Animation)Enum.Parse(typeof(Animation), animation.Trim('*')), screenPosition);
+                return new GameWindowInstruction("DrawCharacter", new object[] { characterName, sprite, (Animation)Enum.Parse(typeof(Animation), animation.Trim('*')), screenPosition });
 
             }
 

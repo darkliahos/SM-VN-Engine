@@ -5,4 +5,5 @@ export const RegexConstants = {
   GetRoundBracketNumbers: /([0-9\.]+)/g,
   GetStuffInAstrix: /\*(.*?)\*/,
   GetSprite: /\](.*?)\*/,
+  GetPosition: /\((left|right|centre|center)\)/i,
 };

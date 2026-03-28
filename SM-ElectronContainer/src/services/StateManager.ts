@@ -4,7 +4,7 @@ import { GameState } from './GameState';
 import { IAlertHandler } from './AlertHandler';
 
 export interface IStateManager {
-  addCharacter(friendlyName: string, spriteName: string, animation: Animation): void;
+  addCharacter(friendlyName: string, spriteName: string, animation: Animation, screenPosition?: number): void;
   addChoice(choice: string): void;
   changeCharacterDisplayName(friendlyName: string, displayName: string): void;
   changeCharacterSprite(friendlyName: string, spriteName: string, animation: Animation): void;
@@ -26,7 +26,7 @@ export interface IStateManager {
 export class StateManager implements IStateManager {
   constructor(private alertHandler: IAlertHandler) {}
 
-  public addCharacter(friendlyName: string, spriteName: string, animation: Animation): void {
+  public addCharacter(friendlyName: string, spriteName: string, animation: Animation, screenPosition: number = 1): void {
     if (GameState.getInstance().showCharacter(friendlyName)) {
       GameState.getInstance().showCharacter(friendlyName);
     } else {
@@ -38,6 +38,7 @@ export class StateManager implements IStateManager {
       character.InScene = true;
       character.SpriteHeight = 50;
       character.SpriteWidth = 50;
+      character.ScreenPosition = screenPosition;
       GameState.getInstance().addCharacter(character);
     }
   }

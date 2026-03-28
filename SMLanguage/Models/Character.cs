@@ -19,5 +19,7 @@ namespace SMLanguage.Models
         public bool InScene { get; set; }
 
         public Guid Identifier { get; set; }
+
+        public int ScreenPosition { get; set; } = 1;
     }
 }

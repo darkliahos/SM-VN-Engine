@@ -1,4 +1,4 @@
-import { Animation, Direction } from '../enums';
+import { Animation, Direction, Position } from '../enums';
 import { GameWindowInstruction } from '../models';
 import { RegexConstants } from './RegexConstants';
 import { containsInsensitive } from './StringUtils';
@@ -128,9 +128,18 @@ export class DirtyParser implements IParser {
     
     const animationStr = animationMatch[1];
     const animation = Animation[animationStr as keyof typeof Animation];
+
+    const positionMatch = command.match(RegexConstants.GetPosition);
+    let position = Position.Centre;
+    if (positionMatch) {
+      const posStr = positionMatch[1].toLowerCase();
+      if (posStr === 'left') position = Position.Left;
+      else if (posStr === 'right') position = Position.Right;
+      else if (posStr === 'centre' || posStr === 'center') position = Position.Centre;
+    }
     
-    this.instructor.addCharacter(characterName.trim(), sprite, animation);
-    return new GameWindowInstruction('DrawCharacter', [characterName, sprite, animation]);
+    this.instructor.addCharacter(characterName.trim(), sprite, animation, position);
+    return new GameWindowInstruction('DrawCharacter', [characterName, sprite, animation, position]);
   }
 
   private parseRemove(command: string): GameWindowInstruction {
@@ -212,7 +221,7 @@ export class DirtyParser implements IParser {
     if (!spriteMatch) {
       throw new ParserException('Unable to process command, check syntax', command);
     }
-    console.log(spriteMatch[1].trim())
+
     let sprite = spriteMatch[1].trim();
     if (!sprite) {
       throw new ParserException('Unable to parse sprite name', command);

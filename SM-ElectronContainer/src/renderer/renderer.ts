@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
 import {Animation} from "../enums/Animation"
+import {Position} from "../enums/Position"
 import {ElectronAPI} from "../main/preload"
 
 
@@ -125,8 +126,8 @@ export class PixiRenderer {
       this.loadBackground(background);
     });
 
-    window.electronAPI.onDrawCharacter((characterName: string, sprite: string) => {
-      this.loadCharacter(characterName, sprite, Animation.FadeIn);
+    window.electronAPI.onDrawCharacter((characterName: string, sprite: string, position: number) => {
+      this.loadCharacter(characterName, sprite, Animation.FadeIn, position);
     });
 
     window.electronAPI.onWriteText((character: string, text: string) => {
@@ -175,7 +176,31 @@ export class PixiRenderer {
         this.choicesContainer.x = window.innerWidth / 2;
         this.choicesContainer.y = window.innerHeight / 2;
       }
+
+      this.repositionCharacters();
     }
+  }
+
+  private repositionCharacters(): void {
+    const spacing = window.innerWidth * 0.05;
+
+    this.characters.forEach((sprite) => {
+      const targetHeight = window.innerHeight * 0.8;
+      const scale = targetHeight / sprite.texture.height;
+      sprite.scale.set(scale);
+
+      const spriteWidth = sprite.texture.width * scale;
+      const screenPosition = (sprite as any).screenPosition ?? 1;
+
+      if (screenPosition === Position.Left) {
+        sprite.x = window.innerWidth * 0.1;
+      } else if (screenPosition === Position.Right) {
+        sprite.x = window.innerWidth * 0.9 - spriteWidth;
+      } else {
+        sprite.x = (window.innerWidth - spriteWidth) / 2;
+      }
+      sprite.y = window.innerHeight;
+    });
   }
 
   public loadBackground(name: string, animation: Animation = Animation.FadeIn): void {
@@ -223,7 +248,7 @@ export class PixiRenderer {
     }
   }
 
-  public loadCharacter(name: string, spriteName: string, animation: Animation = Animation.FadeIn): void {
+  public loadCharacter(name: string, spriteName: string, animation: Animation = Animation.FadeIn, screenPosition: number = 1): void {
     if (this.displayedCharacters.has(name)) {
       return;
     }
@@ -233,10 +258,24 @@ export class PixiRenderer {
       try {
         const texture = PIXI.Texture.from(img);
         const sprite = new PIXI.Sprite(texture);
-        sprite.anchor.set(0.5, 1);
-        sprite.x = window.innerWidth / 2;
-        sprite.y = window.innerHeight - 50;
-        sprite.scale.set(1);
+        sprite.anchor.set(0, 1);
+        (sprite as any).screenPosition = screenPosition;
+
+        const targetHeight = window.innerHeight * 0.8;
+        const scale = targetHeight / sprite.texture.height;
+        sprite.scale.set(scale);
+
+        const spacing = window.innerWidth * 0.05;
+        const spriteWidth = sprite.texture.width * scale;
+
+        if (screenPosition === Position.Left) {
+          sprite.x = window.innerWidth * 0.1;
+        } else if (screenPosition === Position.Right) {
+          sprite.x = window.innerWidth * 0.9 - spriteWidth;
+        } else {
+          sprite.x = (window.innerWidth - spriteWidth) / 2;
+        }
+        sprite.y = window.innerHeight;
 
         this.characters.set(name, sprite);
         this.showCharacter(name, animation);
