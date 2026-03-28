@@ -210,12 +210,12 @@ export class DirtyParser implements IParser {
     const spriteMatch = command.match(RegexConstants.GetSprite);
     
     if (!spriteMatch) {
-      throw new ParserException('Sprite was invalid', command);
+      throw new ParserException('Unable to process command, check syntax', command);
     }
-    
+    console.log(spriteMatch[1].trim())
     let sprite = spriteMatch[1].trim();
-    if (!sprite || sprite.length < 4) {
-      throw new ParserException('Sprite was invalid', command);
+    if (!sprite) {
+      throw new ParserException('Unable to parse sprite name', command);
     }
     
     const animationMatch = command.match(RegexConstants.GetStuffInAstrix);
