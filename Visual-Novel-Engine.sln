@@ -3,21 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
 VisualStudioVersion = 18.3.11520.95 d18.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{477BD317-25E1-4693-8E67-EF3293C387B3}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VNNStart", "VNNStart\VNNStart.csproj", "{BDC85118-5B1E-44C5-B82F-97648BDC6796}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utils", "Utils", "{8585CF1F-3A70-450A-AD2D-1A84959C8D81}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MetadataGenerator", "MetadataGenerator\MetadataGenerator.csproj", "{04538CCB-71EA-4E7E-8971-A8DBDFD8ACF0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SMLanguage", "SMLanguage\SMLanguage.csproj", "{65D163BF-7427-4192-B721-59641B5D650E}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMStart", "SMStart\SMStart.csproj", "{2F8FA866-CBB2-481A-A6E6-AA5049B04ED5}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMLanguageTests", "SMLanguageTests\SMLanguageTests.csproj", "{645E1BAB-C369-4EC5-BDEA-27585D9F084C}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMContent", "SMContent\SMContent.csproj", "{6B0A8649-953F-41D3-813D-0CA4E8FDCC5A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,10 +15,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{BDC85118-5B1E-44C5-B82F-97648BDC6796}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BDC85118-5B1E-44C5-B82F-97648BDC6796}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BDC85118-5B1E-44C5-B82F-97648BDC6796}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BDC85118-5B1E-44C5-B82F-97648BDC6796}.Release|Any CPU.Build.0 = Release|Any CPU
 		{04538CCB-71EA-4E7E-8971-A8DBDFD8ACF0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{04538CCB-71EA-4E7E-8971-A8DBDFD8ACF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{04538CCB-71EA-4E7E-8971-A8DBDFD8ACF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -37,25 +23,12 @@ Global
 		{65D163BF-7427-4192-B721-59641B5D650E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{65D163BF-7427-4192-B721-59641B5D650E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{65D163BF-7427-4192-B721-59641B5D650E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2F8FA866-CBB2-481A-A6E6-AA5049B04ED5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2F8FA866-CBB2-481A-A6E6-AA5049B04ED5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2F8FA866-CBB2-481A-A6E6-AA5049B04ED5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2F8FA866-CBB2-481A-A6E6-AA5049B04ED5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{645E1BAB-C369-4EC5-BDEA-27585D9F084C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{645E1BAB-C369-4EC5-BDEA-27585D9F084C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{645E1BAB-C369-4EC5-BDEA-27585D9F084C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{645E1BAB-C369-4EC5-BDEA-27585D9F084C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6B0A8649-953F-41D3-813D-0CA4E8FDCC5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6B0A8649-953F-41D3-813D-0CA4E8FDCC5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6B0A8649-953F-41D3-813D-0CA4E8FDCC5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6B0A8649-953F-41D3-813D-0CA4E8FDCC5A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{04538CCB-71EA-4E7E-8971-A8DBDFD8ACF0} = {8585CF1F-3A70-450A-AD2D-1A84959C8D81}
-		{645E1BAB-C369-4EC5-BDEA-27585D9F084C} = {477BD317-25E1-4693-8E67-EF3293C387B3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C0A28365-308C-4EC4-ADF3-72C673C2FAA5}
