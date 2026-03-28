@@ -243,6 +243,10 @@ export class PixiRenderer {
   }
 
   private displayBackground(sprite: PIXI.Sprite, animation: Animation): void {
+    if (this.currentBackground === sprite) {
+      return;
+    }
+
     if (this.currentBackground) {
       this.backgroundContainer!.removeChild(this.currentBackground);
     }
