@@ -214,22 +214,32 @@ export class PixiRenderer {
       return;
     }
 
-    const img = new Image();
-    img.onload = () => {
-      try {
-        const texture = PIXI.Texture.from(img);
-        const sprite = new PIXI.Sprite(texture);
-        this.fitSpriteToScreen(sprite);
-        this.backgrounds.set(name, sprite);
-        this.displayBackground(sprite, animation);
-      } catch (e) {
-        console.error(`Failed to create texture for background: ${name}`, e);
+    const loadImage = (extensions: string[]) => {
+      if (extensions.length === 0) {
+        console.error(`Failed to load background: ${name} (tried .png, .jpg, .jpeg)`);
+        return;
       }
+
+      const ext = extensions[0];
+      const img = new Image();
+      img.onload = () => {
+        try {
+          const texture = PIXI.Texture.from(img);
+          const sprite = new PIXI.Sprite(texture);
+          this.fitSpriteToScreen(sprite);
+          this.backgrounds.set(name, sprite);
+          this.displayBackground(sprite, animation);
+        } catch (e) {
+          console.error(`Failed to create texture for background: ${name}`, e);
+        }
+      };
+      img.onerror = () => {
+        loadImage(extensions.slice(1));
+      };
+      img.src = `../Scenes/${name}.${ext}`;
     };
-    img.onerror = () => {
-      console.error(`Failed to load background: ${name}`);
-    };
-    img.src = `../Scenes/${name}.png`;
+
+    loadImage(['png', 'jpg', 'jpeg']);
   }
 
   private displayBackground(sprite: PIXI.Sprite, animation: Animation): void {

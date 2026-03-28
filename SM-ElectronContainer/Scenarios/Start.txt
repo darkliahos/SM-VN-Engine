@@ -1,11 +1,11 @@
 ﻿BEGIN SCENARIO "Temple Garden"
 
-CHANGE BACKGROUND TempleGarden1950s
+CHANGE BACKGROUND TempleGarden
 
 PLAY SOUND LOOP "cicadas_evening.wav"
 
-Add [Yuki] Thoughtful *Fade In* (left)
-Add [Kenji] Nervous *Fade In* (right)
+Add [Yuki] Thoughtful *Fade In* (right)
+Add [Kenji] Nervous *Fade In* (left)
 
 [Kenji] SAYS "I found this place last spring. When everything was in bloom..."
 
@@ -50,7 +50,6 @@ CHANGE SPRITE [Yuki] Thoughtful *Fade*
 [Kenji] SAYS "Especially then."
 
 CHANGE SPRITE [Yuki] Happy *Fade In*
-CHANGE SPRITE [Kenji] Happy *Fade In*
 
 [Yuki] SAYS "Perhaps... perhaps I do belong here after all."
 
