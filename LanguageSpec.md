@@ -18,6 +18,8 @@ v0.0.5b - Sohail Nasir - Clarified Sound instruction set
 
 v0.0.5c - Sohail Nasir - Modified Forking Declaration to include the question rather trying to infer it from the previous line
 
+v0.0.6 - Sohail Nasir - Corrected spec for Says
+
 ## Purpose of this document
 
 To allow for discussion of what this language should be
@@ -43,17 +45,17 @@ In order to define a character, they must be surrounded by brackets like this:
 
 ### Writing a line
 
-```[Character] SAYS [Whatever]```
+```[Character] SAYS "[Whatever]"```
 
 So an example of this is if we had a character called Alanis and Alanis said hello, we would write it like this:
 
-```[Alanis] SAYS hello```
+```[Alanis] SAYS "hello"```
 
 We would identifiy anything before Says as the character name, anything after says would be what we would want to attribute to the character
 
 If you don't want a character or maybe if you wanted to create a system level message, you could easily write
 
-`Says hello
+`Says "hello"
 
 The Language would infer the lack of the character in this scenario would be a system level message
 
