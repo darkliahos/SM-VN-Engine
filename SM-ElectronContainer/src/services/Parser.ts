@@ -1,7 +1,7 @@
 import { Animation, Direction, Position } from '../enums';
 import { GameWindowInstruction } from '../models';
 import { RegexConstants } from './RegexConstants';
-import { containsInsensitive } from './StringUtils';
+import { containsInsensitive, generateGuid } from './StringUtils';
 import { ParserException } from '../exceptions';
 import { IStateManager } from './StateManager';
 import { GameState } from './GameState';
@@ -301,7 +301,7 @@ export class DirtyParser implements IParser {
   }
 
   private parseBeginChoices(command: string): GameWindowInstruction {
-    const choiceId = this.generateGuid();
+    const choiceId = generateGuid();
     this.instructor.createFork(choiceId);
     return new GameWindowInstruction('NEW CHOICE', [choiceId]);
   }
@@ -358,13 +358,5 @@ export class DirtyParser implements IParser {
     const pattern = new RegExp(`\\b(${keywords.join('|')})\\b`, 'i');
     const match = input.match(pattern);
     return match ? match[0] : '';
-  }
-
-  private generateGuid(): string {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-      const r = (Math.random() * 16) | 0;
-      const v = c === 'x' ? r : (r & 0x3) | 0x8;
-      return v.toString(16);
-    });
   }
 }

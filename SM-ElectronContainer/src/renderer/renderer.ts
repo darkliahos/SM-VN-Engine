@@ -13,7 +13,8 @@ declare global {
 export class PixiRenderer {
   private app: PIXI.Application | null = null;
   private backgrounds: Map<string, PIXI.Sprite> = new Map();
-  private characters: Map<string, PIXI.Sprite> = new Map();
+  private characterSprites: Map<string, PIXI.Sprite> = new Map();
+  private characterTextures: Map<string, PIXI.Texture> = new Map();
   private displayedCharacters: Map<string, PIXI.Sprite> = new Map();
   private currentBackground: PIXI.Sprite | null = null;
   private backgroundContainer: PIXI.Container | null = null;
@@ -188,9 +189,7 @@ export class PixiRenderer {
   }
 
   private repositionCharacters(): void {
-    const spacing = window.innerWidth * 0.05;
-
-    this.characters.forEach((sprite) => {
+    this.characterSprites.forEach((sprite) => {
       const targetHeight = window.innerHeight * 0.8;
       const scale = targetHeight / sprite.texture.height;
       sprite.scale.set(scale);
@@ -273,32 +272,19 @@ export class PixiRenderer {
       return;
     }
 
+    const textureKey = `${name}/${spriteName}`;
+    
+    if (this.characterTextures.has(textureKey)) {
+      this.createCharacterSpriteFromTexture(name, textureKey, animation, screenPosition);
+      return;
+    }
+
     const img = new Image();
     img.onload = () => {
       try {
         const texture = PIXI.Texture.from(img);
-        const sprite = new PIXI.Sprite(texture);
-        sprite.anchor.set(0, 1);
-        (sprite as any).screenPosition = screenPosition;
-
-        const targetHeight = window.innerHeight * 0.8;
-        const scale = targetHeight / sprite.texture.height;
-        sprite.scale.set(scale);
-
-        const spacing = window.innerWidth * 0.05;
-        const spriteWidth = sprite.texture.width * scale;
-
-        if (screenPosition === Position.Left) {
-          sprite.x = window.innerWidth * 0.1;
-        } else if (screenPosition === Position.Right) {
-          sprite.x = window.innerWidth * 0.9 - spriteWidth;
-        } else {
-          sprite.x = (window.innerWidth - spriteWidth) / 2;
-        }
-        sprite.y = window.innerHeight;
-
-        this.characters.set(name, sprite);
-        this.showCharacter(name, animation);
+        this.characterTextures.set(textureKey, texture);
+        this.createCharacterSpriteFromTexture(name, textureKey, animation, screenPosition);
       } catch (e) {
         console.error(`Failed to create texture for character: ${name}/${spriteName}`, e);
       }
@@ -308,6 +294,32 @@ export class PixiRenderer {
       window.electronAPI.showError(`Character sprite not found: ${name}/${spriteName}`);
     };
     img.src = `../Characters/${name}/${spriteName}.png`;
+  }
+
+  private createCharacterSpriteFromTexture(name: string, textureKey: string, animation: Animation, screenPosition: number): void {
+    const texture = this.characterTextures.get(textureKey)!;
+    const sprite = new PIXI.Sprite(texture);
+    sprite.anchor.set(0, 1);
+    (sprite as any).screenPosition = screenPosition;
+    (sprite as any).textureKey = textureKey;
+
+    const targetHeight = window.innerHeight * 0.8;
+    const scale = targetHeight / sprite.texture.height;
+    sprite.scale.set(scale);
+
+    const spriteWidth = sprite.texture.width * scale;
+
+    if (screenPosition === Position.Left) {
+      sprite.x = window.innerWidth * 0.1;
+    } else if (screenPosition === Position.Right) {
+      sprite.x = window.innerWidth * 0.9 - spriteWidth;
+    } else {
+      sprite.x = (window.innerWidth - spriteWidth) / 2;
+    }
+    sprite.y = window.innerHeight;
+
+    this.characterSprites.set(name, sprite);
+    this.showCharacter(name, animation);
   }
 
   public removeCharacter(name: string, animation: Animation = Animation.FadeOut): void {
@@ -326,7 +338,7 @@ export class PixiRenderer {
   }
 
   public showCharacter(name: string, animation: Animation = Animation.FadeIn): void {
-    const sprite = this.characters.get(name);
+    const sprite = this.characterSprites.get(name);
     if (!sprite) return;
 
     if (!this.displayedCharacters.has(name)) {
@@ -372,35 +384,25 @@ export class PixiRenderer {
   }
 
   public changeCharacterSprite(name: string, spriteName: string): void {
-    console.log('changeCharacterSprite called:', name, spriteName);
-    console.log('Available characters:', Array.from(this.characters.keys()));
-    
-    const sprite = this.characters.get(name);
-    console.log('Found sprite:', sprite);
+    const sprite = this.characterSprites.get(name);
     if (!sprite) return;
+
+    const textureKey = `${name}/${spriteName}`;
+    
+    if (this.characterTextures.has(textureKey)) {
+      sprite.texture = this.characterTextures.get(textureKey)!;
+      this.updateSpriteScaleAndPosition(sprite);
+      return;
+    }
 
     const img = new Image();
     img.onload = () => {
       try {
-        console.log('Image loaded, updating texture for', name, spriteName);
         const texture = PIXI.Texture.from(img);
+        this.characterTextures.set(textureKey, texture);
         sprite.texture = texture;
-
-        const targetHeight = window.innerHeight * 0.8;
-        const scale = targetHeight / sprite.texture.height;
-        sprite.scale.set(scale);
-
-        const spacing = window.innerWidth * 0.05;
-        const spriteWidth = sprite.texture.width * scale;
-        const screenPosition = (sprite as any).screenPosition ?? 1;
-
-        if (screenPosition === Position.Left) {
-          sprite.x = window.innerWidth * 0.1;
-        } else if (screenPosition === Position.Right) {
-          sprite.x = window.innerWidth * 0.9 - spriteWidth;
-        } else {
-          sprite.x = (window.innerWidth - spriteWidth) / 2;
-        }
+        (sprite as any).textureKey = textureKey;
+        this.updateSpriteScaleAndPosition(sprite);
       } catch (e) {
         console.error(`Failed to change sprite for ${name}/${spriteName}`, e);
       }
@@ -410,6 +412,23 @@ export class PixiRenderer {
       window.electronAPI.showError(`Sprite not found: ${name}/${spriteName}`);
     };
     img.src = `../Characters/${name}/${spriteName}.png`;
+  }
+
+  private updateSpriteScaleAndPosition(sprite: PIXI.Sprite): void {
+    const targetHeight = window.innerHeight * 0.8;
+    const scale = targetHeight / sprite.texture.height;
+    sprite.scale.set(scale);
+
+    const spriteWidth = sprite.texture.width * scale;
+    const screenPosition = (sprite as any).screenPosition ?? 1;
+
+    if (screenPosition === Position.Left) {
+      sprite.x = window.innerWidth * 0.1;
+    } else if (screenPosition === Position.Right) {
+      sprite.x = window.innerWidth * 0.9 - spriteWidth;
+    } else {
+      sprite.x = (window.innerWidth - spriteWidth) / 2;
+    }
   }
 
   private fitSpriteToScreen(sprite: PIXI.Sprite): void {
@@ -422,49 +441,65 @@ export class PixiRenderer {
   }
 
   private fadeIn(sprite: PIXI.Sprite, duration: number = 500): void {
-    const startTime = Date.now();
-    const animate = () => {
-      const elapsed = Date.now() - startTime;
-      sprite.alpha = Math.min(elapsed / duration, 1);
-      if (sprite.alpha < 1) {
-        requestAnimationFrame(animate);
+    if (!this.app) return;
+    
+    const ticker = this.app.ticker;
+    const startTime = ticker.lastTime;
+    const durationMs = duration;
+    
+    const fadeTicker = (t: PIXI.Ticker) => {
+      const elapsed = t.lastTime - startTime;
+      sprite.alpha = Math.min(elapsed / durationMs, 1);
+      if (sprite.alpha >= 1) {
+        ticker.remove(fadeTicker);
       }
     };
-    animate();
+    ticker.add(fadeTicker);
   }
 
   private fadeOut(sprite: PIXI.Sprite, onComplete: () => void, duration: number = 500): void {
-    const startTime = Date.now();
-    const animate = () => {
-      const elapsed = Date.now() - startTime;
-      sprite.alpha = 1 - Math.min(elapsed / duration, 1);
-      if (sprite.alpha > 0) {
-        requestAnimationFrame(animate);
-      } else {
+    if (!this.app) {
+      onComplete();
+      return;
+    }
+    
+    const ticker = this.app.ticker;
+    const startTime = ticker.lastTime;
+    const durationMs = duration;
+    
+    const fadeTicker = (t: PIXI.Ticker) => {
+      const elapsed = t.lastTime - startTime;
+      sprite.alpha = 1 - Math.min(elapsed / durationMs, 1);
+      if (sprite.alpha <= 0) {
+        ticker.remove(fadeTicker);
         onComplete();
       }
     };
-    animate();
+    ticker.add(fadeTicker);
   }
 
   private slideIn(sprite: PIXI.Sprite, direction: string, duration: number = 500): void {
-    const startTime = Date.now();
+    if (!this.app) return;
+    
+    const ticker = this.app.ticker;
+    const startTime = ticker.lastTime;
     const startX = sprite.x;
     const targetX = window.innerWidth / 2;
+    const durationMs = duration;
 
-    const animate = () => {
-      const elapsed = Date.now() - startTime;
-      const progress = Math.min(elapsed / duration, 1);
+    const slideTicker = (t: PIXI.Ticker) => {
+      const elapsed = t.lastTime - startTime;
+      const progress = Math.min(elapsed / durationMs, 1);
       const eased = this.easeOutCubic(progress);
 
       sprite.x = startX + (targetX - startX) * eased;
       sprite.alpha = progress;
 
-      if (progress < 1) {
-        requestAnimationFrame(animate);
+      if (progress >= 1) {
+        ticker.remove(slideTicker);
       }
     };
-    animate();
+    ticker.add(slideTicker);
   }
 
   private easeOutCubic(t: number): number {
@@ -581,10 +616,9 @@ export class PixiRenderer {
   public showTitleScreen(title: string, onStart: () => void): void {
     this.gameTitle = title;
     this.onStartCallback = onStart;
-    this.backgroundContainer!.removeChildren();
-    this.characterContainer!.removeChildren();
+    this.cleanupScene();
+    this.destroyTextures();
     this.textBox!.visible = false;
-    this.choicesContainer!.visible = false;
 
     const bg = new PIXI.Graphics();
     bg.rect(0, 0, window.innerWidth, window.innerHeight);
@@ -658,10 +692,8 @@ export class PixiRenderer {
     const savedTitle = this.gameTitle;
     const savedCallback = this.onStartCallback;
 
-    this.backgroundContainer!.removeChildren();
-    this.characterContainer!.removeChildren();
+    this.cleanupScene();
     this.textBox!.visible = false;
-    this.choicesContainer!.removeChildren();
 
     const bg = new PIXI.Graphics();
     bg.rect(0, 0, window.innerWidth, window.innerHeight);
@@ -680,7 +712,7 @@ export class PixiRenderer {
 
     const buttonContainer = new PIXI.Container();
     const buttonBg = new PIXI.Graphics();
-    buttonBg.roundRect(0, 0, 200, 60, 10);
+    buttonBg.roundRect(-30, 0, 280, 60, 10);
     buttonBg.fill({ color: 0xffd700 });
     buttonBg.stroke({ width: 2, color: 0xffffff });
 
@@ -693,19 +725,19 @@ export class PixiRenderer {
       }
     });
     buttonText.anchor.set(0.5);
-    buttonText.x = 100;
+    buttonText.x = 50;
     buttonText.y = 30;
 
     buttonContainer.addChild(buttonBg);
     buttonContainer.addChild(buttonText);
-    buttonContainer.x = window.innerWidth / 2 - 100;
+    buttonContainer.x = window.innerWidth / 2 - 20;
     buttonContainer.y = window.innerHeight / 2 + 40;
     buttonContainer.eventMode = 'static';
     buttonContainer.cursor = 'pointer';
 
     buttonContainer.on('pointerover', () => {
       buttonBg.clear();
-      buttonBg.roundRect(0, 0, 200, 60, 10);
+      buttonBg.roundRect(30, 0, 280, 60, 10);
       buttonBg.fill({ color: 0xffffff });
       buttonBg.stroke({ width: 2, color: 0xffd700 });
     });
@@ -726,5 +758,20 @@ export class PixiRenderer {
 
   public isInitialized(): boolean {
     return this.isReady;
+  }
+
+  private cleanupScene(): void {
+    this.backgroundContainer!.removeChildren();
+    this.characterContainer!.removeChildren();
+    this.choicesContainer!.removeChildren();
+    this.displayedCharacters.clear();
+    this.characterSprites.clear();
+  }
+
+  public destroyTextures(): void {
+    this.backgrounds.forEach(sprite => sprite.destroy({ children: true, texture: true }));
+    this.backgrounds.clear();
+    this.characterTextures.forEach(texture => texture.destroy(true));
+    this.characterTextures.clear();
   }
 }

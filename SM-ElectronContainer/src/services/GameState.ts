@@ -7,6 +7,7 @@ import {
   RanScenario,
 } from '../models';
 import { ScenarioNotRunningException } from '../exceptions';
+import { generateGuid } from './StringUtils';
 
 export class GameState {
   private static instance: GameState;
@@ -101,7 +102,7 @@ export class GameState {
 
   public setupScenario(name: string): RunningScenario {
     const newScenario = new RunningScenario();
-    newScenario.Id = this.generateGuid();
+    newScenario.Id = generateGuid();
     newScenario.Name = name;
     this.state.CurrentScenario = newScenario;
     return newScenario;
@@ -118,7 +119,7 @@ export class GameState {
   }
 
   public addCharacter(character: Character): boolean {
-    const id = this.generateGuid();
+    const id = generateGuid();
     character.Identifier = id;
     this.getRunningScenario().Characters.set(id, character);
     return true;
@@ -224,13 +225,5 @@ export class GameState {
       ScenarioExtension: this.state.ScenarioExtension,
       PictureFormatType: this.state.ImageFormatType,
     };
-  }
-
-  private generateGuid(): string {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-      const r = (Math.random() * 16) | 0;
-      const v = c === 'x' ? r : (r & 0x3) | 0x8;
-      return v.toString(16);
-    });
   }
 }

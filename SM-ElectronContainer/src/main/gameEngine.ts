@@ -1,7 +1,7 @@
-import * as fs from 'fs';
+import * as fs from 'fs/promises';
 import * as path from 'path';
 import { BrowserWindow } from 'electron';
-import { Metadata } from '../models';
+import { Metadata, GameWindowInstruction } from '../models';
 import { GameState, DirtyParser, StateManager, ConsoleAlertHandler } from '../services';
 import log from 'electron-log';
 
@@ -18,11 +18,11 @@ export class GameEngine {
     this.parser = new DirtyParser(this.stateManager);
   }
 
-  public initialize(): void {
+  public async initialize(): Promise<void> {
     try {
-      this.loadMetadata();
+      await this.loadMetadata();
       GameState.getInstance().setupGameState(this.metadata!, false);
-      this.loadScenario();
+      await this.loadScenario();
       log.info('Game engine initialized successfully');
     } catch (error) {
       log.error('Failed to initialize game engine:', error);
@@ -30,34 +30,27 @@ export class GameEngine {
     }
   }
 
-  private loadMetadata(): void {
+  private async loadMetadata(): Promise<void> {
     const metadataPath = path.join(process.cwd(), 'Metadata.json');
     console.log(metadataPath);
-    if (!fs.existsSync(metadataPath)) {
-      throw new Error('Metadata.json not found');
-    }
-
-    const content = fs.readFileSync(metadataPath, 'utf-8');
+    const content = await fs.readFile(metadataPath, 'utf-8');
     this.metadata = JSON.parse(content);
   }
 
-  private loadScenario(): void {
+  private async loadScenario(): Promise<void> {
     const scenarioPath = path.join(process.cwd(), 'Scenarios');
     const startFile = GameState.getInstance().getStartFile();
     const scenarioFile = path.join(scenarioPath, startFile);
 
-    if (!fs.existsSync(scenarioFile)) {
-      throw new Error(`Start file not found: ${scenarioFile}`);
-    }
-
-    this.scenarioLines = fs.readFileSync(scenarioFile, 'utf-8').split('\n');
+    const content = await fs.readFile(scenarioFile, 'utf-8');
+    this.scenarioLines = content.split('\n');
   }
 
   public getMetadata(): Metadata | null {
     return this.metadata;
   }
 
-  public parseCommand(command: string): any {
+  public parseCommand(command: string): GameWindowInstruction | null {
     return this.parser.parse(command);
   }
 
@@ -98,7 +91,9 @@ export class GameEngine {
     }
   }
 
-  private async executeInstruction(instruction: any): Promise<void> {
+  private async executeInstruction(instruction: GameWindowInstruction | null): Promise<void> {
+    if (!instruction) return;
+    
     switch (instruction.MethodName) {
       case 'DrawCharacter':
         this.mainWindow?.webContents.send('draw-character', instruction.Parameters[0], instruction.Parameters[1], instruction.Parameters[3] ?? 1);
@@ -158,7 +153,7 @@ export class GameEngine {
     }
   }
 
-  private shouldForceInput(instruction: any): boolean {
+  private shouldForceInput(instruction: GameWindowInstruction | null): boolean {
     return instruction?.MethodName === 'WriteText';
   }
 

@@ -1,6 +1,6 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import * as path from 'path';
-import * as fs from 'fs';
+import * as fs from 'fs/promises';
 import log from 'electron-log';
 import { GameEngine } from './gameEngine';
 
@@ -10,7 +10,7 @@ let gameEngine: GameEngine | null = null;
 log.transports.file.level = 'info';
 log.transports.console.level = 'debug';
 
-function createWindow(): void {
+async function createWindow(): Promise<void> {
   log.info('Creating main window');
 
   mainWindow = new BrowserWindow({
@@ -31,15 +31,15 @@ function createWindow(): void {
   });
 
   gameEngine = new GameEngine(mainWindow);
-  gameEngine.initialize();
+  await gameEngine.initialize();
 }
 
-app.whenReady().then(() => {
-  createWindow();
+app.whenReady().then(async () => {
+  await createWindow();
 
-  app.on('activate', () => {
+  app.on('activate', async () => {
     if (BrowserWindow.getAllWindows().length === 0) {
-      createWindow();
+      await createWindow();
     }
   });
 });
@@ -96,12 +96,19 @@ ipcMain.handle('show-choices', async (_event, choices: { text: string; line: num
 });
 
 ipcMain.handle('load-scene-image', async (_event, name: string) => {
-  const { app: electronApp } = await import('electron');
   const imagePath = path.join(process.cwd(), 'Scenes', `${name}.png`);
-  return fs.existsSync(imagePath) ? fs.readFileSync(imagePath) : null;
+  try {
+    return await fs.readFile(imagePath);
+  } catch {
+    return null;
+  }
 });
 
 ipcMain.handle('load-character-image', async (_event, characterName: string, sprite: string) => {
   const imagePath = path.join(process.cwd(), 'Characters', characterName, `${sprite}.png`);
-  return fs.existsSync(imagePath) ? fs.readFileSync(imagePath) : null;
+  try {
+    return await fs.readFile(imagePath);
+  } catch {
+    return null;
+  }
 });
