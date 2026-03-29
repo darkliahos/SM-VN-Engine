@@ -152,7 +152,7 @@ describe('DirtyParser', () => {
 
   describe('parse - CHANGE SPRITE commands', () => {
     it('should parse a CHANGE SPRITE command', () => {
-      const result = parser.parse('CHANGE SPRITE ]Happy.png* *FadeIn*');
+      const result = parser.parse('CHANGE SPRITE [Fred] Happy *FadeIn*');
       
       expect(result).not.toBeNull();
       expect(result!.MethodName).toBe('DrawImage');
