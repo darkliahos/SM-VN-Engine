@@ -25,6 +25,11 @@ export interface ElectronAPI {
   onHideCharacter: (callback: (characterName: string, animation: number) => void) => void;
   onRemoveCharacter: (callback: (characterName: string, animation: number) => void) => void;
   onShowChoices: (callback: (choices: { text: string; line: number }[]) => void) => void;
+  onPlaySound: (callback: (id: string, loop: boolean, volume?: number) => void) => void;
+  onStopSound: (callback: (id: string) => void) => void;
+  onPauseSound: (callback: (id: string) => void) => void;
+  onResumeSound: (callback: (id: string) => void) => void;
+  onStopAllSounds: (callback: () => void) => void;
 }
 
 const electronAPI: ElectronAPI = {
@@ -73,6 +78,21 @@ const electronAPI: ElectronAPI = {
   },
   onShowChoices: (callback: (choices: { text: string; line: number }[]) => void) => {
     ipcRenderer.on('show-choices', (_event, choices) => callback(choices));
+  },
+  onPlaySound: (callback: (id: string, loop: boolean, volume?: number) => void) => {
+    ipcRenderer.on('play-sound', (_event, id, loop, volume) => callback(id, loop, volume));
+  },
+  onStopSound: (callback: (id: string) => void) => {
+    ipcRenderer.on('stop-sound', (_event, id) => callback(id));
+  },
+  onPauseSound: (callback: (id: string) => void) => {
+    ipcRenderer.on('pause-sound', (_event, id) => callback(id));
+  },
+  onResumeSound: (callback: (id: string) => void) => {
+    ipcRenderer.on('resume-sound', (_event, id) => callback(id));
+  },
+  onStopAllSounds: (callback: () => void) => {
+    ipcRenderer.on('stop-all-sounds', () => callback());
   },
 };
 

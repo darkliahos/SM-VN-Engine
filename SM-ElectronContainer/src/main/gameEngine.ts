@@ -117,12 +117,25 @@ export class GameEngine {
         break;
       case 'EndGame':
         this.mainWindow?.webContents.send('end-game');
+        this.mainWindow?.webContents.send('stop-all-sounds');
         break;
       case 'WipeImage':
         this.mainWindow?.webContents.send('hide-character', instruction.Parameters[0], instruction.Parameters[1]);
         break;
       case 'DrawImage':
         this.mainWindow?.webContents.send('change-sprite', instruction.Parameters[0], instruction.Parameters[1]);
+        break;
+      case 'PLAY SOUND':
+        this.mainWindow?.webContents.send('play-sound', instruction.Parameters[0], instruction.Parameters[1], instruction.Parameters[2]);
+        break;
+      case 'STOP SOUND':
+        this.mainWindow?.webContents.send('stop-sound', instruction.Parameters[0]);
+        break;
+      case 'PAUSE SOUND':
+        this.mainWindow?.webContents.send('pause-sound', instruction.Parameters[0]);
+        break;
+      case 'RESUME SOUND':
+        this.mainWindow?.webContents.send('resume-sound', instruction.Parameters[0]);
         break;
       case 'NEW CHOICE':
       case 'CHOICE SET QUESTION':

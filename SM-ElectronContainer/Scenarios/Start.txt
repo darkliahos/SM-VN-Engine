@@ -2,7 +2,7 @@
 
 CHANGE BACKGROUND TempleGarden
 
-PLAY SOUND LOOP "cicadas_evening.wav"
+PLAY SOUND LOOP "cicadas-at-dusk.mp3"
 
 Add [Yuki] Thoughtful *Fade In* (right)
 Add [Kenji] Nervous *Fade In* (left)

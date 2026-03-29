@@ -13,6 +13,8 @@ export interface IParser {
 }
 
 export class DirtyParser implements IParser {
+  private static readonly DEFAULT_SOUND_VOLUME = 0.5;
+
   constructor(private instructor: IStateManager) {}
 
   public getScenarioMarkers(lines: string[]): Map<string, number> {
@@ -64,6 +66,18 @@ export class DirtyParser implements IParser {
 
     if (command.startsWith('PLAY SOUND')) {
       return this.parsePlaySound(command);
+    }
+
+    if (command.startsWith('STOP SOUND')) {
+      return this.parseStopSound(command);
+    }
+
+    if (command.startsWith('PAUSE SOUND')) {
+      return this.parsePauseSound(command);
+    }
+
+    if (command.startsWith('RESUME SOUND')) {
+      return this.parseResumeSound(command);
     }
 
     if (command.startsWith('BEGIN CHOICES')) {
@@ -250,8 +264,40 @@ export class DirtyParser implements IParser {
     
     const file = match[1];
     const loop = containsInsensitive(command, 'loop');
+    const volumeMatch = command.match(/VOL:(\d+)/i);
+    const volume = volumeMatch ? parseInt(volumeMatch[1], 10) / 100 : DirtyParser.DEFAULT_SOUND_VOLUME;
     this.instructor.playSound(file, loop);
-    return new GameWindowInstruction('PLAY SOUND', [file, loop]);
+    return new GameWindowInstruction('PLAY SOUND', [file, loop, volume]);
+  }
+
+  private parseStopSound(command: string): GameWindowInstruction {
+    const match = command.match(RegexConstants.GetStuffInQuotes);
+    if (!match) {
+      throw new ParserException('Sound file must be quoted', command);
+    }
+    
+    const file = match[1];
+    return new GameWindowInstruction('STOP SOUND', [file]);
+  }
+
+  private parsePauseSound(command: string): GameWindowInstruction {
+    const match = command.match(RegexConstants.GetStuffInQuotes);
+    if (!match) {
+      throw new ParserException('Sound file must be quoted', command);
+    }
+    
+    const file = match[1];
+    return new GameWindowInstruction('PAUSE SOUND', [file]);
+  }
+
+  private parseResumeSound(command: string): GameWindowInstruction {
+    const match = command.match(RegexConstants.GetStuffInQuotes);
+    if (!match) {
+      throw new ParserException('Sound file must be quoted', command);
+    }
+    
+    const file = match[1];
+    return new GameWindowInstruction('RESUME SOUND', [file]);
   }
 
   private parseBeginChoices(command: string): GameWindowInstruction {

@@ -20,6 +20,8 @@ v0.0.5c - Sohail Nasir - Modified Forking Declaration to include the question ra
 
 v0.0.6 - Sohail Nasir - Corrected spec for Says
 
+v0.0.7 - Sohail Nasir - Fleshed out sound commands more
+
 ## Purpose of this document
 
 To allow for discussion of what this language should be
@@ -203,6 +205,14 @@ Sound still is somewhat not defined yet, however for the first version of the la
 Single playback ```PLAY SOUND "Some.wav"``` 
 
 Looped playback ```PLAY SOUND LOOP "Some.wav"``` 
+
+Adding Volume ```PLAY SOUND "Some.wav" VOL:100```
+
+Ending Playback ```STOP SOUND "Some.wav"```
+
+Pause playback ```PAUSE SOUND "Some.wav"``` 
+
+Resume playback ```RESUME SOUND "Some.wav"``` 
 
 ### Ending Game
 

@@ -186,18 +186,62 @@ describe('DirtyParser', () => {
       
       expect(result).not.toBeNull();
       expect(result!.MethodName).toBe('PLAY SOUND');
-      expect(result!.Parameters).toEqual(['music.mp3', false]);
+      expect(result!.Parameters).toEqual(['music.mp3', false, 0.5]);
     });
 
     it('should parse PLAY SOUND with loop flag', () => {
       const result = parser.parse('PLAY SOUND loop "music.mp3"');
       
       expect(result).not.toBeNull();
-      expect(result!.Parameters).toEqual(['music.mp3', true]);
+      expect(result!.Parameters).toEqual(['music.mp3', true, 0.5]);
+    });
+
+    it('should parse PLAY SOUND with volume', () => {
+      const result = parser.parse('PLAY SOUND "music.mp3" VOL:50');
+      
+      expect(result).not.toBeNull();
+      expect(result!.Parameters).toEqual(['music.mp3', false, 0.5]);
+    });
+
+    it('should parse PLAY SOUND with loop and volume', () => {
+      const result = parser.parse('PLAY SOUND loop "music.mp3" VOL:75');
+      
+      expect(result).not.toBeNull();
+      expect(result!.Parameters).toEqual(['music.mp3', true, 0.75]);
     });
 
     it('should throw ParserException when sound file is not quoted', () => {
       expect(() => parser.parse('PLAY SOUND music.mp3')).toThrow();
+    });
+  });
+
+  describe('parse - STOP SOUND commands', () => {
+    it('should parse a STOP SOUND command', () => {
+      const result = parser.parse('STOP SOUND "music.mp3"');
+      
+      expect(result).not.toBeNull();
+      expect(result!.MethodName).toBe('STOP SOUND');
+      expect(result!.Parameters).toEqual(['music.mp3']);
+    });
+  });
+
+  describe('parse - PAUSE SOUND commands', () => {
+    it('should parse a PAUSE SOUND command', () => {
+      const result = parser.parse('PAUSE SOUND "music.mp3"');
+      
+      expect(result).not.toBeNull();
+      expect(result!.MethodName).toBe('PAUSE SOUND');
+      expect(result!.Parameters).toEqual(['music.mp3']);
+    });
+  });
+
+  describe('parse - RESUME SOUND commands', () => {
+    it('should parse a RESUME SOUND command', () => {
+      const result = parser.parse('RESUME SOUND "music.mp3"');
+      
+      expect(result).not.toBeNull();
+      expect(result!.MethodName).toBe('RESUME SOUND');
+      expect(result!.Parameters).toEqual(['music.mp3']);
     });
   });
 

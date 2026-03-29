@@ -16,7 +16,7 @@ export interface IStateManager {
   jumpScenario(scenario: string): void;
   moveCharacter(friendlyName: string, direction: Direction, pixels: number): void;
   placeCharacter(friendlyName: string, x: number, y: number, scaleHeight?: number, scaleWidth?: number): void;
-  playSound(fileName: string, loop: boolean): void;
+  playSound(fileName: string, loop: boolean, volume?: number): void;
   removeCharacter(friendlyName: string, animation: Animation): void;
   setForkQuestion(question: string): void;
   showCharacter(friendlyName: string, animation: Animation): void;
@@ -97,7 +97,7 @@ export class StateManager implements IStateManager {
     }
   }
 
-  public playSound(fileName: string, loop: boolean): void {
+  public playSound(fileName: string, loop: boolean, volume?: number): void {
     // TODO: Implement sound
   }
 
