@@ -1,4 +1,4 @@
-import { Animation, Direction } from '../enums';
+import { Animation, Direction, ScenarioStatus } from '../enums';
 import { Character, Coordinate } from '../models';
 import { GameState } from './GameState';
 import { IAlertHandler } from './AlertHandler';
@@ -24,12 +24,10 @@ export interface IStateManager {
 }
 
 export class StateManager implements IStateManager {
-  constructor(private alertHandler: IAlertHandler) {}
+  constructor(private alertHandler: IAlertHandler) { }
 
   public addCharacter(friendlyName: string, spriteName: string, animation: Animation, screenPosition: number = 1): void {
-    if (GameState.getInstance().showCharacter(friendlyName)) {
-      GameState.getInstance().showCharacter(friendlyName);
-    } else {
+    if (!GameState.getInstance().showCharacter(friendlyName)) {
       const character = new Character();
       character.CurrentSprite = spriteName;
       character.FriendlyName = friendlyName;
@@ -66,7 +64,7 @@ export class StateManager implements IStateManager {
   }
 
   public gameOver(): void {
-    GameState.getInstance().teardownCurrentScenario(2); // ScenarioStatus.Ended = 2
+    GameState.getInstance().teardownCurrentScenario(ScenarioStatus.Ended);
     GameState.getInstance().setupScenario('GameOver');
     GameState.getInstance().setCurrentBackground('GameOver');
     GameState.getInstance().setRedraw(true);
@@ -88,7 +86,7 @@ export class StateManager implements IStateManager {
   }
 
   public moveCharacter(friendlyName: string, direction: Direction, pixels: number): void {
-    // TODO: Implement movement
+    this.alertHandler.showWarning(`Character movement not fully implemented: ${friendlyName}`);
   }
 
   public placeCharacter(friendlyName: string, x: number, y: number, scaleHeight: number = 0, scaleWidth: number = 0): void {
@@ -98,7 +96,7 @@ export class StateManager implements IStateManager {
   }
 
   public playSound(fileName: string, loop: boolean, volume?: number): void {
-    // TODO: Implement sound
+    this.alertHandler.showInfo(`Sound play requested: ${fileName} (loop: ${loop}, vol: ${volume})`);
   }
 
   public removeCharacter(friendlyName: string, animation: Animation): void {
@@ -119,6 +117,6 @@ export class StateManager implements IStateManager {
   }
 
   public showChoices(): void {
-    // TODO: Implement choice display
+    this.alertHandler.showWarning('Choice display not fully implemented');
   }
 }

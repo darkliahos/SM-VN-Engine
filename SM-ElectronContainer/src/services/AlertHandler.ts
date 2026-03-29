@@ -1,3 +1,5 @@
+import { GameState } from './GameState';
+
 export interface IAlertHandler {
   showUserError(message: string): void;
   showError(error: Error): void;
@@ -26,6 +28,10 @@ export class ConsoleAlertHandler implements IAlertHandler {
   }
 
   private isDebug(): boolean {
-    return false;
+    try {
+      return GameState.getInstance().isDebug();
+    } catch {
+      return false;
+    }
   }
 }

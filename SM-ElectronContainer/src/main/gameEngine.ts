@@ -21,7 +21,10 @@ export class GameEngine {
   public async initialize(): Promise<void> {
     try {
       await this.loadMetadata();
-      GameState.getInstance().setupGameState(this.metadata!, false);
+      if (!this.metadata) {
+        throw new Error('Failed to load metadata');
+      }
+      GameState.getInstance().setupGameState(this.metadata, false);
       await this.loadScenario();
       log.info('Game engine initialized successfully');
     } catch (error) {
@@ -32,7 +35,6 @@ export class GameEngine {
 
   private async loadMetadata(): Promise<void> {
     const metadataPath = path.join(process.cwd(), 'Metadata.json');
-    console.log(metadataPath);
     const content = await fs.readFile(metadataPath, 'utf-8');
     this.metadata = JSON.parse(content);
   }

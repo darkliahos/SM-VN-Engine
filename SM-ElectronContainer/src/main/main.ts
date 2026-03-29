@@ -4,6 +4,19 @@ import * as fs from 'fs/promises';
 import log from 'electron-log';
 import { GameEngine } from './gameEngine';
 
+const ALLOWED_SCENE_EXTENSIONS = ['.png', '.jpg', '.jpeg'];
+const ALLOWED_CHARACTER_EXTENSIONS = ['.png'];
+
+function isPathSafe(basePath: string, requestedPath: string): boolean {
+  const resolved = path.resolve(basePath, requestedPath);
+  const baseResolved = path.resolve(basePath);
+  return resolved.startsWith(baseResolved) && !resolved.includes('..');
+}
+
+function sanitizeFileName(fileName: string): string {
+  return fileName.replace(/[^a-zA-Z0-9_\-.]/g, '');
+}
+
 let mainWindow: BrowserWindow | null = null;
 let gameEngine: GameEngine | null = null;
 
@@ -96,19 +109,48 @@ ipcMain.handle('show-choices', async (_event, choices: { text: string; line: num
 });
 
 ipcMain.handle('load-scene-image', async (_event, name: string) => {
-  const imagePath = path.join(process.cwd(), 'Scenes', `${name}.png`);
-  try {
-    return await fs.readFile(imagePath);
-  } catch {
+  const safeName = sanitizeFileName(name);
+  const baseDir = path.join(process.cwd(), 'Scenes');
+  
+  if (!isPathSafe(baseDir, safeName)) {
+    log.warn(`Path traversal attempt detected: ${name}`);
     return null;
   }
+  
+  for (const ext of ALLOWED_SCENE_EXTENSIONS) {
+    const imagePath = path.join(baseDir, `${safeName}${ext}`);
+    try {
+      const stat = await fs.stat(imagePath);
+      if (stat.isFile()) {
+        return await fs.readFile(imagePath);
+      }
+    } catch {
+      continue;
+    }
+  }
+  return null;
 });
 
 ipcMain.handle('load-character-image', async (_event, characterName: string, sprite: string) => {
-  const imagePath = path.join(process.cwd(), 'Characters', characterName, `${sprite}.png`);
-  try {
-    return await fs.readFile(imagePath);
-  } catch {
+  const safeCharName = sanitizeFileName(characterName);
+  const safeSprite = sanitizeFileName(sprite);
+  const baseDir = path.join(process.cwd(), 'Characters', safeCharName);
+  
+  if (!isPathSafe(baseDir, safeSprite)) {
+    log.warn(`Path traversal attempt detected: ${characterName}/${sprite}`);
     return null;
   }
+  
+  for (const ext of ALLOWED_CHARACTER_EXTENSIONS) {
+    const imagePath = path.join(baseDir, `${safeSprite}${ext}`);
+    try {
+      const stat = await fs.stat(imagePath);
+      if (stat.isFile()) {
+        return await fs.readFile(imagePath);
+      }
+    } catch {
+      continue;
+    }
+  }
+  return null;
 });

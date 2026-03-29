@@ -2,6 +2,7 @@ import * as PIXI from 'pixi.js';
 import {Animation} from "../enums/Animation"
 import {Position} from "../enums/Position"
 import {ElectronAPI} from "../main/preload"
+import { GameConfig } from "./GameConfig"
 
 
 declare global {
@@ -60,45 +61,46 @@ export class PixiRenderer {
   }
 
   private createTextBox(): void {
+    const { textBox: tb, fonts, colors, dialogue: dl } = GameConfig.UI;
     this.textBox = new PIXI.Container();
 
     const bg = new PIXI.Graphics();
-    bg.roundRect(0, 0, 700, 150, 10);
-    bg.fill({ color: 0x000000, alpha: 0.85 });
-    bg.stroke({ width: 2, color: 0xffffff });
+    bg.roundRect(0, 0, tb.width, tb.height, tb.borderRadius);
+    bg.fill({ color: tb.backgroundColor, alpha: tb.backgroundAlpha });
+    bg.stroke({ width: tb.borderWidth, color: tb.borderColor });
 
     this.characterNameText = new PIXI.Text({
       text: '',
       style: {
-        fontFamily: 'Arial, sans-serif',
-        fontSize: 24,
+        fontFamily: fonts.family,
+        fontSize: fonts.characterNameSize,
         fontWeight: 'bold',
-        fill: 0xffd700,
+        fill: colors.characterName,
       }
     });
-    this.characterNameText.x = 20;
-    this.characterNameText.y = 15;
+    this.characterNameText.x = dl.nameOffsetX;
+    this.characterNameText.y = dl.nameOffsetY;
 
     this.dialogueText = new PIXI.Text({
       text: '',
       style: {
-        fontFamily: 'Arial, sans-serif',
-        fontSize: 20,
-        fill: 0xffffff,
+        fontFamily: fonts.family,
+        fontSize: fonts.dialogueSize,
+        fill: colors.dialogue,
         wordWrap: true,
-        wordWrapWidth: 660,
-        lineHeight: 30,
+        wordWrapWidth: dl.wordWrapWidth,
+        lineHeight: dl.lineHeight,
       }
     });
-    this.dialogueText.x = 20;
-    this.dialogueText.y = 50;
+    this.dialogueText.x = dl.textOffsetX;
+    this.dialogueText.y = dl.textOffsetY;
 
     this.textBox.addChild(bg);
     this.textBox.addChild(this.characterNameText);
     this.textBox.addChild(this.dialogueText);
 
-    this.textBox.x = (window.innerWidth - 700) / 2;
-    this.textBox.y = window.innerHeight - 180;
+    this.textBox.x = (window.innerWidth - tb.width) / 2;
+    this.textBox.y = window.innerHeight - tb.xOffset;
     this.textBox.visible = false;
 
     this.textBox.eventMode = 'static';
@@ -175,8 +177,8 @@ export class PixiRenderer {
       this.app.renderer.resize(window.innerWidth, window.innerHeight);
 
       if (this.textBox) {
-        this.textBox.x = (window.innerWidth - 700) / 2;
-        this.textBox.y = window.innerHeight - 180;
+        this.textBox.x = (window.innerWidth - GameConfig.UI.textBox.width) / 2;
+        this.textBox.y = window.innerHeight - GameConfig.UI.textBox.xOffset;
       }
 
       if (this.choicesContainer) {
@@ -190,22 +192,30 @@ export class PixiRenderer {
 
   private repositionCharacters(): void {
     this.characterSprites.forEach((sprite) => {
-      const targetHeight = window.innerHeight * 0.8;
-      const scale = targetHeight / sprite.texture.height;
-      sprite.scale.set(scale);
-
-      const spriteWidth = sprite.texture.width * scale;
       const screenPosition = (sprite as any).screenPosition ?? 1;
-
-      if (screenPosition === Position.Left) {
-        sprite.x = window.innerWidth * 0.1;
-      } else if (screenPosition === Position.Right) {
-        sprite.x = window.innerWidth * 0.9 - spriteWidth;
-      } else {
-        sprite.x = (window.innerWidth - spriteWidth) / 2;
-      }
-      sprite.y = window.innerHeight;
+      this.positionSprite(sprite, screenPosition, false);
     });
+  }
+
+  private positionSprite(sprite: PIXI.Sprite, screenPosition: number, setY: boolean = true): void {
+    const { targetHeightRatio, leftPositionRatio, rightPositionRatio } = GameConfig.Character;
+    const targetHeight = window.innerHeight * targetHeightRatio;
+    const scale = targetHeight / sprite.texture.height;
+    sprite.scale.set(scale);
+
+    const spriteWidth = sprite.texture.width * scale;
+
+    if (screenPosition === Position.Left) {
+      sprite.x = window.innerWidth * leftPositionRatio;
+    } else if (screenPosition === Position.Right) {
+      sprite.x = window.innerWidth * rightPositionRatio - spriteWidth;
+    } else {
+      sprite.x = (window.innerWidth - spriteWidth) / 2;
+    }
+
+    if (setY) {
+      sprite.y = window.innerHeight;
+    }
   }
 
   public loadBackground(name: string, animation: Animation = Animation.FadeIn): void {
@@ -299,24 +309,11 @@ export class PixiRenderer {
   private createCharacterSpriteFromTexture(name: string, textureKey: string, animation: Animation, screenPosition: number): void {
     const texture = this.characterTextures.get(textureKey)!;
     const sprite = new PIXI.Sprite(texture);
-    sprite.anchor.set(0, 1);
+    sprite.anchor.set(0, GameConfig.Character.anchorY);
     (sprite as any).screenPosition = screenPosition;
     (sprite as any).textureKey = textureKey;
 
-    const targetHeight = window.innerHeight * 0.8;
-    const scale = targetHeight / sprite.texture.height;
-    sprite.scale.set(scale);
-
-    const spriteWidth = sprite.texture.width * scale;
-
-    if (screenPosition === Position.Left) {
-      sprite.x = window.innerWidth * 0.1;
-    } else if (screenPosition === Position.Right) {
-      sprite.x = window.innerWidth * 0.9 - spriteWidth;
-    } else {
-      sprite.x = (window.innerWidth - spriteWidth) / 2;
-    }
-    sprite.y = window.innerHeight;
+    this.positionSprite(sprite, screenPosition, true);
 
     this.characterSprites.set(name, sprite);
     this.showCharacter(name, animation);
@@ -415,20 +412,8 @@ export class PixiRenderer {
   }
 
   private updateSpriteScaleAndPosition(sprite: PIXI.Sprite): void {
-    const targetHeight = window.innerHeight * 0.8;
-    const scale = targetHeight / sprite.texture.height;
-    sprite.scale.set(scale);
-
-    const spriteWidth = sprite.texture.width * scale;
     const screenPosition = (sprite as any).screenPosition ?? 1;
-
-    if (screenPosition === Position.Left) {
-      sprite.x = window.innerWidth * 0.1;
-    } else if (screenPosition === Position.Right) {
-      sprite.x = window.innerWidth * 0.9 - spriteWidth;
-    } else {
-      sprite.x = (window.innerWidth - spriteWidth) / 2;
-    }
+    this.positionSprite(sprite, screenPosition, false);
   }
 
   private fitSpriteToScreen(sprite: PIXI.Sprite): void {
@@ -440,12 +425,12 @@ export class PixiRenderer {
     sprite.anchor.set(0.5);
   }
 
-  private fadeIn(sprite: PIXI.Sprite, duration: number = 500): void {
+  private fadeIn(sprite: PIXI.Sprite, duration?: number): void {
     if (!this.app) return;
     
     const ticker = this.app.ticker;
     const startTime = ticker.lastTime;
-    const durationMs = duration;
+    const durationMs = duration ?? GameConfig.Animation.defaultDuration;
     
     const fadeTicker = (t: PIXI.Ticker) => {
       const elapsed = t.lastTime - startTime;
@@ -457,7 +442,7 @@ export class PixiRenderer {
     ticker.add(fadeTicker);
   }
 
-  private fadeOut(sprite: PIXI.Sprite, onComplete: () => void, duration: number = 500): void {
+  private fadeOut(sprite: PIXI.Sprite, onComplete: () => void, duration?: number): void {
     if (!this.app) {
       onComplete();
       return;
@@ -465,7 +450,7 @@ export class PixiRenderer {
     
     const ticker = this.app.ticker;
     const startTime = ticker.lastTime;
-    const durationMs = duration;
+    const durationMs = duration ?? GameConfig.Animation.defaultDuration;
     
     const fadeTicker = (t: PIXI.Ticker) => {
       const elapsed = t.lastTime - startTime;
@@ -478,14 +463,14 @@ export class PixiRenderer {
     ticker.add(fadeTicker);
   }
 
-  private slideIn(sprite: PIXI.Sprite, direction: string, duration: number = 500): void {
+  private slideIn(sprite: PIXI.Sprite, direction: string, duration?: number): void {
     if (!this.app) return;
     
     const ticker = this.app.ticker;
     const startTime = ticker.lastTime;
     const startX = sprite.x;
     const targetX = window.innerWidth / 2;
-    const durationMs = duration;
+    const durationMs = duration ?? GameConfig.Animation.defaultDuration;
 
     const slideTicker = (t: PIXI.Ticker) => {
       const elapsed = t.lastTime - startTime;
@@ -527,20 +512,21 @@ export class PixiRenderer {
 
   public showChoices(choices: { text: string; line: number }[]): void {
     if (!this.choicesContainer) return;
+    const { fonts, colors, choiceButton: cb } = GameConfig.UI;
 
     this.choicesContainer.removeChildren();
 
     const title = new PIXI.Text({
       text: 'Choose:',
-      style: { fontSize: 24, fill: 0xffffff, fontWeight: 'bold' }
+      style: { fontSize: fonts.characterNameSize, fill: colors.dialogue, fontWeight: 'bold' }
     });
     title.x = -75;
-    title.y = -((choices.length * 50) / 2) - 30;
+    title.y = -((choices.length * cb.spacing) / 2) - 30;
     this.choicesContainer.addChild(title);
 
     choices.forEach((choice, index) => {
       const button = this.createChoiceButton(choice.text, index);
-      button.y = index * 50;
+      button.y = index * cb.spacing;
       this.choicesContainer!.addChild(button);
     });
 
@@ -550,15 +536,16 @@ export class PixiRenderer {
   }
 
   private createChoiceButton(text: string, index: number): PIXI.Container {
+    const { fonts, colors, choiceButton: cb } = GameConfig.UI;
     const container = new PIXI.Container();
 
     const bg = new PIXI.Graphics();
-    bg.roundRect(0, 0, 200, 40, 5);
-    bg.fill({ color: 0x333333, alpha: 0.9 });
-    bg.stroke({ width: 2, color: 0xffffff });
+    bg.roundRect(0, 0, cb.width, cb.height, cb.borderRadius);
+    bg.fill({ color: colors.choiceBg, alpha: cb.alpha });
+    bg.stroke({ width: GameConfig.UI.textBox.borderWidth, color: GameConfig.UI.textBox.borderColor });
 
-    const label = new PIXI.Text({ text, style: { fontSize: 18, fill: 0xffffff } });
-    label.x = 100;
+    const label = new PIXI.Text({ text, style: { fontSize: fonts.choiceButtonSize, fill: colors.dialogue } });
+    label.x = cb.width / 2;
     label.y = 10;
     label.anchor.set(0.5, 0);
 
@@ -570,38 +557,39 @@ export class PixiRenderer {
 
     container.on('pointerover', () => {
       bg.clear();
-      bg.roundRect(0, 0, 200, 40, 5);
-      bg.fill({ color: 0xffd700, alpha: 0.9 });
-      bg.stroke({ width: 2, color: 0xffd700 });
-      label.style.fill = 0x000000;
+      bg.roundRect(0, 0, cb.width, cb.height, cb.borderRadius);
+      bg.fill({ color: colors.choiceBgHover, alpha: cb.alpha });
+      bg.stroke({ width: GameConfig.UI.textBox.borderWidth, color: colors.buttonHoverBorder });
+      label.style.fill = colors.choiceTextHover;
     });
 
     container.on('pointerout', () => {
       bg.clear();
-      bg.roundRect(0, 0, 200, 40, 5);
-      bg.fill({ color: 0x333333, alpha: 0.9 });
-      bg.stroke({ width: 2, color: 0xffffff });
-      label.style.fill = 0xffffff;
+      bg.roundRect(0, 0, cb.width, cb.height, cb.borderRadius);
+      bg.fill({ color: colors.choiceBg, alpha: cb.alpha });
+      bg.stroke({ width: GameConfig.UI.textBox.borderWidth, color: GameConfig.UI.textBox.borderColor });
+      label.style.fill = colors.dialogue;
     });
 
     return container;
   }
 
   private showError(message: string): void {
+    const { colors, fonts } = GameConfig.UI;
     const container = new PIXI.Container();
     const overlay = new PIXI.Graphics();
     overlay.rect(0, 0, window.innerWidth, window.innerHeight);
-    overlay.fill({ color: 0xff0000, alpha: 0.3 });
+    overlay.fill({ color: colors.overlay, alpha: 0.3 });
 
     const errorBox = new PIXI.Graphics();
-    errorBox.roundRect(0, 0, 400, 150, 10);
-    errorBox.fill(0xffffff);
+    errorBox.roundRect(0, 0, 400, 150, GameConfig.UI.textBox.borderRadius);
+    errorBox.fill(colors.errorBg);
     errorBox.x = window.innerWidth / 2 - 200;
     errorBox.y = window.innerHeight / 2 - 75;
 
     const errorText = new PIXI.Text({
       text: message,
-      style: { fontSize: 16, fill: 0xcc0000, wordWrap: true, wordWrapWidth: 360 }
+      style: { fontSize: fonts.dialogueSize - 4, fill: colors.errorText, wordWrap: true, wordWrapWidth: 360 }
     });
     errorText.x = window.innerWidth / 2 - 180;
     errorText.y = window.innerHeight / 2 - 50;
@@ -614,6 +602,7 @@ export class PixiRenderer {
   }
 
   public showTitleScreen(title: string, onStart: () => void): void {
+    const { fonts, colors, textBox: tb } = GameConfig.UI;
     this.gameTitle = title;
     this.onStartCallback = onStart;
     this.cleanupScene();
@@ -628,10 +617,10 @@ export class PixiRenderer {
     const titleText = new PIXI.Text({
       text: title,
       style: {
-        fontSize: 72,
-        fill: 0xffd700,
+        fontSize: fonts.titleSize,
+        fill: GameConfig.Title.color,
         fontWeight: 'bold',
-        fontFamily: 'Georgia, serif'
+        fontFamily: GameConfig.Title.fontFamily
       }
     });
     titleText.anchor.set(0.5);
@@ -639,45 +628,47 @@ export class PixiRenderer {
     titleText.y = window.innerHeight / 2 - 60;
     this.backgroundContainer!.addChild(titleText);
 
+    const buttonWidth = 200;
+    const buttonHeight = 60;
     const buttonContainer = new PIXI.Container();
     const buttonBg = new PIXI.Graphics();
-    buttonBg.roundRect(0, 0, 200, 60, 10);
-    buttonBg.fill({ color: 0xffd700 });
-    buttonBg.stroke({ width: 2, color: 0xffffff });
+    buttonBg.roundRect(0, 0, buttonWidth, buttonHeight, tb.borderRadius);
+    buttonBg.fill({ color: colors.buttonBg });
+    buttonBg.stroke({ width: tb.borderWidth, color: colors.dialogue });
 
     const buttonText = new PIXI.Text({
       text: 'Start',
       style: {
-        fontSize: 28,
-        fill: 0x000000,
+        fontSize: fonts.buttonTextSize,
+        fill: colors.buttonText,
         fontWeight: 'bold'
       }
     });
     buttonText.anchor.set(0.5);
-    buttonText.x = 100;
+    buttonText.x = buttonWidth / 2;
     buttonText.y = 30;
 
     buttonContainer.addChild(buttonBg);
     buttonContainer.addChild(buttonText);
-    buttonContainer.x = window.innerWidth / 2 - 100;
+    buttonContainer.x = window.innerWidth / 2 - buttonWidth / 2;
     buttonContainer.y = window.innerHeight / 2 + 40;
     buttonContainer.eventMode = 'static';
     buttonContainer.cursor = 'pointer';
 
     buttonContainer.on('pointerover', () => {
       buttonBg.clear();
-      buttonBg.roundRect(0, 0, 200, 60, 10);
-      buttonBg.fill({ color: 0xffffff });
-      buttonBg.stroke({ width: 2, color: 0xffd700 });
-      buttonText.style.fill = 0x000000;
+      buttonBg.roundRect(0, 0, buttonWidth, buttonHeight, tb.borderRadius);
+      buttonBg.fill({ color: colors.buttonHoverBg });
+      buttonBg.stroke({ width: tb.borderWidth, color: colors.buttonHoverBorder });
+      buttonText.style.fill = colors.buttonText;
     });
 
     buttonContainer.on('pointerout', () => {
       buttonBg.clear();
-      buttonBg.roundRect(0, 0, 200, 60, 10);
-      buttonBg.fill({ color: 0xffd700 });
-      buttonBg.stroke({ width: 2, color: 0xffffff });
-      buttonText.style.fill = 0x000000;
+      buttonBg.roundRect(0, 0, buttonWidth, buttonHeight, tb.borderRadius);
+      buttonBg.fill({ color: colors.buttonBg });
+      buttonBg.stroke({ width: tb.borderWidth, color: colors.dialogue });
+      buttonText.style.fill = colors.buttonText;
     });
 
     buttonContainer.on('pointerdown', () => {
@@ -689,6 +680,7 @@ export class PixiRenderer {
   }
 
   private showEndGame(): void {
+    const { fonts, colors, textBox: tb } = GameConfig.UI;
     const savedTitle = this.gameTitle;
     const savedCallback = this.onStartCallback;
 
@@ -701,7 +693,7 @@ export class PixiRenderer {
 
     const endText = new PIXI.Text({
       text: 'The End',
-      style: { fontSize: 64, fill: 0xffffff, fontWeight: 'bold' }
+      style: { fontSize: fonts.titleSize - 8, fill: colors.dialogue, fontWeight: 'bold' }
     });
     endText.anchor.set(0.5);
     endText.x = window.innerWidth / 2;
@@ -710,17 +702,19 @@ export class PixiRenderer {
     this.backgroundContainer!.addChild(bg);
     this.backgroundContainer!.addChild(endText);
 
+    const buttonWidth = 300;
+    const buttonHeight = 60;
     const buttonContainer = new PIXI.Container();
     const buttonBg = new PIXI.Graphics();
-    buttonBg.roundRect(-30, 0, 280, 60, 10);
-    buttonBg.fill({ color: 0xffd700 });
-    buttonBg.stroke({ width: 2, color: 0xffffff });
+    buttonBg.roundRect(-50, 0, buttonWidth, buttonHeight, tb.borderRadius);
+    buttonBg.fill({ color: colors.buttonBg });
+    buttonBg.stroke({ width: tb.borderWidth, color: colors.dialogue });
 
     const buttonText = new PIXI.Text({
       text: 'Back to title screen',
       style: {
-        fontSize: 28,
-        fill: 0x000000,
+        fontSize: fonts.buttonTextSize,
+        fill: colors.buttonText,
         fontWeight: 'bold'
       }
     });
@@ -737,16 +731,16 @@ export class PixiRenderer {
 
     buttonContainer.on('pointerover', () => {
       buttonBg.clear();
-      buttonBg.roundRect(30, 0, 280, 60, 10);
-      buttonBg.fill({ color: 0xffffff });
-      buttonBg.stroke({ width: 2, color: 0xffd700 });
+      buttonBg.roundRect(30, 0, buttonWidth, buttonHeight, tb.borderRadius);
+      buttonBg.fill({ color: colors.buttonHoverBg });
+      buttonBg.stroke({ width: tb.borderWidth, color: colors.buttonHoverBorder });
     });
 
     buttonContainer.on('pointerout', () => {
       buttonBg.clear();
-      buttonBg.roundRect(0, 0, 200, 60, 10);
-      buttonBg.fill({ color: 0xffd700 });
-      buttonBg.stroke({ width: 2, color: 0xffffff });
+      buttonBg.roundRect(0, 0, buttonWidth, buttonHeight, tb.borderRadius);
+      buttonBg.fill({ color: colors.buttonBg });
+      buttonBg.stroke({ width: tb.borderWidth, color: colors.dialogue });
     });
 
     buttonContainer.on('pointerdown', () => {
