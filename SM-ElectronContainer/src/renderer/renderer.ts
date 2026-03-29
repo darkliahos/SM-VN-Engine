@@ -24,6 +24,8 @@ export class PixiRenderer {
   private dialogueText: PIXI.Text | null = null;
   private choicesContainer: PIXI.Container | null = null;
   private isReady: boolean = false;
+  private gameTitle: string = 'Visual Novel';
+  private onStartCallback: (() => void) | null = null;
 
   public async initialize(): Promise<void> {
     this.app = new PIXI.Application();
@@ -576,9 +578,90 @@ export class PixiRenderer {
     this.uiContainer!.addChild(container);
   }
 
-  private showEndGame(): void {
+  public showTitleScreen(title: string, onStart: () => void): void {
+    this.gameTitle = title;
+    this.onStartCallback = onStart;
     this.backgroundContainer!.removeChildren();
     this.characterContainer!.removeChildren();
+    this.textBox!.visible = false;
+    this.choicesContainer!.visible = false;
+
+    const bg = new PIXI.Graphics();
+    bg.rect(0, 0, window.innerWidth, window.innerHeight);
+    bg.fill(0x000000);
+    this.backgroundContainer!.addChild(bg);
+
+    const titleText = new PIXI.Text({
+      text: title,
+      style: {
+        fontSize: 72,
+        fill: 0xffd700,
+        fontWeight: 'bold',
+        fontFamily: 'Georgia, serif'
+      }
+    });
+    titleText.anchor.set(0.5);
+    titleText.x = window.innerWidth / 2;
+    titleText.y = window.innerHeight / 2 - 60;
+    this.backgroundContainer!.addChild(titleText);
+
+    const buttonContainer = new PIXI.Container();
+    const buttonBg = new PIXI.Graphics();
+    buttonBg.roundRect(0, 0, 200, 60, 10);
+    buttonBg.fill({ color: 0xffd700 });
+    buttonBg.stroke({ width: 2, color: 0xffffff });
+
+    const buttonText = new PIXI.Text({
+      text: 'Start',
+      style: {
+        fontSize: 28,
+        fill: 0x000000,
+        fontWeight: 'bold'
+      }
+    });
+    buttonText.anchor.set(0.5);
+    buttonText.x = 100;
+    buttonText.y = 30;
+
+    buttonContainer.addChild(buttonBg);
+    buttonContainer.addChild(buttonText);
+    buttonContainer.x = window.innerWidth / 2 - 100;
+    buttonContainer.y = window.innerHeight / 2 + 40;
+    buttonContainer.eventMode = 'static';
+    buttonContainer.cursor = 'pointer';
+
+    buttonContainer.on('pointerover', () => {
+      buttonBg.clear();
+      buttonBg.roundRect(0, 0, 200, 60, 10);
+      buttonBg.fill({ color: 0xffffff });
+      buttonBg.stroke({ width: 2, color: 0xffd700 });
+      buttonText.style.fill = 0x000000;
+    });
+
+    buttonContainer.on('pointerout', () => {
+      buttonBg.clear();
+      buttonBg.roundRect(0, 0, 200, 60, 10);
+      buttonBg.fill({ color: 0xffd700 });
+      buttonBg.stroke({ width: 2, color: 0xffffff });
+      buttonText.style.fill = 0x000000;
+    });
+
+    buttonContainer.on('pointerdown', () => {
+      this.backgroundContainer!.removeChildren();
+      onStart();
+    });
+
+    this.backgroundContainer!.addChild(buttonContainer);
+  }
+
+  private showEndGame(): void {
+    const savedTitle = this.gameTitle;
+    const savedCallback = this.onStartCallback;
+
+    this.backgroundContainer!.removeChildren();
+    this.characterContainer!.removeChildren();
+    this.textBox!.visible = false;
+    this.choicesContainer!.removeChildren();
 
     const bg = new PIXI.Graphics();
     bg.rect(0, 0, window.innerWidth, window.innerHeight);
@@ -590,10 +673,55 @@ export class PixiRenderer {
     });
     endText.anchor.set(0.5);
     endText.x = window.innerWidth / 2;
-    endText.y = window.innerHeight / 2;
+    endText.y = window.innerHeight / 2 - 60;
 
     this.backgroundContainer!.addChild(bg);
     this.backgroundContainer!.addChild(endText);
+
+    const buttonContainer = new PIXI.Container();
+    const buttonBg = new PIXI.Graphics();
+    buttonBg.roundRect(0, 0, 200, 60, 10);
+    buttonBg.fill({ color: 0xffd700 });
+    buttonBg.stroke({ width: 2, color: 0xffffff });
+
+    const buttonText = new PIXI.Text({
+      text: 'Back to title screen',
+      style: {
+        fontSize: 28,
+        fill: 0x000000,
+        fontWeight: 'bold'
+      }
+    });
+    buttonText.anchor.set(0.5);
+    buttonText.x = 100;
+    buttonText.y = 30;
+
+    buttonContainer.addChild(buttonBg);
+    buttonContainer.addChild(buttonText);
+    buttonContainer.x = window.innerWidth / 2 - 100;
+    buttonContainer.y = window.innerHeight / 2 + 40;
+    buttonContainer.eventMode = 'static';
+    buttonContainer.cursor = 'pointer';
+
+    buttonContainer.on('pointerover', () => {
+      buttonBg.clear();
+      buttonBg.roundRect(0, 0, 200, 60, 10);
+      buttonBg.fill({ color: 0xffffff });
+      buttonBg.stroke({ width: 2, color: 0xffd700 });
+    });
+
+    buttonContainer.on('pointerout', () => {
+      buttonBg.clear();
+      buttonBg.roundRect(0, 0, 200, 60, 10);
+      buttonBg.fill({ color: 0xffd700 });
+      buttonBg.stroke({ width: 2, color: 0xffffff });
+    });
+
+    buttonContainer.on('pointerdown', () => {
+      this.showTitleScreen(savedTitle, savedCallback!);
+    });
+
+    this.backgroundContainer!.addChild(buttonContainer);
   }
 
   public isInitialized(): boolean {

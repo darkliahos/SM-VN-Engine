@@ -6,7 +6,10 @@ const renderer = new PixiRenderer();
 async function main() {
   await renderer.initialize();
   setupSoundListeners();
-  window.electronAPI.runScenario();
+  const metadata = await window.electronAPI.getMetadata();
+  renderer.showTitleScreen(metadata.Title || 'Visual Novel', () => {
+    window.electronAPI.runScenario();
+  });
 }
 
 function setupSoundListeners(): void {
