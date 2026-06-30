@@ -1,0 +1,22 @@
+{
+  "name": "sm-metadata-generator",
+  "version": "1.0.0",
+  "description": "Metadata Generator CLI tool - TypeScript Node Port",
+  "main": "dist/index.js",
+  "bin": {
+    "sm-metadata-generator": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "ts-node src/index.ts",
+    "run-cli": "node dist/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.3.0"
+  }
+}
