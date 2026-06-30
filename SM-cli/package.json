@@ -1,7 +1,7 @@
 {
-  "name": "sm-metadata-generator",
+  "name": "sm-cli",
   "version": "1.0.0",
-  "description": "Metadata Generator CLI tool - TypeScript Node Port",
+  "description": "SM Engine CLI tool",
   "main": "dist/index.js",
   "bin": {
     "sm-metadata-generator": "./dist/index.js"

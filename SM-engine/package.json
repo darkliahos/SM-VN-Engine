@@ -1,5 +1,5 @@
 {
-  "name": "sm-electron-container",
+  "name": "sm-engine",
   "version": "1.0.0",
   "description": "Visual Novel Engine - Electron Port",
   "main": "dist/main/main.js",
