@@ -706,7 +706,7 @@ export class PixiRenderer {
     const buttonHeight = 60;
     const buttonContainer = new PIXI.Container();
     const buttonBg = new PIXI.Graphics();
-    buttonBg.roundRect(-50, 0, buttonWidth, buttonHeight, tb.borderRadius);
+    buttonBg.roundRect(0, 0, buttonWidth, buttonHeight, tb.borderRadius);
     buttonBg.fill({ color: colors.buttonBg });
     buttonBg.stroke({ width: tb.borderWidth, color: colors.dialogue });
 
@@ -719,19 +719,19 @@ export class PixiRenderer {
       }
     });
     buttonText.anchor.set(0.5);
-    buttonText.x = 50;
-    buttonText.y = 30;
+    buttonText.x = buttonWidth / 2;
+    buttonText.y = buttonHeight / 2;
 
     buttonContainer.addChild(buttonBg);
     buttonContainer.addChild(buttonText);
-    buttonContainer.x = window.innerWidth / 2 - 20;
+    buttonContainer.x = window.innerWidth / 2 - buttonWidth / 2;
     buttonContainer.y = window.innerHeight / 2 + 40;
     buttonContainer.eventMode = 'static';
     buttonContainer.cursor = 'pointer';
 
     buttonContainer.on('pointerover', () => {
       buttonBg.clear();
-      buttonBg.roundRect(30, 0, buttonWidth, buttonHeight, tb.borderRadius);
+      buttonBg.roundRect(0, 0, buttonWidth, buttonHeight, tb.borderRadius);
       buttonBg.fill({ color: colors.buttonHoverBg });
       buttonBg.stroke({ width: tb.borderWidth, color: colors.buttonHoverBorder });
     });
