@@ -4,12 +4,11 @@
   "description": "Visual Novel Engine - Electron Port",
   "main": "dist/main/main.js",
   "scripts": {
-    "copy-static": "cp src/renderer/*.html dist/renderer/",
-    "copy-content": "cp -r Scenarios Scenes Characters Assets Audio dist/ 2>/dev/null || true",
+    "copy-assets": "node scripts/copy-assets.js",
     "build-renderer": "esbuild src/renderer/main.ts --bundle --outfile=dist/renderer/renderer.js --format=iife --platform=browser --define:exports=undefined",
-    "build": "tsc && npm run build-renderer && npm run copy-static && npm run copy-content",
-    "start": "npm run build && electron .",
-    "dev": "tsc && npm run build-renderer && npm run copy-static && npm run copy-content && electron .",
+    "build": "node scripts/build.js",
+    "start": "node scripts/build.js --run",
+    "dev": "node scripts/build.js --run",
     "test": "vitest",
     "test:run": "vitest run",
     "pack": "electron-builder --dir"
