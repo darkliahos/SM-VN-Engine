@@ -12,11 +12,7 @@ v0.0.3 - Sohail Nasir - Refined syntax following discussions
 
 v0.0.4 - Sohail Nasir - Forking a bit more defined and some typos are fixed.
 
-v0.0.5 - Sohail Nasir - Added positioning
-
-v0.0.5b - Sohail Nasir - Clarified Sound instruction set
-
-v0.0.5c - Sohail Nasir - Modified Forking Declaration to include the question rather trying to infer it from the previous line
+v0.0.5 - Sohail Nasir - Added positioning, Clarified Sound instruction set & Modified Forking Declaration to include the question rather trying to infer it from the previous line
 
 v0.0.6 - Sohail Nasir - Corrected spec for Says
 
