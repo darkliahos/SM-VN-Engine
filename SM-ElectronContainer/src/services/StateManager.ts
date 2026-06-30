@@ -21,6 +21,7 @@ export interface IStateManager {
   setForkQuestion(question: string): void;
   showCharacter(friendlyName: string, animation: Animation): void;
   showChoices(): void;
+  changeBackground(sprite: string):void
 }
 
 export class StateManager implements IStateManager {
@@ -118,5 +119,9 @@ export class StateManager implements IStateManager {
 
   public showChoices(): void {
     this.alertHandler.showWarning('Choice display not fully implemented');
+  }
+
+  public changeBackground(sprite: string):void {
+    GameState.getInstance().setCurrentBackground(sprite);
   }
 }
