@@ -4,7 +4,6 @@ import { RegexConstants } from './RegexConstants';
 import { containsInsensitive, generateGuid } from './StringUtils';
 import { ParserException } from '../exceptions';
 import { IStateManager } from './StateManager';
-import { GameState } from './GameState';
 
 export interface IParser {
   parse(command: string): GameWindowInstruction | null;
@@ -252,7 +251,7 @@ export class DirtyParser implements IParser {
 
   private parseChangeBackground(command: string): GameWindowInstruction {
     const sprite = command.replace('CHANGE BACKGROUND', '').trim();
-    GameState.getInstance().setCurrentBackground(sprite);
+    this.instructor.changeBackground(sprite);
     return new GameWindowInstruction('DrawScene', [sprite]);
   }
 
