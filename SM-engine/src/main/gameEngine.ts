@@ -3,6 +3,7 @@ import * as path from 'path';
 import { BrowserWindow } from 'electron';
 import { Metadata, GameWindowInstruction } from '../models';
 import { GameState, DirtyParser, StateManager, ConsoleAlertHandler } from '../services';
+import { generateGuid } from '../services/StringUtils';
 import log from 'electron-log';
 
 export class GameEngine {
@@ -56,18 +57,85 @@ export class GameEngine {
     return this.parser.parse(command);
   }
 
+  public async selectChoice(choiceText: string, line: number): Promise<void> {
+    const activeScenario = GameState.getInstance().getRunningScenario();
+    if (activeScenario && activeScenario.CurrentChoiceSelector) {
+      activeScenario.CurrentChoiceSelector.SelectedChoice = choiceText;
+    }
+    GameState.getInstance().setCurrentLine(line);
+    await this.runScenario();
+  }
+
   public async runScenario(): Promise<void> {
     const lines = this.scenarioLines;
     
     for (let lineIndex = GameState.getInstance().getCurrentLine(); lineIndex < lines.length; lineIndex++) {
+      GameState.getInstance().setCurrentLine(lineIndex);
       const command = lines[lineIndex].trim();
       
       if (!command) {
         continue;
       }
 
+      // Check if we are executing a choice branch and have encountered another FORK or END CHOICES.
+      const currentChoiceSelector = GameState.getInstance().getRunningScenario().CurrentChoiceSelector;
+      if (currentChoiceSelector && currentChoiceSelector.EndLine !== undefined) {
+        if (command.startsWith('FORK') || command.startsWith('END CHOICES')) {
+          const nextLine = currentChoiceSelector.EndLine + 1;
+          GameState.getInstance().setCurrentLine(nextLine);
+          currentChoiceSelector.EndLine = undefined;
+          
+          const activeScenario = GameState.getInstance().getRunningScenario();
+          activeScenario.ChoiceSelectors.push({
+            Id: currentChoiceSelector.Id,
+            Question: currentChoiceSelector.Question,
+            Choices: { ...currentChoiceSelector.Choices },
+            SelectedChoice: currentChoiceSelector.SelectedChoice
+          });
+          
+          lineIndex = nextLine - 1;
+          continue;
+        }
+      }
+
+      // Scan ahead for choice block
+      if (command.startsWith('BEGIN CHOICES')) {
+        let endIndex = -1;
+        for (let i = lineIndex + 1; i < lines.length; i++) {
+          if (lines[i].trim().startsWith('END CHOICES')) {
+            endIndex = i;
+            break;
+          }
+        }
+
+        if (endIndex === -1) {
+          log.error(`Missing END CHOICES for BEGIN CHOICES at line ${lineIndex}`);
+          this.alertHandler.showUserError(`Syntax Error: BEGIN CHOICES at line ${lineIndex + 1} has no matching END CHOICES`);
+          break;
+        }
+
+        const choiceId = generateGuid();
+        GameState.getInstance().createChoice(choiceId);
+        const selector = GameState.getInstance().getRunningScenario().CurrentChoiceSelector;
+        selector.EndLine = endIndex;
+
+        for (let i = lineIndex + 1; i < endIndex; i++) {
+          const innerCommand = lines[i].trim();
+          if (innerCommand.startsWith('QUESTION')) {
+            const questionText = innerCommand.substring(9).replace(/"/g, '');
+            GameState.getInstance().setChoiceQuestion(questionText);
+          } else if (innerCommand.startsWith('FORK')) {
+            const forkText = innerCommand.substring(5).replace(/"/g, '');
+            selector.Choices[forkText] = i + 1;
+          }
+        }
+
+        lineIndex = endIndex;
+        GameState.getInstance().setCurrentLine(lineIndex);
+      }
+
       try {
-        const instruction = this.parser.parse(command);
+        const instruction = this.parser.parse(lines[lineIndex].trim());
 
         if (instruction) {
           await this.executeInstruction(instruction);
@@ -83,7 +151,7 @@ export class GameEngine {
           break;
         }
       } catch (error) {
-        log.error(`Error parsing command at line ${lineIndex}: ${command}`, error);
+        log.error(`Error parsing command at line ${lineIndex}: ${lines[lineIndex]}`, error);
         this.alertHandler.showError(error as Error);
       }
 
@@ -134,11 +202,17 @@ export class GameEngine {
       case 'RESUME SOUND':
         this.mainWindow?.webContents.send('resume-sound', instruction.Parameters[0]);
         break;
+      case 'DISPLAY CHOICE':
+        const selector = GameState.getInstance().getRunningScenario().CurrentChoiceSelector;
+        const choicesArray = Object.keys(selector.Choices).map(text => ({
+          text,
+          line: selector.Choices[text]
+        }));
+        this.mainWindow?.webContents.send('show-choices', selector.Question, choicesArray);
+        break;
       case 'NEW CHOICE':
       case 'CHOICE SET QUESTION':
       case 'ADD CHOICE':
-      case 'DISPLAY CHOICE':
-        // TODO: Implement choices
         break;
     }
   }
@@ -156,7 +230,7 @@ export class GameEngine {
   }
 
   private shouldForceInput(instruction: GameWindowInstruction | null): boolean {
-    return instruction?.MethodName === 'WriteText';
+    return instruction?.MethodName === 'WriteText' || instruction?.MethodName === 'DISPLAY CHOICE';
   }
 
   public setCurrentBackground(background: string): void {

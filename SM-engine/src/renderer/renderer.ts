@@ -28,6 +28,10 @@ export class PixiRenderer {
   private isReady: boolean = false;
   private gameTitle: string = 'Visual Novel';
   private onStartCallback: (() => void) | null = null;
+  private currentChoices: { text: string; line: number }[] = [];
+  private selectedChoiceIndex: number = -1;
+  private isShowingChoices: boolean = false;
+  private choiceButtons: PIXI.Container[] = [];
 
   public async initialize(): Promise<void> {
     this.app = new PIXI.Application();
@@ -120,10 +124,34 @@ export class PixiRenderer {
     window.addEventListener('resize', () => this.resize());
 
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        this.advanceDialogue();
+      if (this.isShowingChoices) {
+        if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
+          e.preventDefault();
+          this.navigateChoice(-1);
+        } else if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
+          e.preventDefault();
+          this.navigateChoice(1);
+        } else if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          this.selectCurrentChoice();
+        }
+      } else {
+        if (e.key === 'Enter' || e.key === ' ') {
+          this.advanceDialogue();
+        }
       }
     });
+  }
+
+  private navigateChoice(direction: number): void {
+    if (this.currentChoices.length === 0) return;
+    this.selectedChoiceIndex += direction;
+    if (this.selectedChoiceIndex < 0) {
+      this.selectedChoiceIndex = this.currentChoices.length - 1;
+    } else if (this.selectedChoiceIndex >= this.currentChoices.length) {
+      this.selectedChoiceIndex = 0;
+    }
+    this.updateChoiceHighlights();
   }
 
   private setupIPCListeners(): void {
@@ -167,8 +195,8 @@ export class PixiRenderer {
       this.removeCharacter(characterName, animation as Animation);
     });
 
-    window.electronAPI.onShowChoices((choices: { text: string; line: number }[]) => {
-      this.showChoices(choices);
+    window.electronAPI.onShowChoices((question: string, choices: { text: string; line: number }[]) => {
+      this.showChoices(question, choices);
     });
   }
 
@@ -510,68 +538,145 @@ export class PixiRenderer {
     window.electronAPI.runScenario();
   }
 
-  public showChoices(choices: { text: string; line: number }[]): void {
+  public showChoices(question: string, choices: { text: string; line: number }[]): void {
     if (!this.choicesContainer) return;
     const { fonts, colors, choiceButton: cb } = GameConfig.UI;
+
+    this.currentChoices = choices;
+    this.selectedChoiceIndex = 0;
+    this.isShowingChoices = true;
+    this.choiceButtons = [];
 
     this.choicesContainer.removeChildren();
 
     const title = new PIXI.Text({
-      text: 'Choose:',
-      style: { fontSize: fonts.characterNameSize, fill: colors.dialogue, fontWeight: 'bold' }
+      text: question || 'Choose:',
+      style: {
+        fontFamily: fonts.family,
+        fontSize: fonts.characterNameSize,
+        fill: colors.dialogue,
+        fontWeight: 'bold',
+        wordWrap: true,
+        wordWrapWidth: 600,
+      }
     });
-    title.x = -75;
-    title.y = -((choices.length * cb.spacing) / 2) - 30;
+    title.anchor.set(0.5, 0);
+    title.x = 0;
+
+    const buttonWidth = 500;
+    const buttonHeight = 50;
+    const buttonSpacing = 65;
+
+    title.y = -((choices.length * buttonSpacing) / 2) - 50;
     this.choicesContainer.addChild(title);
 
     choices.forEach((choice, index) => {
-      const button = this.createChoiceButton(choice.text, index);
-      button.y = index * cb.spacing;
+      const button = this.createChoiceButton(choice.text, index, buttonWidth, buttonHeight);
+      button.x = -buttonWidth / 2;
+      button.y = index * buttonSpacing - ((choices.length * buttonSpacing) / 2) + 20;
       this.choicesContainer!.addChild(button);
+      this.choiceButtons.push(button);
     });
+
+    this.updateChoiceHighlights();
 
     this.choicesContainer.visible = true;
     this.choicesContainer.x = window.innerWidth / 2;
     this.choicesContainer.y = window.innerHeight / 2;
   }
 
-  private createChoiceButton(text: string, index: number): PIXI.Container {
+  private createChoiceButton(text: string, index: number, buttonWidth: number, buttonHeight: number): PIXI.Container {
     const { fonts, colors, choiceButton: cb } = GameConfig.UI;
     const container = new PIXI.Container();
 
     const bg = new PIXI.Graphics();
-    bg.roundRect(0, 0, cb.width, cb.height, cb.borderRadius);
-    bg.fill({ color: colors.choiceBg, alpha: cb.alpha });
-    bg.stroke({ width: GameConfig.UI.textBox.borderWidth, color: GameConfig.UI.textBox.borderColor });
-
-    const label = new PIXI.Text({ text, style: { fontSize: fonts.choiceButtonSize, fill: colors.dialogue } });
-    label.x = cb.width / 2;
-    label.y = 10;
-    label.anchor.set(0.5, 0);
+    
+    const label = new PIXI.Text({
+      text,
+      style: {
+        fontFamily: fonts.family,
+        fontSize: fonts.choiceButtonSize,
+        fill: colors.dialogue,
+        wordWrap: true,
+        wordWrapWidth: buttonWidth - 40,
+      }
+    });
+    label.x = buttonWidth / 2;
+    label.y = buttonHeight / 2;
+    label.anchor.set(0.5, 0.5);
 
     container.addChild(bg);
     container.addChild(label);
+    
+    (container as any).bg = bg;
+    (container as any).label = label;
+    (container as any).buttonWidth = buttonWidth;
+    (container as any).buttonHeight = buttonHeight;
+
+    this.drawButtonState(container, false);
 
     container.eventMode = 'static';
     container.cursor = 'pointer';
 
     container.on('pointerover', () => {
-      bg.clear();
-      bg.roundRect(0, 0, cb.width, cb.height, cb.borderRadius);
-      bg.fill({ color: colors.choiceBgHover, alpha: cb.alpha });
-      bg.stroke({ width: GameConfig.UI.textBox.borderWidth, color: colors.buttonHoverBorder });
-      label.style.fill = colors.choiceTextHover;
+      this.selectedChoiceIndex = index;
+      this.updateChoiceHighlights();
     });
 
-    container.on('pointerout', () => {
-      bg.clear();
-      bg.roundRect(0, 0, cb.width, cb.height, cb.borderRadius);
-      bg.fill({ color: colors.choiceBg, alpha: cb.alpha });
-      bg.stroke({ width: GameConfig.UI.textBox.borderWidth, color: GameConfig.UI.textBox.borderColor });
-      label.style.fill = colors.dialogue;
+    container.on('pointerdown', () => {
+      this.selectCurrentChoice();
     });
 
     return container;
+  }
+
+  private drawButtonState(button: PIXI.Container, isSelected: boolean): void {
+    const { colors, choiceButton: cb, textBox: tb } = GameConfig.UI;
+    const bg = (button as any).bg as PIXI.Graphics;
+    const label = (button as any).label as PIXI.Text;
+    const buttonWidth = (button as any).buttonWidth as number;
+    const buttonHeight = (button as any).buttonHeight as number;
+
+    bg.clear();
+    bg.roundRect(0, 0, buttonWidth, buttonHeight, cb.borderRadius);
+    
+    if (isSelected) {
+      bg.fill({ color: colors.choiceBgHover, alpha: cb.alpha });
+      bg.stroke({ width: tb.borderWidth, color: colors.buttonHoverBorder });
+      label.style.fill = colors.choiceTextHover;
+    } else {
+      bg.fill({ color: colors.choiceBg, alpha: cb.alpha });
+      bg.stroke({ width: tb.borderWidth, color: tb.borderColor });
+      label.style.fill = colors.dialogue;
+    }
+  }
+
+  private updateChoiceHighlights(): void {
+    this.choiceButtons.forEach((button, index) => {
+      this.drawButtonState(button, index === this.selectedChoiceIndex);
+    });
+  }
+
+  private selectCurrentChoice(): void {
+    if (!this.isShowingChoices || this.selectedChoiceIndex < 0 || this.selectedChoiceIndex >= this.currentChoices.length) {
+      return;
+    }
+
+    const selectedChoice = this.currentChoices[this.selectedChoiceIndex];
+    
+    if (this.choicesContainer) {
+      this.choicesContainer.visible = false;
+      this.choicesContainer.removeChildren();
+    }
+    this.isShowingChoices = false;
+    this.currentChoices = [];
+    this.choiceButtons = [];
+    this.selectedChoiceIndex = -1;
+
+    window.electronAPI.selectChoice(selectedChoice.text, selectedChoice.line)
+      .catch((err) => {
+        console.error('Error selecting choice:', err);
+      });
   }
 
   private showError(message: string): void {

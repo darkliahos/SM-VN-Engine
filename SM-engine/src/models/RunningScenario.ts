@@ -13,4 +13,5 @@ export class RunningScenario {
     Question: '',
     Choices: {},
   };
+  public ChoiceSelectors: ChoiceSelector[] = [];
 }

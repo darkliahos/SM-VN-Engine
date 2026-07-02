@@ -11,7 +11,8 @@ export interface ElectronAPI {
   showCharacter: (characterName: string, animation: number) => Promise<void>;
   hideCharacter: (characterName: string, animation: number) => Promise<void>;
   removeCharacter: (characterName: string, animation: number) => Promise<void>;
-  showChoices: (choices: { text: string; line: number }[]) => Promise<void>;
+  showChoices: (question: string, choices: { text: string; line: number }[]) => Promise<void>;
+  selectChoice: (choiceText: string, line: number) => Promise<void>;
   loadSceneImage: (name: string) => Promise<Buffer | null>;
   loadCharacterImage: (characterName: string, sprite: string) => Promise<Buffer | null>;
   onDrawBackground: (callback: (background: string) => void) => void;
@@ -24,7 +25,7 @@ export interface ElectronAPI {
   onChangeSprite: (callback: (characterName: string, sprite: string) => void) => void;
   onHideCharacter: (callback: (characterName: string, animation: number) => void) => void;
   onRemoveCharacter: (callback: (characterName: string, animation: number) => void) => void;
-  onShowChoices: (callback: (choices: { text: string; line: number }[]) => void) => void;
+  onShowChoices: (callback: (question: string, choices: { text: string; line: number }[]) => void) => void;
   onPlaySound: (callback: (id: string, loop: boolean, volume?: number) => void) => void;
   onStopSound: (callback: (id: string) => void) => void;
   onPauseSound: (callback: (id: string) => void) => void;
@@ -43,7 +44,8 @@ const electronAPI: ElectronAPI = {
   showCharacter: (characterName: string, animation: number) => ipcRenderer.invoke('show-character', characterName, animation),
   hideCharacter: (characterName: string, animation: number) => ipcRenderer.invoke('hide-character', characterName, animation),
   removeCharacter: (characterName: string, animation: number) => ipcRenderer.invoke('remove-character', characterName, animation),
-  showChoices: (choices: { text: string; line: number }[]) => ipcRenderer.invoke('show-choices', choices),
+  showChoices: (question: string, choices: { text: string; line: number }[]) => ipcRenderer.invoke('show-choices', question, choices),
+  selectChoice: (choiceText: string, line: number) => ipcRenderer.invoke('select-choice', choiceText, line),
   loadSceneImage: (name: string) => ipcRenderer.invoke('load-scene-image', name),
   loadCharacterImage: (characterName: string, sprite: string) => ipcRenderer.invoke('load-character-image', characterName, sprite),
   onDrawBackground: (callback: (background: string) => void) => {
@@ -76,8 +78,8 @@ const electronAPI: ElectronAPI = {
   onRemoveCharacter: (callback: (characterName: string, animation: number) => void) => {
     ipcRenderer.on('remove-character', (_event, characterName, animation) => callback(characterName, animation));
   },
-  onShowChoices: (callback: (choices: { text: string; line: number }[]) => void) => {
-    ipcRenderer.on('show-choices', (_event, choices) => callback(choices));
+  onShowChoices: (callback: (question: string, choices: { text: string; line: number }[]) => void) => {
+    ipcRenderer.on('show-choices', (_event, question, choices) => callback(question, choices));
   },
   onPlaySound: (callback: (id: string, loop: boolean, volume?: number) => void) => {
     ipcRenderer.on('play-sound', (_event, id, loop, volume) => callback(id, loop, volume));

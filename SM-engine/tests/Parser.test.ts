@@ -25,6 +25,7 @@ describe('DirtyParser', () => {
       jumpScenario: vi.fn(),
       jumpLine: vi.fn(),
       gameOver: vi.fn(),
+      changeBackground: vi.fn(),
     };
     parser = new DirtyParser(mockInstructor as IStateManager);
   });
