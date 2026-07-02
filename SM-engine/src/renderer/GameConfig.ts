@@ -15,7 +15,7 @@ export const GameConfig = {
       characterNameSize: 24,
       dialogueSize: 20,
       choiceButtonSize: 18,
-      titleSize: 72,
+      titleSize: 48,
       buttonSize: 28,
       buttonTextSize: 28,
     },
