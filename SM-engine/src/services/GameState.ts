@@ -82,7 +82,7 @@ export class GameState {
     this.setupScenario(name);
   }
 
-  private getRunningScenario(): RunningScenario {
+  public getRunningScenario(): RunningScenario {
     if (!this.state.CurrentScenario) {
       throw new ScenarioNotRunningException();
     }

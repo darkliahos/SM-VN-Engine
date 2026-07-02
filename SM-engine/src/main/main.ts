@@ -104,8 +104,12 @@ ipcMain.handle('remove-character', async (_event, characterName: string, animati
   mainWindow?.webContents.send('remove-character', characterName, animation);
 });
 
-ipcMain.handle('show-choices', async (_event, choices: { text: string; line: number }[]) => {
-  mainWindow?.webContents.send('show-choices', choices);
+ipcMain.handle('show-choices', async (_event, question: string, choices: { text: string; line: number }[]) => {
+  mainWindow?.webContents.send('show-choices', question, choices);
+});
+
+ipcMain.handle('select-choice', async (_event, choiceText: string, line: number) => {
+  await gameEngine?.selectChoice(choiceText, line);
 });
 
 ipcMain.handle('load-scene-image', async (_event, name: string) => {

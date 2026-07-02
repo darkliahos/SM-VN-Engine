@@ -1,4 +1,4 @@
-﻿BEGIN SCENARIO "Temple Garden"
+BEGIN SCENARIO "Temple Garden"
 
 CHANGE BACKGROUND TempleGarden
 
@@ -12,6 +12,16 @@ Add [Kenji] Nervous *Fade In* (left)
 CHANGE SPRITE [Kenji] Shy *Slide*
 
 [Yuki] SAYS "It's beautiful. Like something from a painting."
+
+BEGIN CHOICES
+QUESTION "What should Kenji do next?"
+FORK "Hold Yuki's hand"
+[Kenji] SAYS "(I slowly reach out and hold Yuki's hand.)"
+[Yuki] SAYS "Kenji... your hand is so warm."
+FORK "Offer Yuki some hot tea"
+[Kenji] SAYS "Would you like some hot tea? I brought a thermos."
+[Yuki] SAYS "Thank you, Kenji. That is very thoughtful of you."
+END CHOICES
 
 CHANGE SPRITE [Yuki] Sad *Fade*
 
