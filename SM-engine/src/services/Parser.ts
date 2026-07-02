@@ -80,7 +80,7 @@ export class DirtyParser implements IParser {
     }
 
     if (command.startsWith('BEGIN CHOICES')) {
-      return this.parseBeginChoices(command);
+      return this.parseBeginChoices();
     }
 
     if (command.startsWith('QUESTION')) {
@@ -96,11 +96,11 @@ export class DirtyParser implements IParser {
     }
 
     if (command.startsWith('END CHOICES')) {
-      return this.parseEndChoices(command);
+      return this.parseEndChoices();
     }
 
     if (command === 'END STORY') {
-      return this.parseEndStory(command);
+      return this.parseEndStory();
     }
 
     return null;
@@ -299,7 +299,7 @@ export class DirtyParser implements IParser {
     return new GameWindowInstruction('RESUME SOUND', [file]);
   }
 
-  private parseBeginChoices(command: string): GameWindowInstruction {
+  private parseBeginChoices(): GameWindowInstruction {
     const choiceId = generateGuid();
     this.instructor.createFork(choiceId);
     return new GameWindowInstruction('NEW CHOICE', [choiceId]);
@@ -334,16 +334,16 @@ export class DirtyParser implements IParser {
     return new GameWindowInstruction('ADD CHOICE', [fork]);
   }
 
-  private parseEndChoices(command: string): GameWindowInstruction {
+  private parseEndChoices(): GameWindowInstruction {
     return new GameWindowInstruction('DISPLAY CHOICE', []);
   }
 
-  private parseEndStory(command: string): GameWindowInstruction {
+  private parseEndStory(): GameWindowInstruction {
     this.instructor.gameOver();
     return new GameWindowInstruction('EndGame', []);
   }
 
-  public seekIndex(command: string): number {
+  public seekIndex(_command: string): number {
     // TODO: Implement
     return 0;
   }
