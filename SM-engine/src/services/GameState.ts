@@ -22,6 +22,7 @@ export class GameState {
   }
 
   public setupGameState(metaData: Metadata, debug: boolean): void {
+    this.state = new Game();
     this.state.Title = metaData.Title;
     this.state.ImageFormatType = metaData.PictureFormatType;
     this.state.DebugMode = debug;

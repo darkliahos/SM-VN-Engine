@@ -900,6 +900,11 @@ export class PixiRenderer {
     this.choicesContainer!.removeChildren();
     this.displayedCharacters.clear();
     this.characterSprites.clear();
+    this.currentBackground = null;
+    this.selectedChoiceIndex = -1;
+    this.isShowingChoices = false;
+    this.currentChoices = [];
+    this.choiceButtons = [];
   }
 
   public destroyTextures(): void {
