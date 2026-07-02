@@ -7,7 +7,8 @@ async function main() {
   await renderer.initialize();
   setupSoundListeners();
   const metadata = await window.electronAPI.getMetadata();
-  renderer.showTitleScreen(metadata.Title || 'Visual Novel', () => {
+  renderer.showTitleScreen(metadata.Title || 'Visual Novel', async () => {
+    await window.electronAPI.resetGame();
     window.electronAPI.runScenario();
   });
 }

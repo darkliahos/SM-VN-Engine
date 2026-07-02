@@ -75,6 +75,10 @@ ipcMain.handle('run-scenario', async () => {
   return gameEngine?.runScenario();
 });
 
+ipcMain.handle('reset-game', async () => {
+  return gameEngine?.resetGame();
+});
+
 ipcMain.handle('set-current-background', async (_event, background: string) => {
   gameEngine?.setCurrentBackground(background);
 });

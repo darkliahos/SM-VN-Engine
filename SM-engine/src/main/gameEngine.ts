@@ -236,4 +236,17 @@ export class GameEngine {
   public setCurrentBackground(background: string): void {
     GameState.getInstance().setCurrentBackground(background);
   }
+
+  public async resetGame(): Promise<void> {
+    try {
+      if (this.metadata) {
+        GameState.getInstance().setupGameState(this.metadata, false);
+        await this.loadScenario();
+        log.info('Game state reset successfully');
+      }
+    } catch (error) {
+      log.error('Failed to reset game state:', error);
+      this.alertHandler.showError(error as Error);
+    }
+  }
 }

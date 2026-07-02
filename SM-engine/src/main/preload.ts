@@ -31,12 +31,14 @@ export interface ElectronAPI {
   onPauseSound: (callback: (id: string) => void) => void;
   onResumeSound: (callback: (id: string) => void) => void;
   onStopAllSounds: (callback: () => void) => void;
+  resetGame: () => Promise<void>;
 }
 
 const electronAPI: ElectronAPI = {
   getMetadata: () => ipcRenderer.invoke('get-metadata'),
   parseCommand: (command: string) => ipcRenderer.invoke('parse-command', command),
   runScenario: () => ipcRenderer.invoke('run-scenario'),
+  resetGame: () => ipcRenderer.invoke('reset-game'),
   setCurrentBackground: (background: string) => ipcRenderer.invoke('set-current-background', background),
   drawBackground: (background: string) => ipcRenderer.invoke('draw-background', background),
   drawCharacter: (characterName: string, sprite: string, position: number) => ipcRenderer.invoke('draw-character', characterName, sprite, position),
