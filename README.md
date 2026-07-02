@@ -23,7 +23,7 @@ Very slow progress will be made to get this fully functional to spec 0.07, feel 
 | Character Place  |  :heavy_check_mark:   |  :heavy_check_mark:  |
 | Jump Scenario  |  :heavy_check_mark:   |  :heavy_check_mark:  |
 | Change Background  |  :heavy_check_mark:   | :heavy_check_mark:   |
-| Forking  |  :heavy_check_mark:    | :x:  |
+| Forking  |  :heavy_check_mark:    | :heavy_check_mark:  |
 | Sound  |  :heavy_check_mark:   | :heavy_check_mark:  |
 | Ending game  |   :heavy_check_mark:   |  :heavy_check_mark: |
 
