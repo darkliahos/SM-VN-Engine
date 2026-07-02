@@ -27,7 +27,7 @@ export interface IStateManager {
 export class StateManager implements IStateManager {
   constructor(private alertHandler: IAlertHandler) { }
 
-  public addCharacter(friendlyName: string, spriteName: string, animation: Animation, screenPosition: number = 1): void {
+  public addCharacter(friendlyName: string, spriteName: string, _animation: Animation, screenPosition: number = 1): void {
     if (!GameState.getInstance().showCharacter(friendlyName)) {
       const character = new Character();
       character.CurrentSprite = spriteName;
@@ -50,7 +50,7 @@ export class StateManager implements IStateManager {
     GameState.getInstance().changeCharacterName(friendlyName, displayName);
   }
 
-  public changeCharacterSprite(friendlyName: string, spriteName: string, animation: Animation): void {
+  public changeCharacterSprite(friendlyName: string, spriteName: string, _animation: Animation): void {
     if (GameState.getInstance().changeSprite(friendlyName, spriteName)) {
       GameState.getInstance().setRedraw(true);
     }
@@ -71,7 +71,7 @@ export class StateManager implements IStateManager {
     GameState.getInstance().setRedraw(true);
   }
 
-  public hideCharacter(friendlyName: string, animation: Animation): void {
+  public hideCharacter(friendlyName: string, _animation: Animation): void {
     if (!GameState.getInstance().hideCharacter(friendlyName)) {
       this.alertHandler.showUserError(`${friendlyName} may not exist, unable to hide character`);
     }
@@ -86,7 +86,7 @@ export class StateManager implements IStateManager {
     GameState.getInstance().jumpScenarios(scenario);
   }
 
-  public moveCharacter(friendlyName: string, direction: Direction, pixels: number): void {
+  public moveCharacter(friendlyName: string, _direction: Direction, _pixels: number): void {
     this.alertHandler.showWarning(`Character movement not fully implemented: ${friendlyName}`);
   }
 
@@ -100,7 +100,7 @@ export class StateManager implements IStateManager {
     this.alertHandler.showInfo(`Sound play requested: ${fileName} (loop: ${loop}, vol: ${volume})`);
   }
 
-  public removeCharacter(friendlyName: string, animation: Animation): void {
+  public removeCharacter(friendlyName: string, _animation: Animation): void {
     if (!GameState.getInstance().removeCharacter(friendlyName)) {
       throw new Error(`Failed to remove ${friendlyName}`);
     }
@@ -111,7 +111,7 @@ export class StateManager implements IStateManager {
     GameState.getInstance().setChoiceQuestion(question);
   }
 
-  public showCharacter(friendlyName: string, animation: Animation): void {
+  public showCharacter(friendlyName: string, _animation: Animation): void {
     if (!GameState.getInstance().showCharacter(friendlyName)) {
       this.alertHandler.showUserError(`Unable to show ${friendlyName}, character may not exist`);
     }

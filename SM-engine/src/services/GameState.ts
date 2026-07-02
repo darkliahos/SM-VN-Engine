@@ -4,7 +4,6 @@ import {
   Metadata,
   RunningScenario,
   Character,
-  RanScenario,
 } from '../models';
 import { ScenarioNotRunningException } from '../exceptions';
 import { generateGuid } from './StringUtils';
