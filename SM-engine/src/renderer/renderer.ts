@@ -32,6 +32,9 @@ export class PixiRenderer {
   private selectedChoiceIndex: number = -1;
   private isShowingChoices: boolean = false;
   private choiceButtons: PIXI.Container[] = [];
+  private titleText: PIXI.Text | null = null;
+  private startButton: PIXI.Container | null = null;
+  private titleScreenBg: PIXI.Graphics | null = null;
 
   public async initialize(): Promise<void> {
     this.app = new PIXI.Application();
@@ -203,6 +206,26 @@ export class PixiRenderer {
   private resize(): void {
     if (this.app) {
       this.app.renderer.resize(window.innerWidth, window.innerHeight);
+
+      if (this.titleScreenBg) {
+        this.titleScreenBg.clear();
+        this.titleScreenBg.rect(0, 0, window.innerWidth, window.innerHeight);
+        this.titleScreenBg.fill(0x000000);
+      }
+
+      if (this.titleText && this.startButton) {
+        this.titleText.style.wordWrapWidth = window.innerWidth - 80;
+        
+        const spacing = 40;
+        const buttonHeight = 60;
+        const totalHeight = this.titleText.height + spacing + buttonHeight;
+        
+        this.titleText.x = window.innerWidth / 2;
+        this.titleText.y = (window.innerHeight - totalHeight) / 2 + this.titleText.height / 2;
+        
+        this.startButton.x = window.innerWidth / 2 - 100;
+        this.startButton.y = this.titleText.y + this.titleText.height / 2 + spacing;
+      }
 
       if (this.textBox) {
         this.textBox.x = (window.innerWidth - GameConfig.UI.textBox.width) / 2;
@@ -714,28 +737,29 @@ export class PixiRenderer {
     this.destroyTextures();
     this.textBox!.visible = false;
 
-    const bg = new PIXI.Graphics();
-    bg.rect(0, 0, window.innerWidth, window.innerHeight);
-    bg.fill(0x000000);
-    this.backgroundContainer!.addChild(bg);
+    this.titleScreenBg = new PIXI.Graphics();
+    this.titleScreenBg.rect(0, 0, window.innerWidth, window.innerHeight);
+    this.titleScreenBg.fill(0x000000);
+    this.backgroundContainer!.addChild(this.titleScreenBg);
 
-    const titleText = new PIXI.Text({
+    this.titleText = new PIXI.Text({
       text: title,
       style: {
         fontSize: fonts.titleSize,
         fill: GameConfig.Title.color,
         fontWeight: 'bold',
-        fontFamily: GameConfig.Title.fontFamily
+        fontFamily: GameConfig.Title.fontFamily,
+        wordWrap: true,
+        wordWrapWidth: window.innerWidth - 80,
+        align: 'center'
       }
     });
-    titleText.anchor.set(0.5);
-    titleText.x = window.innerWidth / 2;
-    titleText.y = window.innerHeight / 2 - 60;
-    this.backgroundContainer!.addChild(titleText);
+    this.titleText.anchor.set(0.5);
+    this.backgroundContainer!.addChild(this.titleText);
 
     const buttonWidth = 200;
     const buttonHeight = 60;
-    const buttonContainer = new PIXI.Container();
+    this.startButton = new PIXI.Container();
     const buttonBg = new PIXI.Graphics();
     buttonBg.roundRect(0, 0, buttonWidth, buttonHeight, tb.borderRadius);
     buttonBg.fill({ color: colors.buttonBg });
@@ -753,14 +777,12 @@ export class PixiRenderer {
     buttonText.x = buttonWidth / 2;
     buttonText.y = 30;
 
-    buttonContainer.addChild(buttonBg);
-    buttonContainer.addChild(buttonText);
-    buttonContainer.x = window.innerWidth / 2 - buttonWidth / 2;
-    buttonContainer.y = window.innerHeight / 2 + 40;
-    buttonContainer.eventMode = 'static';
-    buttonContainer.cursor = 'pointer';
+    this.startButton.addChild(buttonBg);
+    this.startButton.addChild(buttonText);
+    this.startButton.eventMode = 'static';
+    this.startButton.cursor = 'pointer';
 
-    buttonContainer.on('pointerover', () => {
+    this.startButton.on('pointerover', () => {
       buttonBg.clear();
       buttonBg.roundRect(0, 0, buttonWidth, buttonHeight, tb.borderRadius);
       buttonBg.fill({ color: colors.buttonHoverBg });
@@ -768,7 +790,7 @@ export class PixiRenderer {
       buttonText.style.fill = colors.buttonText;
     });
 
-    buttonContainer.on('pointerout', () => {
+    this.startButton.on('pointerout', () => {
       buttonBg.clear();
       buttonBg.roundRect(0, 0, buttonWidth, buttonHeight, tb.borderRadius);
       buttonBg.fill({ color: colors.buttonBg });
@@ -776,12 +798,25 @@ export class PixiRenderer {
       buttonText.style.fill = colors.buttonText;
     });
 
-    buttonContainer.on('pointerdown', () => {
+    this.startButton.on('pointerdown', () => {
       this.backgroundContainer!.removeChildren();
+      this.titleText = null;
+      this.startButton = null;
+      this.titleScreenBg = null;
       onStart();
     });
 
-    this.backgroundContainer!.addChild(buttonContainer);
+    this.backgroundContainer!.addChild(this.startButton);
+
+    // Initial position calculation to ensure perfectly centered title and button.
+    const spacing = 40;
+    const totalHeight = this.titleText.height + spacing + buttonHeight;
+    
+    this.titleText.x = window.innerWidth / 2;
+    this.titleText.y = (window.innerHeight - totalHeight) / 2 + this.titleText.height / 2;
+    
+    this.startButton.x = window.innerWidth / 2 - buttonWidth / 2;
+    this.startButton.y = this.titleText.y + this.titleText.height / 2 + spacing;
   }
 
   private showEndGame(): void {
