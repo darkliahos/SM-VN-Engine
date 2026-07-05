@@ -7,10 +7,14 @@ async function main() {
   await renderer.initialize();
   setupSoundListeners();
   const metadata = await window.electronAPI.getMetadata();
-  renderer.showTitleScreen(metadata.Title || 'Visual Novel', async () => {
-    await window.electronAPI.resetGame();
-    window.electronAPI.runScenario();
-  });
+  renderer.showTitleScreen(
+    metadata.Title || 'Visual Novel',
+    async () => {
+      await window.electronAPI.resetGame();
+      window.electronAPI.runScenario();
+    },
+    metadata.TitleScreenImageName
+  );
 }
 
 function setupSoundListeners(): void {
