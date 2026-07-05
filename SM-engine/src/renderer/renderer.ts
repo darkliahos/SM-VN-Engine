@@ -35,6 +35,8 @@ export class PixiRenderer {
   private titleText: PIXI.Text | null = null;
   private startButton: PIXI.Container | null = null;
   private titleScreenBg: PIXI.Graphics | null = null;
+  private titleScreenImageName: string = '';
+  private titleScreenImage: PIXI.Sprite | null = null;
 
   public async initialize(): Promise<void> {
     this.app = new PIXI.Application();
@@ -211,6 +213,10 @@ export class PixiRenderer {
         this.titleScreenBg.clear();
         this.titleScreenBg.rect(0, 0, window.innerWidth, window.innerHeight);
         this.titleScreenBg.fill(0x000000);
+      }
+
+      if (this.titleScreenImage) {
+        this.fitSpriteToScreen(this.titleScreenImage);
       }
 
       if (this.titleText && this.startButton) {
@@ -729,10 +735,11 @@ export class PixiRenderer {
     this.uiContainer!.addChild(container);
   }
 
-  public showTitleScreen(title: string, onStart: () => void): void {
+  public showTitleScreen(title: string, onStart: () => void, imageName?: string): void {
     const { fonts, colors, textBox: tb } = GameConfig.UI;
     this.gameTitle = title;
     this.onStartCallback = onStart;
+    this.titleScreenImageName = imageName || '';
     this.cleanupScene();
     this.destroyTextures();
     this.textBox!.visible = false;
@@ -741,6 +748,38 @@ export class PixiRenderer {
     this.titleScreenBg.rect(0, 0, window.innerWidth, window.innerHeight);
     this.titleScreenBg.fill(0x000000);
     this.backgroundContainer!.addChild(this.titleScreenBg);
+
+    if (this.titleScreenImageName) {
+      const loadTitleImage = (extensions: string[]) => {
+        if (extensions.length === 0) {
+          console.error(`Failed to load title screen image: ${this.titleScreenImageName} (tried .png, .jpg, .jpeg)`);
+          return;
+        }
+        const ext = extensions[0];
+        const img = new Image();
+        img.onload = () => {
+          try {
+            const texture = PIXI.Texture.from(img);
+            this.titleScreenImage = new PIXI.Sprite(texture);
+            this.fitSpriteToScreen(this.titleScreenImage);
+            
+            const index = this.backgroundContainer!.children.indexOf(this.titleScreenBg!);
+            if (index !== -1) {
+              this.backgroundContainer!.addChildAt(this.titleScreenImage, index + 1);
+            } else {
+              this.backgroundContainer!.addChild(this.titleScreenImage);
+            }
+          } catch (e) {
+            console.error(`Failed to create texture for title screen image: ${this.titleScreenImageName}`, e);
+          }
+        };
+        img.onerror = () => {
+          loadTitleImage(extensions.slice(1));
+        };
+        img.src = `../Assets/${this.titleScreenImageName}.${ext}`;
+      };
+      loadTitleImage(['png', 'jpg', 'jpeg']);
+    }
 
     this.titleText = new PIXI.Text({
       text: title,
@@ -803,6 +842,7 @@ export class PixiRenderer {
       this.titleText = null;
       this.startButton = null;
       this.titleScreenBg = null;
+      this.titleScreenImage = null;
       onStart();
     });
 
@@ -823,6 +863,7 @@ export class PixiRenderer {
     const { fonts, colors, textBox: tb } = GameConfig.UI;
     const savedTitle = this.gameTitle;
     const savedCallback = this.onStartCallback;
+    const savedImageName = this.titleScreenImageName;
 
     this.cleanupScene();
     this.textBox!.visible = false;
@@ -884,7 +925,7 @@ export class PixiRenderer {
     });
 
     buttonContainer.on('pointerdown', () => {
-      this.showTitleScreen(savedTitle, savedCallback!);
+      this.showTitleScreen(savedTitle, savedCallback!, savedImageName);
     });
 
     this.backgroundContainer!.addChild(buttonContainer);
@@ -912,5 +953,9 @@ export class PixiRenderer {
     this.backgrounds.clear();
     this.characterTextures.forEach(texture => texture.destroy(true));
     this.characterTextures.clear();
+    if (this.titleScreenImage) {
+      this.titleScreenImage.destroy({ children: true, texture: true });
+      this.titleScreenImage = null;
+    }
   }
 }

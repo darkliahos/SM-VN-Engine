@@ -12,6 +12,7 @@ enum ImageFormatType {
 
 interface Metadata {
   Title: string;
+  TitleScreenImageName:string;
   Author: string;
   Version: string;
   DateGenerated: string;
@@ -44,11 +45,13 @@ async function main() {
     console.log('=====Metadata Generator===== ');
     const title = await question('What is the title of your game?\n');
     const author = await question('Who is the creator of this game?\n');
+    const titleScreenName = await question("Do you have a title screen image \n Type the name of the file excluding the extension and place the png image in the assets folder \n")
     const gameVersion = await question('Please type in the version number for this game\n');
     const startFile = await question('Please enter the name of the start file (without the extension)\n');
 
     const metadata: Metadata = {
       Title: title,
+      TitleScreenImageName: titleScreenName,
       Author: author,
       Version: gameVersion,
       DateGenerated: new Date().toISOString(),

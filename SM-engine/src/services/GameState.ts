@@ -24,6 +24,7 @@ export class GameState {
   public setupGameState(metaData: Metadata, debug: boolean): void {
     this.state = new Game();
     this.state.Title = metaData.Title;
+    this.state.TitleScreenImageName = metaData.TitleScreenImageName || '';
     this.state.ImageFormatType = metaData.PictureFormatType;
     this.state.DebugMode = debug;
     this.state.StartFile = metaData.StartFile;
@@ -217,6 +218,7 @@ export class GameState {
   public getMetadata(): Metadata {
     return {
       Title: this.state.Title,
+      TitleScreenImageName: this.state.TitleScreenImageName,
       Author: '',
       Version: '1.0.0',
       DateGenerated: new Date(),
