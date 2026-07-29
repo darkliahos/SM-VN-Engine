@@ -6,7 +6,7 @@ import {
   Character,
   RanScenario,
 } from '../models';
-import { ScenarioNotRunningException } from '../exceptions';
+import { NoEjectedScenariosException, ScenarioNotRunningException } from '../exceptions';
 import { generateGuid } from './StringUtils';
 
 export class GameState {
@@ -31,10 +31,7 @@ export class GameState {
     this.state.DebugMode = debug;
     this.state.StartFile = metaData.StartFile;
     this.state.ScenarioExtension = metaData.ScenarioExtension;
-    this.state.CurrentScenario = new RunningScenario();
-    this.state.CurrentScenario.Name = 'Start';
-    this.state.CurrentScenario.Line = 0;
-    this.state.
+    this.state.CurrentScenario = this.setupScenario(metaData.StartFile, metaData.StartFile);
   }
 
   public getTitle(): string {
@@ -81,13 +78,21 @@ export class GameState {
     this.getRunningScenario().Redraw = redraw;
   }
 
-  public jumpScenarios(name: string): void {
+  public jumpScenarios(name: string, fileName: string): void {
     this.teardownCurrentScenario(ScenarioStatus.Ejected);
-    this.setupScenario(name);
+    this.setupScenario(name, fileName);
   }
 
   public getLastEjectedScenario(): RanScenario {
-    
+    const ejected = this.state.PreviousScenarios
+      .filter(s => s.Status === ScenarioStatus.Ejected)
+      .sort((a, b) => b.EjectionPrecidence - a.EjectionPrecidence);
+
+    if (ejected.length === 0) {
+      throw new NoEjectedScenariosException();
+    }
+
+    return ejected[0];
   }
 
   public getRunningScenario(): RunningScenario {
@@ -112,10 +117,12 @@ export class GameState {
     this.state.EjectionCounter = this.state.EjectionCounter + 1
   }
 
-  public setupScenario(name: string): RunningScenario {
+  public setupScenario(name: string, file: string): RunningScenario {
     const newScenario = new RunningScenario();
     newScenario.Id = generateGuid();
+    newScenario.fileName = file;
     newScenario.Name = name;
+    newScenario.Line = 0;
     this.state.CurrentScenario = newScenario;
     return newScenario;
   }

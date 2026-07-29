@@ -12,7 +12,6 @@ export class GameEngine {
   private alertHandler: ConsoleAlertHandler;
   private stateManager: StateManager;
   private scenarioLines: string[] = [];
-  private currentFileName: string = 'Start.txt';
   private metadata: Metadata | null = null;
 
   constructor(private mainWindow: BrowserWindow | null) {
@@ -49,7 +48,6 @@ export class GameEngine {
 
     const content = await fs.readFile(scenarioFile, 'utf-8');
     this.scenarioLines = content.split('\n');
-    this.currentFileName = startFile;
   }
 
   private async loadTargetScenario(targetScenario: string): Promise<void> {
@@ -81,8 +79,7 @@ export class GameEngine {
       try {
         const content = await fs.readFile(scenarioFile, 'utf-8');
         this.scenarioLines = content.split('\n');
-        this.currentFileName = file;
-        GameState.getInstance().jumpScenarios(targetScenario);
+        GameState.getInstance().jumpScenarios(targetScenario, file);
         GameState.getInstance().setCurrentLine(0);
         log.info(`Jumped to scenario file: ${file}`);
         return;
@@ -96,7 +93,7 @@ export class GameEngine {
 
   private popScenarioStack(): boolean {
       const parentFrame = GameState.getInstance().getLastEjectedScenario();
-      GameState.getInstance().jumpScenarios(parentFrame.Id);
+      GameState.getInstance().jumpScenarios(parentFrame.Name, parentFrame.Name);
       GameState.getInstance().setCurrentLine(parentFrame.LastRunNumber);
       log.info(`Returned to parent scenario: ${parentFrame.Id} at line ${parentFrame.LastRunNumber}`);
       return true;
