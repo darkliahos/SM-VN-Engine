@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs/promises';
 import log from 'electron-log';
 import { GameEngine } from './gameEngine';
+import { getResourcePath } from './pathUtils';
 
 const ALLOWED_SCENE_EXTENSIONS = ['.png', '.jpg', '.jpeg'];
 const ALLOWED_CHARACTER_EXTENSIONS = ['.png'];
@@ -118,7 +119,7 @@ ipcMain.handle('select-choice', async (_event, choiceText: string, line: number)
 
 ipcMain.handle('load-scene-image', async (_event, name: string) => {
   const safeName = sanitizeFileName(name);
-  const baseDir = path.join(process.cwd(), 'Scenes');
+  const baseDir = getResourcePath('Scenes');
   
   if (!isPathSafe(baseDir, safeName)) {
     log.warn(`Path traversal attempt detected: ${name}`);
@@ -142,7 +143,7 @@ ipcMain.handle('load-scene-image', async (_event, name: string) => {
 ipcMain.handle('load-character-image', async (_event, characterName: string, sprite: string) => {
   const safeCharName = sanitizeFileName(characterName);
   const safeSprite = sanitizeFileName(sprite);
-  const baseDir = path.join(process.cwd(), 'Characters', safeCharName);
+  const baseDir = getResourcePath('Characters', safeCharName);
   
   if (!isPathSafe(baseDir, safeSprite)) {
     log.warn(`Path traversal attempt detected: ${characterName}/${sprite}`);
