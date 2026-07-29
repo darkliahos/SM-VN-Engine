@@ -57,6 +57,16 @@ function copyContent() {
       console.warn(`Warning copying folder ${folder}:`, err.message);
     }
   }
+
+  try {
+    const metadataSrc = path.join(rootDir, 'Metadata.json');
+    const metadataDest = path.join(rootDir, 'dist', 'Metadata.json');
+    if (fs.existsSync(metadataSrc)) {
+      fs.copyFileSync(metadataSrc, metadataDest);
+    }
+  } catch (err) {
+    console.warn('Warning copying Metadata.json:', err.message);
+  }
 }
 
 console.log('Copying static assets and content folders...');

@@ -5,6 +5,7 @@ import { Metadata, GameWindowInstruction } from '../models';
 import { GameState, DirtyParser, StateManager, ConsoleAlertHandler } from '../services';
 import { generateGuid } from '../services/StringUtils';
 import log from 'electron-log';
+import { getResourcePath } from './pathUtils';
 
 export class GameEngine {
   private parser: DirtyParser;
@@ -35,13 +36,13 @@ export class GameEngine {
   }
 
   private async loadMetadata(): Promise<void> {
-    const metadataPath = path.join(process.cwd(), 'Metadata.json');
+    const metadataPath = getResourcePath('Metadata.json');
     const content = await fs.readFile(metadataPath, 'utf-8');
     this.metadata = JSON.parse(content);
   }
 
   private async loadScenario(): Promise<void> {
-    const scenarioPath = path.join(process.cwd(), 'Scenarios');
+    const scenarioPath = getResourcePath('Scenarios');
     const startFile = GameState.getInstance().getStartFile();
     const scenarioFile = path.join(scenarioPath, startFile);
 
