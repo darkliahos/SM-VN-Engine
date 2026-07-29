@@ -21,6 +21,9 @@ FORK "Hold Yuki's hand"
 FORK "Offer Yuki some hot tea"
 [Kenji] SAYS "Would you like some hot tea? I brought a thermos."
 [Yuki] SAYS "Thank you, Kenji. That is very thoughtful of you."
+FORK "Go inside the tower with Yuki"
+[Kenji] SAYS "Let's head inside Tokyo Tower together."
+JUMP SCENARIO "insidethetower"
 END CHOICES
 
 CHANGE SPRITE [Yuki] Sad *Fade*

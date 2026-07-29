@@ -7,11 +7,20 @@ import { generateGuid } from '../services/StringUtils';
 import log from 'electron-log';
 import { getResourcePath } from './pathUtils';
 
+interface ScenarioStackFrame {
+  fileName: string;
+  scenarioName: string;
+  lines: string[];
+  returnLine: number;
+}
+
 export class GameEngine {
   private parser: DirtyParser;
   private alertHandler: ConsoleAlertHandler;
   private stateManager: StateManager;
   private scenarioLines: string[] = [];
+  private currentFileName: string = 'Start.txt';
+  private scenarioStack: ScenarioStackFrame[] = [];
   private metadata: Metadata | null = null;
 
   constructor(private mainWindow: BrowserWindow | null) {
@@ -48,6 +57,71 @@ export class GameEngine {
 
     const content = await fs.readFile(scenarioFile, 'utf-8');
     this.scenarioLines = content.split('\n');
+    this.currentFileName = startFile;
+    this.scenarioStack = [];
+  }
+
+  private async loadTargetScenario(targetScenario: string): Promise<void> {
+    const normalizedTarget = targetScenario.trim().toLowerCase();
+    for (let i = 0; i < this.scenarioLines.length; i++) {
+      const line = this.scenarioLines[i].trim();
+      if (line.toLowerCase().startsWith('begin scenario')) {
+        const markerName = line.substring(14).replace(/"/g, '').trim().toLowerCase();
+        if (markerName === normalizedTarget) {
+          GameState.getInstance().setCurrentLine(i);
+          return;
+        }
+      }
+    }
+
+    const scenarioPath = getResourcePath('Scenarios');
+    const ext = GameState.getInstance().getScenarioFileExtension() || 'txt';
+    const candidateFiles = [
+      targetScenario,
+      `${targetScenario}.${ext}`,
+      `${targetScenario.replace(/\s+/g, '')}.${ext}`,
+      `${targetScenario.toLowerCase()}.${ext}`
+    ];
+
+    for (const file of candidateFiles) {
+      const scenarioFile = path.join(scenarioPath, file);
+      try {
+        const content = await fs.readFile(scenarioFile, 'utf-8');
+        const currentLine = GameState.getInstance().getCurrentLine();
+        const currentScenarioName = GameState.getInstance().getRunningScenario()?.Name || 'Start';
+
+        this.scenarioStack.push({
+          fileName: this.currentFileName,
+          scenarioName: currentScenarioName,
+          lines: this.scenarioLines,
+          returnLine: currentLine + 1,
+        });
+
+        this.scenarioLines = content.split('\n');
+        this.currentFileName = file;
+        GameState.getInstance().jumpScenarios(targetScenario);
+        GameState.getInstance().setCurrentLine(0);
+        log.info(`Jumped to scenario file: ${file} (pushed ${this.scenarioStack[this.scenarioStack.length - 1].fileName} to stack)`);
+        return;
+      } catch {
+        continue;
+      }
+    }
+
+    log.warn(`Scenario target not found: ${targetScenario}`);
+  }
+
+  private popScenarioStack(): boolean {
+    if (this.scenarioStack.length > 0) {
+      const parentFrame = this.scenarioStack.pop()!;
+      this.scenarioLines = parentFrame.lines;
+      this.currentFileName = parentFrame.fileName;
+      GameState.getInstance().jumpScenarios(parentFrame.scenarioName);
+      GameState.getInstance().setCurrentLine(parentFrame.returnLine);
+      log.info(`Returned to parent scenario: ${parentFrame.fileName} at line ${parentFrame.returnLine}`);
+      return true;
+    }
+    return false;
   }
 
   public getMetadata(): Metadata | null {
@@ -68,13 +142,19 @@ export class GameEngine {
   }
 
   public async runScenario(): Promise<void> {
-    const lines = this.scenarioLines;
-    
-    for (let lineIndex = GameState.getInstance().getCurrentLine(); lineIndex < lines.length; lineIndex++) {
-      GameState.getInstance().setCurrentLine(lineIndex);
-      const command = lines[lineIndex].trim();
+    while (true) {
+      const currentLineIndex = GameState.getInstance().getCurrentLine();
+      if (currentLineIndex < 0 || currentLineIndex >= this.scenarioLines.length) {
+        if (this.popScenarioStack()) {
+          continue;
+        }
+        break;
+      }
+
+      const command = this.scenarioLines[currentLineIndex].trim();
       
       if (!command) {
+        GameState.getInstance().setCurrentLine(currentLineIndex + 1);
         continue;
       }
 
@@ -94,7 +174,6 @@ export class GameEngine {
             SelectedChoice: currentChoiceSelector.SelectedChoice
           });
           
-          lineIndex = nextLine - 1;
           continue;
         }
       }
@@ -102,16 +181,16 @@ export class GameEngine {
       // Scan ahead for choice block
       if (command.startsWith('BEGIN CHOICES')) {
         let endIndex = -1;
-        for (let i = lineIndex + 1; i < lines.length; i++) {
-          if (lines[i].trim().startsWith('END CHOICES')) {
+        for (let i = currentLineIndex + 1; i < this.scenarioLines.length; i++) {
+          if (this.scenarioLines[i].trim().startsWith('END CHOICES')) {
             endIndex = i;
             break;
           }
         }
 
         if (endIndex === -1) {
-          log.error(`Missing END CHOICES for BEGIN CHOICES at line ${lineIndex}`);
-          this.alertHandler.showUserError(`Syntax Error: BEGIN CHOICES at line ${lineIndex + 1} has no matching END CHOICES`);
+          log.error(`Missing END CHOICES for BEGIN CHOICES at line ${currentLineIndex}`);
+          this.alertHandler.showUserError(`Syntax Error: BEGIN CHOICES at line ${currentLineIndex + 1} has no matching END CHOICES`);
           break;
         }
 
@@ -120,8 +199,8 @@ export class GameEngine {
         const selector = GameState.getInstance().getRunningScenario().CurrentChoiceSelector;
         selector.EndLine = endIndex;
 
-        for (let i = lineIndex + 1; i < endIndex; i++) {
-          const innerCommand = lines[i].trim();
+        for (let i = currentLineIndex + 1; i < endIndex; i++) {
+          const innerCommand = this.scenarioLines[i].trim();
           if (innerCommand.startsWith('QUESTION')) {
             const questionText = innerCommand.substring(9).replace(/"/g, '');
             GameState.getInstance().setChoiceQuestion(questionText);
@@ -131,12 +210,14 @@ export class GameEngine {
           }
         }
 
-        lineIndex = endIndex;
-        GameState.getInstance().setCurrentLine(lineIndex);
+        GameState.getInstance().setCurrentLine(endIndex);
       }
 
       try {
-        const instruction = this.parser.parse(lines[lineIndex].trim());
+        const lineBeforeExecute = GameState.getInstance().getCurrentLine();
+        const scenarioBeforeExecute = GameState.getInstance().getRunningScenario().Name;
+
+        const instruction = this.parser.parse(this.scenarioLines[lineBeforeExecute].trim());
 
         if (instruction) {
           await this.executeInstruction(instruction);
@@ -146,17 +227,25 @@ export class GameEngine {
           await this.redrawScene();
         }
 
+        const lineAfterExecute = GameState.getInstance().getCurrentLine();
+        const scenarioAfterExecute = GameState.getInstance().getRunningScenario()?.Name;
+
+        const jumpOccurred = lineAfterExecute !== lineBeforeExecute || scenarioAfterExecute !== scenarioBeforeExecute;
+
         if (this.shouldForceInput(instruction)) {
           GameState.getInstance().setRedraw(true);
-          GameState.getInstance().setCurrentLine(lineIndex + 1);
+          if (!jumpOccurred) {
+            GameState.getInstance().setCurrentLine(lineAfterExecute + 1);
+          }
           break;
         }
-      } catch (error) {
-        log.error(`Error parsing command at line ${lineIndex}: ${lines[lineIndex]}`, error);
-        this.alertHandler.showError(error as Error);
-      }
 
-      if (lineIndex >= lines.length - 1) {
+        if (!jumpOccurred) {
+          GameState.getInstance().setCurrentLine(lineAfterExecute + 1);
+        }
+      } catch (error) {
+        log.error(`Error parsing command at line ${currentLineIndex}: ${this.scenarioLines[currentLineIndex]}`, error);
+        this.alertHandler.showError(error as Error);
         break;
       }
     }
@@ -178,10 +267,13 @@ export class GameEngine {
         break;
       case 'Jump':
         if (instruction.Parameters.length > 0) {
-          // Scenario jump
+          await this.loadTargetScenario(instruction.Parameters[0]);
         }
         break;
       case 'EndGame':
+        if (this.popScenarioStack()) {
+          break;
+        }
         this.mainWindow?.webContents.send('end-game');
         this.mainWindow?.webContents.send('stop-all-sounds');
         break;
@@ -241,6 +333,7 @@ export class GameEngine {
   public async resetGame(): Promise<void> {
     try {
       if (this.metadata) {
+        this.scenarioStack = [];
         GameState.getInstance().setupGameState(this.metadata, false);
         await this.loadScenario();
         log.info('Game state reset successfully');
