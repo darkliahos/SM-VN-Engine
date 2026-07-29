@@ -1,9 +1,10 @@
-import { ScenarioStatus } from '../enums';
+import { ScenarioStatus, ImageFormatType } from '../enums';
 import {
   Game,
   Metadata,
   RunningScenario,
   Character,
+  RanScenario,
 } from '../models';
 import { ScenarioNotRunningException } from '../exceptions';
 import { generateGuid } from './StringUtils';
@@ -16,6 +17,7 @@ export class GameState {
 
   public static getInstance(): GameState {
     if (!GameState.instance) {
+      console.log("Created new instance of game state")
       GameState.instance = new GameState();
     }
     return GameState.instance;
@@ -32,6 +34,7 @@ export class GameState {
     this.state.CurrentScenario = new RunningScenario();
     this.state.CurrentScenario.Name = 'Start';
     this.state.CurrentScenario.Line = 0;
+    this.state.
   }
 
   public getTitle(): string {
@@ -83,6 +86,10 @@ export class GameState {
     this.setupScenario(name);
   }
 
+  public getLastEjectedScenario(): RanScenario {
+    
+  }
+
   public getRunningScenario(): RunningScenario {
     if (!this.state.CurrentScenario) {
       throw new ScenarioNotRunningException();
@@ -97,8 +104,12 @@ export class GameState {
       Name: scenario.Name,
       Status: status,
       LastRunNumber: scenario.Line,
+      LastBackground: scenario.Background,
+      LastSound: "", //TODO We do not have this in state 
+      EjectionPrecidence: this.state.EjectionCounter + 1
     });
     this.state.CurrentScenario = null;
+    this.state.EjectionCounter = this.state.EjectionCounter + 1
   }
 
   public setupScenario(name: string): RunningScenario {
@@ -227,5 +238,66 @@ export class GameState {
       ScenarioExtension: this.state.ScenarioExtension,
       PictureFormatType: this.state.ImageFormatType,
     };
+  }
+
+  public dumpState(): void {
+    console.group('GameState Dump');
+    console.log('Title:', this.state.Title);
+    console.log('TitleScreenImageName:', this.state.TitleScreenImageName);
+    console.log('ImageFormatType:', ImageFormatType[this.state.ImageFormatType]);
+    console.log('DebugMode:', this.state.DebugMode);
+    console.log('StartFile:', this.state.StartFile);
+    console.log('ScenarioExtension:', this.state.ScenarioExtension);
+
+    if (this.state.CurrentScenario) {
+      console.group('CurrentScenario');
+      console.log('Id:', this.state.CurrentScenario.Id);
+      console.log('Name:', this.state.CurrentScenario.Name);
+      console.log('Line:', this.state.CurrentScenario.Line);
+      console.log('Background:', this.state.CurrentScenario.Background);
+      console.log('Redraw:', this.state.CurrentScenario.Redraw);
+
+      console.group('CurrentChoiceSelector');
+      console.log('Id:', this.state.CurrentScenario.CurrentChoiceSelector.Id);
+      console.log('Question:', this.state.CurrentScenario.CurrentChoiceSelector.Question);
+      console.log('Choices:', this.state.CurrentScenario.CurrentChoiceSelector.Choices);
+      console.log('SelectedChoice:', this.state.CurrentScenario.CurrentChoiceSelector.SelectedChoice);
+      console.log('EndLine:', this.state.CurrentScenario.CurrentChoiceSelector.EndLine);
+      console.groupEnd();
+
+      console.log('ChoiceSelectors:', JSON.stringify(this.state.CurrentScenario.ChoiceSelectors));
+
+      console.group('Characters');
+      for (const [id, character] of this.state.CurrentScenario.Characters) {
+        console.group(`Character: ${character.FriendlyName} (${id})`);
+        console.log('Identifier:', character.Identifier);
+        console.log('FriendlyName:', character.FriendlyName);
+        console.log('DisplayName:', character.DisplayName);
+        console.log('Position:', { XAxis: character.Position.XAxis, YAxis: character.Position.YAxis });
+        console.log('SpriteHeight:', character.SpriteHeight);
+        console.log('SpriteWidth:', character.SpriteWidth);
+        console.log('CurrentSprite:', character.CurrentSprite);
+        console.log('InScene:', character.InScene);
+        console.log('ScreenPosition:', character.ScreenPosition);
+        console.groupEnd();
+      }
+      console.groupEnd();
+      console.groupEnd();
+    } else {
+      console.log('CurrentScenario: null');
+    }
+
+    console.group('PreviousScenarios');
+    for (let i = 0; i < this.state.PreviousScenarios.length; i++) {
+      const prev = this.state.PreviousScenarios[i];
+      console.group(`Scenario ${i}`);
+      console.log('Id:', prev.Id);
+      console.log('Name:', prev.Name);
+      console.log('Status:', ScenarioStatus[prev.Status]);
+      console.log('LastRunNumber:', prev.LastRunNumber);
+      console.groupEnd();
+    }
+    console.groupEnd();
+    console.groupEnd();
   }
 }

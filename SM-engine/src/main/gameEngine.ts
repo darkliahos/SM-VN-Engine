@@ -7,20 +7,12 @@ import { generateGuid } from '../services/StringUtils';
 import log from 'electron-log';
 import { getResourcePath } from './pathUtils';
 
-interface ScenarioStackFrame {
-  fileName: string;
-  scenarioName: string;
-  lines: string[];
-  returnLine: number;
-}
-
 export class GameEngine {
   private parser: DirtyParser;
   private alertHandler: ConsoleAlertHandler;
   private stateManager: StateManager;
   private scenarioLines: string[] = [];
   private currentFileName: string = 'Start.txt';
-  private scenarioStack: ScenarioStackFrame[] = [];
   private metadata: Metadata | null = null;
 
   constructor(private mainWindow: BrowserWindow | null) {
@@ -58,10 +50,11 @@ export class GameEngine {
     const content = await fs.readFile(scenarioFile, 'utf-8');
     this.scenarioLines = content.split('\n');
     this.currentFileName = startFile;
-    this.scenarioStack = [];
   }
 
   private async loadTargetScenario(targetScenario: string): Promise<void> {
+
+    GameState.getInstance().dumpState();
     const normalizedTarget = targetScenario.trim().toLowerCase();
     for (let i = 0; i < this.scenarioLines.length; i++) {
       const line = this.scenarioLines[i].trim();
@@ -87,21 +80,11 @@ export class GameEngine {
       const scenarioFile = path.join(scenarioPath, file);
       try {
         const content = await fs.readFile(scenarioFile, 'utf-8');
-        const currentLine = GameState.getInstance().getCurrentLine();
-        const currentScenarioName = GameState.getInstance().getRunningScenario()?.Name || 'Start';
-
-        this.scenarioStack.push({
-          fileName: this.currentFileName,
-          scenarioName: currentScenarioName,
-          lines: this.scenarioLines,
-          returnLine: currentLine + 1,
-        });
-
         this.scenarioLines = content.split('\n');
         this.currentFileName = file;
         GameState.getInstance().jumpScenarios(targetScenario);
         GameState.getInstance().setCurrentLine(0);
-        log.info(`Jumped to scenario file: ${file} (pushed ${this.scenarioStack[this.scenarioStack.length - 1].fileName} to stack)`);
+        log.info(`Jumped to scenario file: ${file}`);
         return;
       } catch {
         continue;
@@ -112,16 +95,11 @@ export class GameEngine {
   }
 
   private popScenarioStack(): boolean {
-    if (this.scenarioStack.length > 0) {
-      const parentFrame = this.scenarioStack.pop()!;
-      this.scenarioLines = parentFrame.lines;
-      this.currentFileName = parentFrame.fileName;
-      GameState.getInstance().jumpScenarios(parentFrame.scenarioName);
-      GameState.getInstance().setCurrentLine(parentFrame.returnLine);
-      log.info(`Returned to parent scenario: ${parentFrame.fileName} at line ${parentFrame.returnLine}`);
+      const parentFrame = GameState.getInstance().getLastEjectedScenario();
+      GameState.getInstance().jumpScenarios(parentFrame.Id);
+      GameState.getInstance().setCurrentLine(parentFrame.LastRunNumber);
+      log.info(`Returned to parent scenario: ${parentFrame.Id} at line ${parentFrame.LastRunNumber}`);
       return true;
-    }
-    return false;
   }
 
   public getMetadata(): Metadata | null {
@@ -333,7 +311,6 @@ export class GameEngine {
   public async resetGame(): Promise<void> {
     try {
       if (this.metadata) {
-        this.scenarioStack = [];
         GameState.getInstance().setupGameState(this.metadata, false);
         await this.loadScenario();
         log.info('Game state reset successfully');

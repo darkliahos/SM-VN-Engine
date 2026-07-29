@@ -11,4 +11,5 @@ export class Game {
   public ScenarioExtension: string = '';
   public CurrentScenario: RunningScenario | null = null;
   public PreviousScenarios: RanScenario[] = [];
+  public EjectionCounter: number = -1;
 }
