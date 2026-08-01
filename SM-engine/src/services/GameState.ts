@@ -13,7 +13,7 @@ export class GameState {
   private static instance: GameState;
   private state: Game = new Game();
 
-  private constructor() {}
+  private constructor() { }
 
   public static getInstance(): GameState {
     if (!GameState.instance) {
@@ -84,8 +84,10 @@ export class GameState {
   }
 
   public getLastEjectedScenario(): RanScenario {
+    console.log("****PREVIOUS SCENARIOS****");
+    console.log(this.state.PreviousScenarios);
     const ejected = this.state.PreviousScenarios
-      .filter(s => s.Status === ScenarioStatus.Ejected)
+      .filter(s => s.Status === ScenarioStatus.Ejected && s.Id !== this.getRunningScenario().Id)
       .sort((a, b) => b.EjectionPrecidence - a.EjectionPrecidence);
 
     if (ejected.length === 0) {
@@ -104,22 +106,36 @@ export class GameState {
 
   public teardownCurrentScenario(status: ScenarioStatus): void {
     const scenario = this.getRunningScenario();
-    this.state.PreviousScenarios.push({
-      Id: scenario.Id,
-      Name: scenario.Name,
-      Status: status,
-      LastRunNumber: scenario.Line,
-      LastBackground: scenario.Background,
-      LastSound: "", //TODO We do not have this in state 
-      EjectionPrecidence: this.state.EjectionCounter + 1
-    });
+    const existing = this.state.PreviousScenarios.find(s => s.Id === scenario.Id);
+    if (existing) {
+      existing.Name = scenario.Name;
+      existing.Status = status;
+      existing.LastRunNumber = scenario.Line;
+      existing.LastBackground = scenario.Background;
+      existing.LastSound = "";
+      existing.EjectionPrecidence = status === ScenarioStatus.Ejected ? this.state.EjectionCounter + 1 : existing.EjectionPrecidence;
+    } else {
+      this.state.PreviousScenarios.push({
+        Id: scenario.Id,
+        Name: scenario.Name,
+        Status: status,
+        LastRunNumber: scenario.Line,
+        LastBackground: scenario.Background,
+        LastSound: "", //TODO We do not have this in state 
+        EjectionPrecidence: status === ScenarioStatus.Ejected ? this.state.EjectionCounter + 1 : -1
+      });
+    }
     this.state.CurrentScenario = null;
-    this.state.EjectionCounter = this.state.EjectionCounter + 1
+    if (status === ScenarioStatus.Ejected) {
+      this.state.EjectionCounter = this.state.EjectionCounter + 1;
+    }
   }
 
   public setupScenario(name: string, file: string): RunningScenario {
+    var previousScenario = this.state.PreviousScenarios.find(s => s.Name === name);
+    
     const newScenario = new RunningScenario();
-    newScenario.Id = generateGuid();
+    newScenario.Id = previousScenario ? previousScenario.Id : generateGuid();
     newScenario.fileName = file;
     newScenario.Name = name;
     newScenario.Line = 0;
