@@ -1,17 +1,18 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { BrowserWindow } from 'electron';
-import { Metadata, GameWindowInstruction } from '../models';
+import { Metadata, GameWindowInstruction, RanScenario } from '../models';
 import { GameState, DirtyParser, StateManager, ConsoleAlertHandler } from '../services';
 import { generateGuid } from '../services/StringUtils';
 import log from 'electron-log';
 import { getResourcePath } from './pathUtils';
+import { ScenarioMemoryStructure } from '../models/ScenarioMemoryStructure';
 
 export class GameEngine {
   private parser: DirtyParser;
   private alertHandler: ConsoleAlertHandler;
   private stateManager: StateManager;
-  private scenarioLines: string[] = [];
+  private scenarioLines: ScenarioMemoryStructure[] = [];
   private metadata: Metadata | null = null;
 
   constructor(private mainWindow: BrowserWindow | null) {
@@ -41,29 +42,47 @@ export class GameEngine {
     this.metadata = JSON.parse(content);
   }
 
+  private getScenarioLines(): string[] {
+    const name = GameState.getInstance().getRunningScenario().Name.trim().toLowerCase();
+    const index = this.scenarioLines.findIndex(s => s.name.trim().toLowerCase() === name);
+    return index >= 0 ? this.scenarioLines[index].lines : [];
+  }
+
   private async loadScenario(): Promise<void> {
     const scenarioPath = getResourcePath('Scenarios');
     const startFile = GameState.getInstance().getStartFile();
     const scenarioFile = path.join(scenarioPath, startFile);
 
     const content = await fs.readFile(scenarioFile, 'utf-8');
-    this.scenarioLines = content.split('\n');
+    const liveScenario = this.stateManager.getCurrentScenario();
+    this.scenarioLines = [{
+      id: liveScenario.Id,
+      name: liveScenario.Name,
+      lines: content.split('\n')
+    }];
   }
 
   private async loadTargetScenario(targetScenario: string): Promise<void> {
 
     GameState.getInstance().dumpState();
     const normalizedTarget = targetScenario.trim().toLowerCase();
-    for (let i = 0; i < this.scenarioLines.length; i++) {
-      const line = this.scenarioLines[i].trim();
-      if (line.toLowerCase().startsWith('begin scenario')) {
-        const markerName = line.substring(14).replace(/"/g, '').trim().toLowerCase();
-        if (markerName === normalizedTarget) {
-          GameState.getInstance().setCurrentLine(i);
-          return;
+    const existingIndex = this.scenarioLines.findIndex(x => x.name.trim().toLowerCase() == normalizedTarget);
+
+    if (existingIndex != -1) {
+      const existingLines = this.scenarioLines[existingIndex].lines;
+      for (let i = 0; i < existingLines.length; i++) {
+        const line = existingLines[i].trim();
+        if (line.toLowerCase().startsWith('begin scenario')) {
+          const markerName = line.substring(14).replace(/"/g, '').trim().toLowerCase();
+          if (markerName === normalizedTarget) {
+            GameState.getInstance().jumpScenarios(targetScenario, targetScenario);
+            GameState.getInstance().setCurrentLine(i);
+            return;
+          }
         }
       }
     }
+
 
     const scenarioPath = getResourcePath('Scenarios');
     const ext = GameState.getInstance().getScenarioFileExtension() || 'txt';
@@ -78,7 +97,7 @@ export class GameEngine {
       const scenarioFile = path.join(scenarioPath, file);
       try {
         const content = await fs.readFile(scenarioFile, 'utf-8');
-        this.scenarioLines = content.split('\n');
+        this.scenarioLines.push({ name: targetScenario, id: "", lines: content.split('\n') });
         GameState.getInstance().jumpScenarios(targetScenario, file);
         GameState.getInstance().setCurrentLine(0);
         log.info(`Jumped to scenario file: ${file}`);
@@ -92,11 +111,23 @@ export class GameEngine {
   }
 
   private popScenarioStack(): boolean {
-      const parentFrame = GameState.getInstance().getLastEjectedScenario();
+    let parentFrame: RanScenario | undefined;
+    try {
+      parentFrame = GameState.getInstance().getLastEjectedScenario();
+    } catch {
+      // no ejected parent scenario
+    }
+    if (parentFrame != undefined) {
       GameState.getInstance().jumpScenarios(parentFrame.Name, parentFrame.Name);
-      GameState.getInstance().setCurrentLine(parentFrame.LastRunNumber);
+      GameState.getInstance().setCurrentLine(parentFrame.LastRunNumber + 1);
+      GameState.getInstance().setCurrentBackground(parentFrame.LastBackground);
+      this.mainWindow?.webContents.send('draw-background', parentFrame.LastBackground);
       log.info(`Returned to parent scenario: ${parentFrame.Id} at line ${parentFrame.LastRunNumber}`);
       return true;
+    }
+
+    //TODO load Game over
+    return false;
   }
 
   public getMetadata(): Metadata | null {
@@ -119,15 +150,15 @@ export class GameEngine {
   public async runScenario(): Promise<void> {
     while (true) {
       const currentLineIndex = GameState.getInstance().getCurrentLine();
-      if (currentLineIndex < 0 || currentLineIndex >= this.scenarioLines.length) {
+      if (currentLineIndex < 0 || currentLineIndex >= this.getScenarioLines().length) {
         if (this.popScenarioStack()) {
           continue;
         }
         break;
       }
 
-      const command = this.scenarioLines[currentLineIndex].trim();
-      
+      const command = this.getScenarioLines()[currentLineIndex].trim();
+
       if (!command) {
         GameState.getInstance().setCurrentLine(currentLineIndex + 1);
         continue;
@@ -140,7 +171,7 @@ export class GameEngine {
           const nextLine = currentChoiceSelector.EndLine + 1;
           GameState.getInstance().setCurrentLine(nextLine);
           currentChoiceSelector.EndLine = undefined;
-          
+
           const activeScenario = GameState.getInstance().getRunningScenario();
           activeScenario.ChoiceSelectors.push({
             Id: currentChoiceSelector.Id,
@@ -148,7 +179,7 @@ export class GameEngine {
             Choices: { ...currentChoiceSelector.Choices },
             SelectedChoice: currentChoiceSelector.SelectedChoice
           });
-          
+
           continue;
         }
       }
@@ -156,8 +187,8 @@ export class GameEngine {
       // Scan ahead for choice block
       if (command.startsWith('BEGIN CHOICES')) {
         let endIndex = -1;
-        for (let i = currentLineIndex + 1; i < this.scenarioLines.length; i++) {
-          if (this.scenarioLines[i].trim().startsWith('END CHOICES')) {
+        for (let i = currentLineIndex + 1; i < this.getScenarioLines().length; i++) {
+          if (this.getScenarioLines()[i].trim().startsWith('END CHOICES')) {
             endIndex = i;
             break;
           }
@@ -175,7 +206,7 @@ export class GameEngine {
         selector.EndLine = endIndex;
 
         for (let i = currentLineIndex + 1; i < endIndex; i++) {
-          const innerCommand = this.scenarioLines[i].trim();
+          const innerCommand = this.getScenarioLines()[i].trim();
           if (innerCommand.startsWith('QUESTION')) {
             const questionText = innerCommand.substring(9).replace(/"/g, '');
             GameState.getInstance().setChoiceQuestion(questionText);
@@ -192,7 +223,7 @@ export class GameEngine {
         const lineBeforeExecute = GameState.getInstance().getCurrentLine();
         const scenarioBeforeExecute = GameState.getInstance().getRunningScenario().Name;
 
-        const instruction = this.parser.parse(this.scenarioLines[lineBeforeExecute].trim());
+        const instruction = this.parser.parse(this.getScenarioLines()[lineBeforeExecute].trim());
 
         if (instruction) {
           await this.executeInstruction(instruction);
@@ -219,7 +250,7 @@ export class GameEngine {
           GameState.getInstance().setCurrentLine(lineAfterExecute + 1);
         }
       } catch (error) {
-        log.error(`Error parsing command at line ${currentLineIndex}: ${this.scenarioLines[currentLineIndex]}`, error);
+        log.error(`Error parsing command at line ${currentLineIndex}: ${this.getScenarioLines()[currentLineIndex]}`, error);
         this.alertHandler.showError(error as Error);
         break;
       }
@@ -228,7 +259,7 @@ export class GameEngine {
 
   private async executeInstruction(instruction: GameWindowInstruction | null): Promise<void> {
     if (!instruction) return;
-    
+
     switch (instruction.MethodName) {
       case 'DrawCharacter':
         this.mainWindow?.webContents.send('draw-character', instruction.Parameters[0], instruction.Parameters[1], instruction.Parameters[3] ?? 1);
@@ -272,6 +303,9 @@ export class GameEngine {
         break;
       case 'DISPLAY CHOICE':
         const selector = GameState.getInstance().getRunningScenario().CurrentChoiceSelector;
+        if (!selector || Object.keys(selector.Choices).length === 0) {
+          break;
+        }
         const choicesArray = Object.keys(selector.Choices).map(text => ({
           text,
           line: selector.Choices[text]
@@ -298,7 +332,12 @@ export class GameEngine {
   }
 
   private shouldForceInput(instruction: GameWindowInstruction | null): boolean {
-    return instruction?.MethodName === 'WriteText' || instruction?.MethodName === 'DISPLAY CHOICE';
+    if (instruction?.MethodName === 'WriteText') return true;
+    if (instruction?.MethodName === 'DISPLAY CHOICE') {
+      const selector = GameState.getInstance().getRunningScenario().CurrentChoiceSelector;
+      return selector != undefined && Object.keys(selector.Choices).length > 0;
+    }
+    return false;
   }
 
   public setCurrentBackground(background: string): void {

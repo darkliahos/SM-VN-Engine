@@ -1,5 +1,5 @@
 import { Animation, Direction, ScenarioStatus } from '../enums';
-import { Character, Coordinate } from '../models';
+import { Character, Coordinate, RunningScenario } from '../models';
 import { GameState } from './GameState';
 import { IAlertHandler } from './AlertHandler';
 
@@ -22,6 +22,7 @@ export interface IStateManager {
   showCharacter(friendlyName: string, animation: Animation): void;
   showChoices(): void;
   changeBackground(sprite: string):void
+  getCurrentScenario(): RunningScenario;
 }
 
 export class StateManager implements IStateManager {
@@ -123,5 +124,9 @@ export class StateManager implements IStateManager {
 
   public changeBackground(sprite: string):void {
     GameState.getInstance().setCurrentBackground(sprite);
+  }
+
+  public getCurrentScenario():RunningScenario {
+    return GameState.getInstance().getRunningScenario();
   }
 }
