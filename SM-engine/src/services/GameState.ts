@@ -114,6 +114,7 @@ export class GameState {
       existing.LastBackground = scenario.Background;
       existing.LastSound = "";
       existing.EjectionPrecidence = status === ScenarioStatus.Ejected ? this.state.EjectionCounter + 1 : existing.EjectionPrecidence;
+      existing.Characters = new Map(scenario.Characters);
     } else {
       this.state.PreviousScenarios.push({
         Id: scenario.Id,
@@ -122,7 +123,8 @@ export class GameState {
         LastRunNumber: scenario.Line,
         LastBackground: scenario.Background,
         LastSound: "", //TODO We do not have this in state 
-        EjectionPrecidence: status === ScenarioStatus.Ejected ? this.state.EjectionCounter + 1 : -1
+        EjectionPrecidence: status === ScenarioStatus.Ejected ? this.state.EjectionCounter + 1 : -1,
+        Characters: new Map(scenario.Characters)
       });
     }
     this.state.CurrentScenario = null;
@@ -139,6 +141,9 @@ export class GameState {
     newScenario.fileName = file;
     newScenario.Name = name;
     newScenario.Line = 0;
+    if (previousScenario) {
+      newScenario.Characters = new Map(previousScenario.Characters);
+    }
     this.state.CurrentScenario = newScenario;
     return newScenario;
   }

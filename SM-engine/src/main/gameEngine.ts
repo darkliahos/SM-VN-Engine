@@ -1,6 +1,7 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { BrowserWindow } from 'electron';
+import { ScenarioStatus } from '../enums';
 import { Metadata, GameWindowInstruction, RanScenario } from '../models';
 import { GameState, DirtyParser, StateManager, ConsoleAlertHandler } from '../services';
 import { generateGuid } from '../services/StringUtils';
@@ -118,9 +119,11 @@ export class GameEngine {
       // no ejected parent scenario
     }
     if (parentFrame != undefined) {
-      GameState.getInstance().jumpScenarios(parentFrame.Name, parentFrame.Name);
+      GameState.getInstance().teardownCurrentScenario(ScenarioStatus.Ended);
+      GameState.getInstance().setupScenario(parentFrame.Name, parentFrame.Name);
       GameState.getInstance().setCurrentLine(parentFrame.LastRunNumber + 1);
       GameState.getInstance().setCurrentBackground(parentFrame.LastBackground);
+      GameState.getInstance().setRedraw(true);
       this.mainWindow?.webContents.send('draw-background', parentFrame.LastBackground);
       log.info(`Returned to parent scenario: ${parentFrame.Id} at line ${parentFrame.LastRunNumber}`);
       return true;
