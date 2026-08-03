@@ -6,3 +6,4 @@ export { RunningScenario } from './RunningScenario';
 export { RanScenario } from './RanScenario';
 export { Game } from './Game';
 export { GameWindowInstruction } from './GameWindowInstruction';
+export { ScenarioMemoryStructure } from './ScenarioMemoryStructure';

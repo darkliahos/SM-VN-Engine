@@ -1,5 +1,5 @@
 import { Animation, Direction, ScenarioStatus } from '../enums';
-import { Character, Coordinate } from '../models';
+import { Character, Coordinate, RunningScenario } from '../models';
 import { GameState } from './GameState';
 import { IAlertHandler } from './AlertHandler';
 
@@ -13,7 +13,7 @@ export interface IStateManager {
   gameOver(): void;
   hideCharacter(friendlyName: string, animation: Animation): void;
   jumpLine(number: number): void;
-  jumpScenario(scenario: string): void;
+  jumpScenario(scenario: string, fileName: string): void;
   moveCharacter(friendlyName: string, direction: Direction, pixels: number): void;
   placeCharacter(friendlyName: string, x: number, y: number, scaleHeight?: number, scaleWidth?: number): void;
   playSound(fileName: string, loop: boolean, volume?: number): void;
@@ -22,6 +22,7 @@ export interface IStateManager {
   showCharacter(friendlyName: string, animation: Animation): void;
   showChoices(): void;
   changeBackground(sprite: string):void
+  getCurrentScenario(): RunningScenario;
 }
 
 export class StateManager implements IStateManager {
@@ -66,7 +67,7 @@ export class StateManager implements IStateManager {
 
   public gameOver(): void {
     GameState.getInstance().teardownCurrentScenario(ScenarioStatus.Ended);
-    GameState.getInstance().setupScenario('GameOver');
+    GameState.getInstance().setupScenario('GameOver' , '');
     GameState.getInstance().setCurrentBackground('GameOver');
     GameState.getInstance().setRedraw(true);
   }
@@ -82,8 +83,8 @@ export class StateManager implements IStateManager {
     GameState.getInstance().setCurrentLine(number);
   }
 
-  public jumpScenario(scenario: string): void {
-    GameState.getInstance().jumpScenarios(scenario);
+  public jumpScenario(scenario: string, fileName: string): void {
+    GameState.getInstance().jumpScenarios(scenario, fileName);
   }
 
   public moveCharacter(friendlyName: string, _direction: Direction, _pixels: number): void {
@@ -123,5 +124,9 @@ export class StateManager implements IStateManager {
 
   public changeBackground(sprite: string):void {
     GameState.getInstance().setCurrentBackground(sprite);
+  }
+
+  public getCurrentScenario():RunningScenario {
+    return GameState.getInstance().getRunningScenario();
   }
 }

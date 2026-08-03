@@ -1,0 +1,56 @@
+BEGIN SCENARIO "Inside The Tower"
+
+CHANGE BACKGROUND insidetower
+
+PLAY SOUND LOOP "cicadas-at-dusk.mp3"
+
+Add [Yuki] Thoughtful *Fade In* (right)
+Add [Kenji] Nervous *Fade In* (left)
+
+[Kenji] SAYS "Looking down at Tokyo from up here... everyone looks so small."
+
+CHANGE SPRITE [Yuki] Sad *Fade*
+
+[Yuki] SAYS "Small, and endlessly rushed, Kenji. Like clockwork figures trapped in a machine they didn't design."
+
+[Kenji] SAYS "It's exhausting, isn't it? Working until midnight, inflation eating away our savings, while society demands we smile and fit the quiet mold."
+
+CHANGE SPRITE [Kenji] Concerned *Slide*
+
+[Yuki] SAYS "The rigid norms of Japanese society leave very little room to stumble. If you step out of line, the silence that follows is deafening."
+
+[Kenji] SAYS "Sometimes I feel like we're constantly stuck in a trolley problem with no good choices."
+
+CHANGE SPRITE [Yuki] Thoughtful *Fade In*
+
+[Yuki] SAYS "The trolley problem? You mean pulling the lever to divert the train?"
+
+[Kenji] SAYS "Exactly. If we conform and stay on the main track, we slowly crush our own dreams to keep society running smoothly."
+
+[Yuki] SAYS "And if we pull the lever to save ourselves... we sacrifice the harmony everyone expects from us."
+
+CHANGE SPRITE [Kenji] Determined *Slide*
+
+[Kenji] SAYS "So which track do we choose, Yuki? Do we keep quiet, or do we build our own path?"
+
+BEGIN CHOICES
+QUESTION "How does Yuki respond to Kenji's question?"
+FORK "Pull the lever and forge our own path"
+[Yuki] SAYS "Let's pull the lever, Kenji. Even if it's scary, I want a life that actually feels like ours."
+[Kenji] SAYS "Then we'll face whatever comes next together."
+FORK "Stay quiet and survive together"
+[Yuki] SAYS "We might have to navigate the quiet track for a while, but as long as we have each other, the noise won't break us."
+[Kenji] SAYS "As long as we're together, that's enough for me."
+END CHOICES
+
+CHANGE SPRITE [Yuki] Happy *Fade In*
+CHANGE SPRITE [Kenji] Hopeful *Slide*
+
+[Yuki] SAYS "Thank you for bringing me up here, Kenji. The world down there is heavy, but up here, I can breathe."
+
+[Kenji] SAYS "Whenever it gets too heavy... we'll come back."
+
+Hide [Kenji] *Fade Out*
+Hide [Yuki] *Fade Out*
+
+END STORY

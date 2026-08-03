@@ -318,7 +318,7 @@ export class DirtyParser implements IParser {
       const match = command.match(RegexConstants.GetStuffInQuotes);
       if (match) {
         const scenario = match[1];
-        this.instructor.jumpScenario(scenario);
+        this.instructor.jumpScenario(scenario, scenario);
         return new GameWindowInstruction('Jump', [scenario]);
       }
     }
