@@ -265,7 +265,7 @@ export class DirtyParser implements IParser {
     const loop = containsInsensitive(command, 'loop');
     const volumeMatch = command.match(/VOL:(\d+)/i);
     const volume = volumeMatch ? parseInt(volumeMatch[1], 10) / 100 : DirtyParser.DEFAULT_SOUND_VOLUME;
-    this.instructor.playSound(file, loop);
+    this.instructor.playSound(file, loop, volume);
     return new GameWindowInstruction('PLAY SOUND', [file, loop, volume]);
   }
 
