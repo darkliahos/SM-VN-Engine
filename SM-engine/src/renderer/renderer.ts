@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
-import {Animation} from "../enums/Animation"
-import {Position} from "../enums/Position"
-import {ElectronAPI} from "../main/preload"
+import { Animation } from "../enums/Animation"
+import { Position } from "../enums/Position"
+import { ElectronAPI } from "../main/preload"
 import { GameConfig } from "./GameConfig"
 
 
@@ -37,6 +37,11 @@ export class PixiRenderer {
   private titleScreenBg: PIXI.Graphics | null = null;
   private titleScreenImageName: string = '';
   private titleScreenImage: PIXI.Sprite | null = null;
+  private transitionContainer: PIXI.Container | null = null;
+  private transitionOverlay: PIXI.Graphics | null = null;
+  private isTransitioning: boolean = false;
+  private pendingTransitionDraws: Array<() => void> = [];
+  private animationTickers: Map<PIXI.Sprite, (t: PIXI.Ticker) => void> = new Map();
 
   public async initialize(): Promise<void> {
     this.app = new PIXI.Application();
@@ -60,6 +65,15 @@ export class PixiRenderer {
     this.app.stage.addChild(this.backgroundContainer);
     this.app.stage.addChild(this.characterContainer);
     this.app.stage.addChild(this.uiContainer);
+
+    this.transitionContainer = new PIXI.Container();
+    this.transitionOverlay = new PIXI.Graphics();
+    this.transitionOverlay.rect(0, 0, window.innerWidth, window.innerHeight);
+    this.transitionOverlay.fill(0x000000);
+    this.transitionOverlay.alpha = 0;
+    this.transitionOverlay.eventMode = 'none';
+    this.transitionContainer.addChild(this.transitionOverlay);
+    this.app.stage.addChild(this.transitionContainer);
 
     this.createTextBox();
     this.createChoicesContainer();
@@ -161,11 +175,11 @@ export class PixiRenderer {
 
   private setupIPCListeners(): void {
     window.electronAPI.onDrawBackground((background: string) => {
-      this.loadBackground(background);
+      this.queueTransitionDraw(() => this.loadBackground(background));
     });
 
     window.electronAPI.onDrawCharacter((characterName: string, sprite: string, position: number) => {
-      this.loadCharacter(characterName, sprite, Animation.FadeIn, position);
+      this.queueTransitionDraw(() => this.loadCharacter(characterName, sprite, Animation.FadeIn, position));
     });
 
     window.electronAPI.onWriteText((character: string, text: string) => {
@@ -185,29 +199,39 @@ export class PixiRenderer {
     });
 
     window.electronAPI.onShowCharacter((characterName: string, animation: number) => {
-      this.showCharacter(characterName, animation as Animation);
+      this.queueTransitionDraw(() => this.showCharacter(characterName, animation as Animation));
     });
 
     window.electronAPI.onChangeSprite((characterName: string, spriteName: string) => {
-      this.changeCharacterSprite(characterName, spriteName);
+      this.queueTransitionDraw(() => this.changeCharacterSprite(characterName, spriteName));
     });
 
     window.electronAPI.onHideCharacter((characterName: string, animation: number) => {
-      this.hideCharacter(characterName, animation as Animation);
+      this.queueTransitionDraw(() => this.hideCharacter(characterName, animation as Animation));
     });
 
     window.electronAPI.onRemoveCharacter((characterName: string, animation: number) => {
-      this.removeCharacter(characterName, animation as Animation);
+      this.queueTransitionDraw(() => this.removeCharacter(characterName, animation as Animation));
     });
 
     window.electronAPI.onShowChoices((question: string, choices: { text: string; line: number }[]) => {
       this.showChoices(question, choices);
+    });
+
+    window.electronAPI.onSceneTransition(() => {
+      this.handleSceneTransition();
     });
   }
 
   private resize(): void {
     if (this.app) {
       this.app.renderer.resize(window.innerWidth, window.innerHeight);
+
+      if (this.transitionOverlay) {
+        this.transitionOverlay.clear();
+        this.transitionOverlay.rect(0, 0, window.innerWidth, window.innerHeight);
+        this.transitionOverlay.fill(0x000000);
+      }
 
       if (this.titleScreenBg) {
         this.titleScreenBg.clear();
@@ -221,14 +245,14 @@ export class PixiRenderer {
 
       if (this.titleText && this.startButton) {
         this.titleText.style.wordWrapWidth = window.innerWidth - 80;
-        
+
         const spacing = 40;
         const buttonHeight = 60;
         const totalHeight = this.titleText.height + spacing + buttonHeight;
-        
+
         this.titleText.x = window.innerWidth / 2;
         this.titleText.y = (window.innerHeight - totalHeight) / 2 + this.titleText.height / 2;
-        
+
         this.startButton.x = window.innerWidth / 2 - 100;
         this.startButton.y = this.titleText.y + this.titleText.height / 2 + spacing;
       }
@@ -340,7 +364,7 @@ export class PixiRenderer {
     }
 
     const textureKey = `${name}/${spriteName}`;
-    
+
     if (this.characterTextures.has(textureKey)) {
       this.createCharacterSpriteFromTexture(name, textureKey, animation, screenPosition);
       return;
@@ -439,10 +463,13 @@ export class PixiRenderer {
 
   public changeCharacterSprite(name: string, spriteName: string): void {
     const sprite = this.characterSprites.get(name);
-    if (!sprite) return;
+    if (!sprite) {
+      console.error(`${spriteName} for ${name} not found`);
+      return;
+    }
 
     const textureKey = `${name}/${spriteName}`;
-    
+
     if (this.characterTextures.has(textureKey)) {
       sprite.texture = this.characterTextures.get(textureKey)!;
       this.updateSpriteScaleAndPosition(sprite);
@@ -484,18 +511,20 @@ export class PixiRenderer {
 
   private fadeIn(sprite: PIXI.Sprite, duration?: number): void {
     if (!this.app) return;
-    
+
     const ticker = this.app.ticker;
     const startTime = ticker.lastTime;
     const durationMs = duration ?? GameConfig.Animation.defaultDuration;
-    
+
     const fadeTicker = (t: PIXI.Ticker) => {
       const elapsed = t.lastTime - startTime;
       sprite.alpha = Math.min(elapsed / durationMs, 1);
       if (sprite.alpha >= 1) {
+        this.unregisterAnimation(sprite, fadeTicker);
         ticker.remove(fadeTicker);
       }
     };
+    this.registerAnimation(sprite, fadeTicker);
     ticker.add(fadeTicker);
   }
 
@@ -504,25 +533,27 @@ export class PixiRenderer {
       onComplete();
       return;
     }
-    
+
     const ticker = this.app.ticker;
     const startTime = ticker.lastTime;
     const durationMs = duration ?? GameConfig.Animation.defaultDuration;
-    
+
     const fadeTicker = (t: PIXI.Ticker) => {
       const elapsed = t.lastTime - startTime;
       sprite.alpha = 1 - Math.min(elapsed / durationMs, 1);
       if (sprite.alpha <= 0) {
+        this.unregisterAnimation(sprite, fadeTicker);
         ticker.remove(fadeTicker);
         onComplete();
       }
     };
+    this.registerAnimation(sprite, fadeTicker);
     ticker.add(fadeTicker);
   }
 
   private slideIn(sprite: PIXI.Sprite, direction: string, duration?: number): void {
     if (!this.app) return;
-    
+
     const ticker = this.app.ticker;
     const startTime = ticker.lastTime;
     const startX = sprite.x;
@@ -538,14 +569,104 @@ export class PixiRenderer {
       sprite.alpha = progress;
 
       if (progress >= 1) {
+        this.unregisterAnimation(sprite, slideTicker);
         ticker.remove(slideTicker);
       }
     };
+    this.registerAnimation(sprite, slideTicker);
     ticker.add(slideTicker);
+  }
+
+  private registerAnimation(sprite: PIXI.Sprite, tickerFn: (t: PIXI.Ticker) => void): void {
+    const existing = this.animationTickers.get(sprite);
+    if (existing && this.app) {
+      this.app.ticker.remove(existing);
+    }
+    this.animationTickers.set(sprite, tickerFn);
+  }
+
+  private unregisterAnimation(sprite: PIXI.Sprite, tickerFn: (t: PIXI.Ticker) => void): void {
+    const existing = this.animationTickers.get(sprite);
+    if (existing === tickerFn) {
+      this.animationTickers.delete(sprite);
+    }
+  }
+
+  private cancelAnimation(sprite: PIXI.Sprite): void {
+    const existing = this.animationTickers.get(sprite);
+    if (existing && this.app) {
+      this.app.ticker.remove(existing);
+    }
+    this.animationTickers.delete(sprite);
+  }
+
+  private cancelAllAnimations(): void {
+    if (!this.app) {
+      this.animationTickers.clear();
+      return;
+    }
+    this.animationTickers.forEach((tickerFn) => this.app!.ticker.remove(tickerFn));
+    this.animationTickers.clear();
   }
 
   private easeOutCubic(t: number): number {
     return 1 - Math.pow(1 - t, 3);
+  }
+
+  private queueTransitionDraw(action: () => void): void {
+    if (this.isTransitioning) {
+      this.pendingTransitionDraws.push(action);
+      return;
+    }
+    action();
+  }
+
+  private handleSceneTransition(): void {
+    if (this.isTransitioning) return;
+    this.isTransitioning = true;
+    this.pendingTransitionDraws = [];
+
+    this.animateTransitionOverlay(0, 1, () => {
+      this.resetCharacterDisplay();
+      const draws = this.pendingTransitionDraws;
+      this.pendingTransitionDraws = [];
+      this.isTransitioning = false;
+      draws.forEach((draw) => draw());
+      this.animateTransitionOverlay(1, 0);
+    });
+  }
+
+  private resetCharacterDisplay(): void {
+    this.cancelAllAnimations();
+    this.characterContainer!.removeChildren();
+    this.displayedCharacters.clear();
+    if (this.textBox) {
+      this.textBox.visible = false;
+    }
+  }
+
+  private animateTransitionOverlay(from: number, to: number, onComplete?: () => void, duration?: number): void {
+    if (!this.app || !this.transitionOverlay) {
+      onComplete?.();
+      return;
+    }
+
+    const ticker = this.app.ticker;
+    const startTime = ticker.lastTime;
+    const durationMs = duration ?? GameConfig.Animation.transitionDuration;
+    this.transitionOverlay.alpha = from;
+
+    const overlayTicker = (t: PIXI.Ticker) => {
+      const elapsed = t.lastTime - startTime;
+      const progress = Math.min(elapsed / durationMs, 1);
+      this.transitionOverlay!.alpha = from + (to - from) * progress;
+      if (progress >= 1) {
+        this.transitionOverlay!.alpha = to;
+        ticker.remove(overlayTicker);
+        onComplete?.();
+      }
+    };
+    ticker.add(overlayTicker);
   }
 
   private showTextBox(character: string, text: string): void {
@@ -619,7 +740,7 @@ export class PixiRenderer {
     const container = new PIXI.Container();
 
     const bg = new PIXI.Graphics();
-    
+
     const label = new PIXI.Text({
       text,
       style: {
@@ -636,7 +757,7 @@ export class PixiRenderer {
 
     container.addChild(bg);
     container.addChild(label);
-    
+
     (container as any).bg = bg;
     (container as any).label = label;
     (container as any).buttonWidth = buttonWidth;
@@ -668,7 +789,7 @@ export class PixiRenderer {
 
     bg.clear();
     bg.roundRect(0, 0, buttonWidth, buttonHeight, cb.borderRadius);
-    
+
     if (isSelected) {
       bg.fill({ color: colors.choiceBgHover, alpha: cb.alpha });
       bg.stroke({ width: tb.borderWidth, color: colors.buttonHoverBorder });
@@ -692,7 +813,7 @@ export class PixiRenderer {
     }
 
     const selectedChoice = this.currentChoices[this.selectedChoiceIndex];
-    
+
     if (this.choicesContainer) {
       this.choicesContainer.visible = false;
       this.choicesContainer.removeChildren();
@@ -762,7 +883,7 @@ export class PixiRenderer {
             const texture = PIXI.Texture.from(img);
             this.titleScreenImage = new PIXI.Sprite(texture);
             this.fitSpriteToScreen(this.titleScreenImage);
-            
+
             const index = this.backgroundContainer!.children.indexOf(this.titleScreenBg!);
             if (index !== -1) {
               this.backgroundContainer!.addChildAt(this.titleScreenImage, index + 1);
@@ -851,10 +972,10 @@ export class PixiRenderer {
     // Initial position calculation to ensure perfectly centered title and button.
     const spacing = 40;
     const totalHeight = this.titleText.height + spacing + buttonHeight;
-    
+
     this.titleText.x = window.innerWidth / 2;
     this.titleText.y = (window.innerHeight - totalHeight) / 2 + this.titleText.height / 2;
-    
+
     this.startButton.x = window.innerWidth / 2 - buttonWidth / 2;
     this.startButton.y = this.titleText.y + this.titleText.height / 2 + spacing;
   }
@@ -946,6 +1067,12 @@ export class PixiRenderer {
     this.isShowingChoices = false;
     this.currentChoices = [];
     this.choiceButtons = [];
+    this.cancelAllAnimations();
+    this.isTransitioning = false;
+    this.pendingTransitionDraws = [];
+    if (this.transitionOverlay) {
+      this.transitionOverlay.alpha = 0;
+    }
   }
 
   public destroyTextures(): void {

@@ -57,6 +57,7 @@ export const GameConfig = {
   },
   Animation: {
     defaultDuration: 500,
+    transitionDuration: 300,
   },
   Title: {
     fontFamily: 'Georgia, serif',

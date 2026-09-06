@@ -65,7 +65,6 @@ export class GameEngine {
 
   private async loadTargetScenario(targetScenario: string): Promise<void> {
 
-    GameState.getInstance().dumpState();
     const normalizedTarget = targetScenario.trim().toLowerCase();
     const existingIndex = this.scenarioLines.findIndex(x => x.name.trim().toLowerCase() == normalizedTarget);
 
@@ -78,6 +77,7 @@ export class GameEngine {
           if (markerName === normalizedTarget) {
             GameState.getInstance().jumpScenarios(targetScenario, targetScenario);
             GameState.getInstance().setCurrentLine(i);
+            this.mainWindow?.webContents.send('scene-transition');
             return;
           }
         }
@@ -102,6 +102,7 @@ export class GameEngine {
         GameState.getInstance().jumpScenarios(targetScenario, file);
         GameState.getInstance().setCurrentLine(0);
         log.info(`Jumped to scenario file: ${file}`);
+        this.mainWindow?.webContents.send('scene-transition');
         return;
       } catch {
         continue;
@@ -123,8 +124,10 @@ export class GameEngine {
       GameState.getInstance().setupScenario(parentFrame.Name, parentFrame.Name);
       GameState.getInstance().setCurrentLine(parentFrame.LastRunNumber + 1);
       GameState.getInstance().setCurrentBackground(parentFrame.LastBackground);
+      GameState.getInstance().floodCharacters(parentFrame.Characters);
       GameState.getInstance().setRedraw(true);
-      this.mainWindow?.webContents.send('draw-background', parentFrame.LastBackground);
+      GameState.getInstance().dumpState();
+      this.mainWindow?.webContents.send('scene-transition');
       log.info(`Returned to parent scenario: ${parentFrame.Id} at line ${parentFrame.LastRunNumber}`);
       return true;
     }
@@ -155,12 +158,15 @@ export class GameEngine {
       const currentLineIndex = GameState.getInstance().getCurrentLine();
       if (currentLineIndex < 0 || currentLineIndex >= this.getScenarioLines().length) {
         if (this.popScenarioStack()) {
+          console.log(currentLineIndex);
+          GameState.getInstance().setCurrentLine(currentLineIndex)
           continue;
         }
         break;
       }
 
       const command = this.getScenarioLines()[currentLineIndex].trim();
+      console.log(command)
 
       if (!command) {
         GameState.getInstance().setCurrentLine(currentLineIndex + 1);
@@ -329,7 +335,9 @@ export class GameEngine {
     }
 
     const characters = GameState.getInstance().getCharactersInScene();
+
     for (const character of characters) {
+      console.log(character)
       this.mainWindow?.webContents.send('draw-character', character.FriendlyName, character.CurrentSprite, character.ScreenPosition);
     }
   }
