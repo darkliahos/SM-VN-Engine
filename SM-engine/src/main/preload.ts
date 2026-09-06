@@ -31,6 +31,7 @@ export interface ElectronAPI {
   onPauseSound: (callback: (id: string) => void) => void;
   onResumeSound: (callback: (id: string) => void) => void;
   onStopAllSounds: (callback: () => void) => void;
+  onSceneTransition: (callback: () => void) => void;
   resetGame: () => Promise<void>;
 }
 
@@ -97,6 +98,9 @@ const electronAPI: ElectronAPI = {
   },
   onStopAllSounds: (callback: () => void) => {
     ipcRenderer.on('stop-all-sounds', () => callback());
+  },
+  onSceneTransition: (callback: () => void) => {
+    ipcRenderer.on('scene-transition', () => callback());
   },
 };
 

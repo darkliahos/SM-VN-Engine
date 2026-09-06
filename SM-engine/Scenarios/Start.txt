@@ -1,18 +1,11 @@
 BEGIN SCENARIO "Temple Garden"
-
 CHANGE BACKGROUND TempleGarden
-
 PLAY SOUND LOOP "cicadas-at-dusk.mp3"
-
 Add [Yuki] Thoughtful *Fade In* (right)
 Add [Kenji] Nervous *Fade In* (left)
-
 [Kenji] SAYS "I found this place last spring. When everything was in bloom..."
-
 CHANGE SPRITE [Kenji] Shy *Slide*
-
 [Yuki] SAYS "It's beautiful. Like something from a painting."
-
 BEGIN CHOICES
 QUESTION "What should Kenji do next?"
 FORK "Hold Yuki's hand"
@@ -25,48 +18,26 @@ FORK "Go inside the tower with Yuki"
 [Kenji] SAYS "Let's head inside Tokyo Tower together."
 JUMP SCENARIO "insidethetower"
 END CHOICES
-
 CHANGE SPRITE [Yuki] Sad *Fade*
-
 [Kenji] SAYS "Yuki... you've been quiet since we left Tokyo."
-
 [Yuki] SAYS "I'm not sure I belong here, Kenji. Everything is changing so fast."
-
 CHANGE SPRITE [Kenji] Concerned *Swirl*
-
 [Kenji] SAYS "The world is changing. But... my feelings haven't."
-
 [Yuki] SAYS "Your feelings?"
-
 CHANGE SPRITE [Kenji] Determined *Fade In*
-
 [Kenji] SAYS "I meant what I said last year. Under the cherry blossoms."
-
 CHANGE SPRITE [Yuki] Surprised *Swirl*
-
 [Yuki] SAYS "That was before your family... before everything."
-
 [Kenji] SAYS "I don't care about any of that. I care about you."
-
 CHANGE SPRITE [Yuki] Happy *Fade In*
-
 [Yuki] SAYS "Kenji..."
-
 CHANGE SPRITE [Kenji] Hopeful *Slide*
-
 [Kenji] SAYS "These old temples... they don't change. The maple leaves still turn gold every autumn."
-
 CHANGE SPRITE [Yuki] Thoughtful *Fade*
-
 [Yuki] SAYS "And you'll still be here. Even when the world says we shouldn't be."
-
 [Kenji] SAYS "Especially then."
-
 CHANGE SPRITE [Yuki] Happy *Fade In*
-
 [Yuki] SAYS "Perhaps... perhaps I do belong here after all."
-
 Hide [Kenji] *Fade Out*
 Hide [Yuki] *Fade Out*
-
 END STORY

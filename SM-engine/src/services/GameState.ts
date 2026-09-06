@@ -62,6 +62,10 @@ export class GameState {
     this.getRunningScenario().Background = background;
   }
 
+  public floodCharacters(characters: Map<string, Character>){
+    this.getRunningScenario().Characters = characters;
+  }
+
   public setCurrentLine(line: number): void {
     this.getRunningScenario().Line = line;
   }
@@ -150,6 +154,7 @@ export class GameState {
 
   public getCharactersInScene(): Character[] {
     const scenario = this.getRunningScenario();
+    console.log(scenario);
     return Array.from(scenario.Characters.values()).filter(c => c.InScene);
   }
 
@@ -233,6 +238,7 @@ export class GameState {
         return true;
       }
     }
+    console.error(`Failed to find character ${friendlyName} in scene`);
     return false;
   }
 
