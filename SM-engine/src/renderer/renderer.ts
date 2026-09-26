@@ -25,6 +25,8 @@ export class PixiRenderer {
   private characterNameText: PIXI.Text | null = null;
   private dialogueText: PIXI.Text | null = null;
   private choicesContainer: PIXI.Container | null = null;
+  private choiceBackdrop: PIXI.Graphics | null = null;
+  private choiceFadeTicker: ((t: PIXI.Ticker) => void) | null = null;
   private isReady: boolean = false;
   private gameTitle: string = 'Visual Novel';
   private onStartCallback: (() => void) | null = null;
@@ -134,6 +136,15 @@ export class PixiRenderer {
   }
 
   private createChoicesContainer(): void {
+    const { choiceBackdrop: cbd } = GameConfig.UI;
+    this.choiceBackdrop = new PIXI.Graphics();
+    this.choiceBackdrop.rect(0, 0, window.innerWidth, window.innerHeight);
+    this.choiceBackdrop.fill({ color: cbd.backgroundColor, alpha: cbd.backgroundAlpha });
+    this.choiceBackdrop.visible = false;
+    this.choiceBackdrop.eventMode = 'static';
+    this.choiceBackdrop.cursor = 'default';
+    this.uiContainer!.addChild(this.choiceBackdrop);
+
     this.choicesContainer = new PIXI.Container();
     this.choicesContainer.visible = false;
     this.uiContainer!.addChild(this.choicesContainer);
@@ -260,6 +271,15 @@ export class PixiRenderer {
       if (this.textBox) {
         this.textBox.x = (window.innerWidth - GameConfig.UI.textBox.width) / 2;
         this.textBox.y = window.innerHeight - GameConfig.UI.textBox.xOffset;
+      }
+
+      if (this.choiceBackdrop) {
+        this.choiceBackdrop.clear();
+        this.choiceBackdrop.rect(0, 0, window.innerWidth, window.innerHeight);
+        this.choiceBackdrop.fill({
+          color: GameConfig.UI.choiceBackdrop.backgroundColor,
+          alpha: GameConfig.UI.choiceBackdrop.backgroundAlpha,
+        });
       }
 
       if (this.choicesContainer) {
@@ -690,7 +710,16 @@ export class PixiRenderer {
 
   public showChoices(question: string, choices: { text: string; line: number }[]): void {
     if (!this.choicesContainer) return;
-    const { fonts, colors, choiceButton: cb } = GameConfig.UI;
+    const { fonts, colors, choiceButton: cb, choicePanel: cp, choiceBackdrop: cbd } = GameConfig.UI;
+
+    if (this.textBox && this.textBox.visible) {
+      this.textBox.visible = false;
+    }
+
+    if (this.choiceFadeTicker && this.app) {
+      this.app.ticker.remove(this.choiceFadeTicker);
+      this.choiceFadeTicker = null;
+    }
 
     this.currentChoices = choices;
     this.selectedChoiceIndex = 0;
@@ -699,44 +728,118 @@ export class PixiRenderer {
 
     this.choicesContainer.removeChildren();
 
+    const buttonWidth = cb.width;
+    const buttonHeight = cb.height;
+    const buttonSpacing = cb.spacing;
+
+    const titleText = question || 'Choose:';
+    const minPanelWidth = cp.minWidth;
+    const maxTextWrapWidth = Math.max(buttonWidth, minPanelWidth - cp.paddingX * 2);
+
     const title = new PIXI.Text({
-      text: question || 'Choose:',
+      text: titleText,
       style: {
         fontFamily: fonts.family,
         fontSize: fonts.characterNameSize,
         fill: colors.dialogue,
         fontWeight: 'bold',
         wordWrap: true,
-        wordWrapWidth: 600,
+        wordWrapWidth: maxTextWrapWidth,
+        align: 'center',
       }
     });
     title.anchor.set(0.5, 0);
+
+    const panelWidth = Math.max(minPanelWidth, buttonWidth + cp.paddingX * 2, title.width + cp.paddingX * 2);
+    const numChoices = choices.length;
+    const totalButtonsHeight = numChoices > 0 ? (numChoices - 1) * buttonSpacing + buttonHeight : 0;
+    const dividerGap = cp.showDivider ? cp.titleToDividerGap + cp.dividerToButtonGap : cp.titleToDividerGap;
+    const contentHeight = title.height + dividerGap + totalButtonsHeight;
+    const panelHeight = cp.paddingTop + contentHeight + cp.paddingBottom;
+
+    const startX = -panelWidth / 2;
+    const startY = -panelHeight / 2;
+
+    if (cp.enabled) {
+      // Ambient shadow for elevation & depth
+      const shadow = new PIXI.Graphics();
+      shadow.roundRect(startX - 3, startY - 3, panelWidth + 6, panelHeight + 6, cp.borderRadius + 2);
+      shadow.fill({ color: cp.shadowColor, alpha: cp.shadowAlpha });
+      this.choicesContainer.addChild(shadow);
+
+      // Sleek translucent glass-like card panel
+      const panelBg = new PIXI.Graphics();
+      panelBg.roundRect(startX, startY, panelWidth, panelHeight, cp.borderRadius);
+      panelBg.fill({ color: cp.backgroundColor, alpha: cp.backgroundAlpha });
+      panelBg.stroke({ width: cp.borderWidth, color: cp.borderColor, alpha: cp.borderAlpha });
+      this.choicesContainer.addChild(panelBg);
+
+      // Subtle accent divider below question
+      if (cp.showDivider) {
+        const dividerY = startY + cp.paddingTop + title.height + cp.titleToDividerGap;
+        const divider = new PIXI.Graphics();
+        divider.moveTo(startX + 35, dividerY);
+        divider.lineTo(startX + panelWidth - 35, dividerY);
+        divider.stroke({ width: 1, color: cp.dividerColor, alpha: cp.dividerAlpha });
+        this.choicesContainer.addChild(divider);
+      }
+    }
+
     title.x = 0;
-
-    const buttonWidth = 500;
-    const buttonHeight = 50;
-    const buttonSpacing = 65;
-
-    title.y = -((choices.length * buttonSpacing) / 2) - 50;
+    title.y = startY + cp.paddingTop;
     this.choicesContainer.addChild(title);
+
+    const firstButtonY = startY + cp.paddingTop + title.height + dividerGap;
 
     choices.forEach((choice, index) => {
       const button = this.createChoiceButton(choice.text, index, buttonWidth, buttonHeight);
       button.x = -buttonWidth / 2;
-      button.y = index * buttonSpacing - ((choices.length * buttonSpacing) / 2) + 20;
+      button.y = firstButtonY + index * buttonSpacing;
       this.choicesContainer!.addChild(button);
       this.choiceButtons.push(button);
     });
 
     this.updateChoiceHighlights();
 
-    this.choicesContainer.visible = true;
     this.choicesContainer.x = window.innerWidth / 2;
     this.choicesContainer.y = window.innerHeight / 2;
+    this.choicesContainer.visible = true;
+
+    if (this.choiceBackdrop && cbd.enabled) {
+      this.choiceBackdrop.clear();
+      this.choiceBackdrop.rect(0, 0, window.innerWidth, window.innerHeight);
+      this.choiceBackdrop.fill({ color: cbd.backgroundColor, alpha: cbd.backgroundAlpha });
+      this.choiceBackdrop.visible = true;
+    }
+
+    const fadeDuration = GameConfig.Animation.choiceFadeDuration;
+    if (this.app && fadeDuration > 0) {
+      const ticker = this.app.ticker;
+      const startTime = ticker.lastTime;
+      if (this.choiceBackdrop) this.choiceBackdrop.alpha = 0;
+      this.choicesContainer.alpha = 0;
+
+      this.choiceFadeTicker = (t: PIXI.Ticker) => {
+        const elapsed = t.lastTime - startTime;
+        const progress = Math.min(elapsed / fadeDuration, 1);
+        if (this.choiceBackdrop) this.choiceBackdrop.alpha = progress;
+        if (this.choicesContainer) this.choicesContainer.alpha = progress;
+        if (progress >= 1) {
+          if (this.choiceFadeTicker) {
+            ticker.remove(this.choiceFadeTicker);
+            this.choiceFadeTicker = null;
+          }
+        }
+      };
+      ticker.add(this.choiceFadeTicker);
+    } else {
+      if (this.choiceBackdrop) this.choiceBackdrop.alpha = 1;
+      this.choicesContainer.alpha = 1;
+    }
   }
 
   private createChoiceButton(text: string, index: number, buttonWidth: number, buttonHeight: number): PIXI.Container {
-    const { fonts, colors, choiceButton: cb } = GameConfig.UI;
+    const { fonts, colors } = GameConfig.UI;
     const container = new PIXI.Container();
 
     const bg = new PIXI.Graphics();
@@ -749,6 +852,7 @@ export class PixiRenderer {
         fill: colors.dialogue,
         wordWrap: true,
         wordWrapWidth: buttonWidth - 40,
+        align: 'center',
       }
     });
     label.x = buttonWidth / 2;
@@ -791,12 +895,16 @@ export class PixiRenderer {
     bg.roundRect(0, 0, buttonWidth, buttonHeight, cb.borderRadius);
 
     if (isSelected) {
-      bg.fill({ color: colors.choiceBgHover, alpha: cb.alpha });
-      bg.stroke({ width: tb.borderWidth, color: colors.buttonHoverBorder });
+      bg.fill({ color: colors.choiceBgHover, alpha: 1 });
+      bg.stroke({ width: 2, color: colors.buttonHoverBorder });
       label.style.fill = colors.choiceTextHover;
     } else {
       bg.fill({ color: colors.choiceBg, alpha: cb.alpha });
-      bg.stroke({ width: tb.borderWidth, color: tb.borderColor });
+      bg.stroke({
+        width: 1.5,
+        color: (colors as any).choiceBorder ?? tb.borderColor,
+        alpha: (colors as any).choiceBorderAlpha ?? 0.25,
+      });
       label.style.fill = colors.dialogue;
     }
   }
@@ -813,6 +921,15 @@ export class PixiRenderer {
     }
 
     const selectedChoice = this.currentChoices[this.selectedChoiceIndex];
+
+    if (this.choiceFadeTicker && this.app) {
+      this.app.ticker.remove(this.choiceFadeTicker);
+      this.choiceFadeTicker = null;
+    }
+
+    if (this.choiceBackdrop) {
+      this.choiceBackdrop.visible = false;
+    }
 
     if (this.choicesContainer) {
       this.choicesContainer.visible = false;
@@ -1057,9 +1174,19 @@ export class PixiRenderer {
   }
 
   private cleanupScene(): void {
+    if (this.choiceFadeTicker && this.app) {
+      this.app.ticker.remove(this.choiceFadeTicker);
+      this.choiceFadeTicker = null;
+    }
+    if (this.choiceBackdrop) {
+      this.choiceBackdrop.visible = false;
+    }
+    if (this.choicesContainer) {
+      this.choicesContainer.visible = false;
+      this.choicesContainer.removeChildren();
+    }
     this.backgroundContainer!.removeChildren();
     this.characterContainer!.removeChildren();
-    this.choicesContainer!.removeChildren();
     this.displayedCharacters.clear();
     this.characterSprites.clear();
     this.currentBackground = null;
