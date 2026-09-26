@@ -1,7 +1,7 @@
 {
   "name": "sm-engine",
-  "version": "1.0.0",
-  "description": "Visual Novel Engine - Electron Port",
+  "version": "0.7.0",
+  "description": "Visual Novel Engine - Milestone 1",
   "main": "dist/main/main.js",
   "scripts": {
     "copy-assets": "node scripts/copy-assets.js",
