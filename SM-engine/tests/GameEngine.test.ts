@@ -3,10 +3,11 @@ import { GameEngine } from '../src/main/gameEngine';
 import { GameState } from '../src/services/GameState';
 import { Character } from '../src/models';
 import { ScenarioStatus } from '../src/enums';
+import { looseContentSource } from './helpers/contentSource';
 
 describe('GameEngine - Choices / Forking', () => {
   it('should initialize and process choices correctly', async () => {
-    const engine = new GameEngine(null);
+    const engine = new GameEngine(null, await looseContentSource());
     await engine.initialize();
     
     // Reset state to start
@@ -48,7 +49,7 @@ describe('GameEngine - Choices / Forking', () => {
   });
 
   it('should jump to insidethetower scenario correctly when selected', async () => {
-    const engine = new GameEngine(null);
+    const engine = new GameEngine(null, await looseContentSource());
     await engine.initialize();
     
     GameState.getInstance().setCurrentLine(0);
@@ -69,7 +70,7 @@ describe('GameEngine - Choices / Forking', () => {
   });
 
   it('should return to parent scenario after completing inner scenario', async () => {
-    const engine = new GameEngine(null);
+    const engine = new GameEngine(null, await looseContentSource());
     await engine.initialize();
     
     GameState.getInstance().setCurrentLine(0);
@@ -112,7 +113,7 @@ describe('GameEngine - Choices / Forking', () => {
   });
 
   it('should restore characters in scope when returning to parent scenario', async () => {
-    const engine = new GameEngine(null);
+    const engine = new GameEngine(null, await looseContentSource());
     await engine.initialize();
     
     GameState.getInstance().setCurrentLine(0);
@@ -186,7 +187,7 @@ describe('GameEngine - Choices / Forking', () => {
     const mockWindow = {
       webContents: { send: (channel: string) => { sent.push(channel); } },
     } as unknown as never;
-    const engine = new GameEngine(mockWindow);
+    const engine = new GameEngine(mockWindow, await looseContentSource());
     await engine.initialize();
 
     GameState.getInstance().setCurrentLine(0);

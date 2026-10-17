@@ -25,6 +25,9 @@ function copyRecursiveSync(src, dest) {
   }
 }
 
+// Static files the renderer loads from disk rather than through the esbuild bundle.
+const STATIC_FILES = [];
+
 function copyStatic() {
   try {
     const srcDir = path.join(rootDir, 'src', 'renderer');
@@ -36,7 +39,7 @@ function copyStatic() {
       }
       const files = fs.readdirSync(srcDir);
       for (const file of files) {
-        if (file.endsWith('.html')) {
+        if (file.endsWith('.html') || STATIC_FILES.includes(file)) {
           fs.copyFileSync(path.join(srcDir, file), path.join(destDir, file));
         }
       }
@@ -47,7 +50,21 @@ function copyStatic() {
 }
 
 function copyContent() {
-  const folders = ['Scenarios', 'Scenes', 'Characters', 'Assets', 'Audio'];
+  // Canonical FAP layout: content lives under Assets/ and Scripts/.
+  const folders = ['Scripts', 'Assets'];
+  for (const folder of folders) {
+    try {
+      // Remove the destination first. Without this the copy is additive, which
+      // leaves renamed files behind (copying Title.png over an existing
+      // title.png keeps the old casing on a case-insensitive filesystem) and
+      // leaves folders that the layout migration moved away from.
+      const destDir = path.join(rootDir, 'dist', folder);
+      fs.rmSync(destDir, { recursive: true, force: true });
+    } catch (err) {
+      console.warn(`Warning cleaning folder ${folder} in dist:`, err.message);
+    }
+  }
+
   for (const folder of folders) {
     try {
       const srcDir = path.join(rootDir, folder);

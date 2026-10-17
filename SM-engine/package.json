@@ -4,17 +4,17 @@
   "description": "Visual Novel Engine - Milestone 2",
   "main": "dist/main/main.js",
   "scripts": {
-    "copy-assets": "node scripts/copy-assets.js",
+    "copy-assets": "node tools/copy-assets.js",
     "build-renderer": "esbuild src/renderer/main.ts --bundle --outfile=dist/renderer/renderer.js --format=iife --platform=browser --define:exports=undefined",
-    "build": "node scripts/build.js",
-    "start": "node scripts/build.js --run",
-    "dev": "node scripts/build.js --run",
+    "build": "node tools/build.js",
+    "start": "node tools/build.js --run",
+    "dev": "node tools/build.js --run",
     "test": "vitest",
     "test:run": "vitest run",
-    "pack": "node scripts/distribute.js --dir",
-    "dist": "node scripts/distribute.js",
-    "distribute": "node scripts/distribute.js",
-    "distribute:dir": "node scripts/distribute.js --dir"
+    "pack": "node tools/distribute.js --dir",
+    "dist": "node tools/distribute.js",
+    "distribute": "node tools/distribute.js",
+    "distribute:dir": "node tools/distribute.js --dir"
   },
   "author": "",
   "license": "MIT",
@@ -25,12 +25,14 @@
     "electron-builder": "^26.15.3",
     "esbuild": "^0.28.1",
     "typescript": "^5.3.0",
-    "vitest": "^4.1.11"
+    "vitest": "^4.1.11",
+    "yazl": "^3.3.1"
   },
   "dependencies": {
     "electron-log": "^5.0.0",
     "howler": "^2.2.4",
-    "pixi.js": "^8.17.1"
+    "pixi.js": "^8.17.1",
+    "unzipper": "^0.12.5"
   },
   "build": {
     "appId": "com.sm.vnengine",
@@ -44,11 +46,8 @@
     ],
     "extraResources": [
       "Metadata.json",
-      "Scenarios/**/*",
-      "Scenes/**/*",
-      "Characters/**/*",
-      "Assets/**/*",
-      "Audio/**/*"
+      "Scripts/**/*",
+      "Assets/**/*"
     ]
   }
 }
