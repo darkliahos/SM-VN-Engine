@@ -17,6 +17,7 @@ import {
   translateStreamError,
 } from './GameSource';
 import { verifyPasswordAgainst } from './password';
+import { decodeKeyFile, keyPathForPack } from './cipher';
 
 /**
  * A game's content read out of a `.fap` pack.
@@ -88,10 +89,51 @@ export class PackSource implements GameSource {
     }
   }
 
+  /**
+   * Resolves the pack password using the following priority:
+   *
+   * 1. If a `game.key` (or `<packName>.key`) file exists next to the pack,
+   *    decrypt it with the engine's AES-256-GCM cipher and verify the
+   *    recovered password against the PBKDF2 verifier in Metadata.json.
+   *
+   * 2. (Legacy / fallback) If `Metadata.Password` is set, use it directly.
+   *    This path is deprecated and will be removed in a future version.
+   *
+   * If neither source yields a valid password and the pack requires one, the
+   * caller must show an error dialog and abort.
+   */
   private async loadPasswordFromMetadata(): Promise<void> {
     const metadata = await this.readMetadata();
+
+    // --- Approach 3: AES-encrypted game.key (preferred) ---
+    const keyPath = keyPathForPack(this.packPath);
+    let keyPassword: string | null = null;
+    try {
+      keyPassword = await decodeKeyFile(keyPath);
+    } catch {
+      // key file absent or malformed — fall through to legacy path
+    }
+
+    if (keyPassword !== null) {
+      const ok = await this.verifyPassword(keyPassword);
+      if (!ok) {
+        throw new BadPasswordError(
+          `game.key was decoded successfully but the password did not match ` +
+          `the PBKDF2 verifier in Metadata.json. The key file may be for a ` +
+          `different version of this pack.`
+        );
+      }
+      return;
+    }
+
+    // --- Legacy: plaintext password in Metadata.json ---
     const metadataPassword = metadata.Password ?? (metadata as any).password;
     if (metadataPassword) {
+      // Warn, but honour the legacy field so existing packs keep working.
+      console.warn(
+        '[PackSource] Warning: pack is using a deprecated plaintext Password field in ' +
+        'Metadata.json. Re-pack with `sm-cli pack --password=<pwd>` to switch to game.key.'
+      );
       await this.verifyPassword(metadataPassword);
     }
   }

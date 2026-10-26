@@ -1,7 +1,8 @@
+import * as fs from 'fs';
 import * as path from 'path';
 import { app } from 'electron';
 import { PACK_EXTENSION } from '../../services/GamePaths';
-import { GameSource } from './GameSource';
+import { BadPasswordError, GameSource } from './GameSource';
 import { PackSource } from './PackSource';
 import { ensurePack } from './packBuilder';
 
@@ -29,8 +30,9 @@ export function resolveSourceRoot(): string {
     return process.resourcesPath;
   }
 
-  // Development runs straight from the repository root. The loose-folder
-  // development path has been removed; the engine only ever reads a pack.
+  // Development runs from the staged build directory, which `copy-assets`
+  // populates in the canonical layout. The engine only ever reads a pack; this
+  // folder is the input for the launch-time auto-build fallback.
   return path.resolve(__dirname, '..', '..');
 }
 
@@ -87,15 +89,126 @@ export function cachedPackPath(): string | null {
 }
 
 /**
- * Opens the game's content. The engine reads *only* a `.fap`. At launch, a pack
- * is either supplied via `--pack`, or it is built (and reused when fresh) from
- * the canonical source layout.
+ * Finds a `.fap` that is already sitting in `root`.
+ *
+ * `game.fap` wins; otherwise the first other `.fap` by sorted name is used, so
+ * a shipped pack with a title-specific name still loads. Returns null when the
+ * folder does not exist or holds no pack.
+ */
+export function findPackIn(root: string): string | null {
+  if (!root) {
+    return null;
+  }
+
+  let names: string[];
+  try {
+    names = fs
+      .readdirSync(root, { withFileTypes: true })
+      .filter(entry => entry.isFile() && entry.name.toLowerCase().endsWith(PACK_EXTENSION))
+      .map(entry => entry.name)
+      .sort((a, b) => a.localeCompare(b));
+  } catch {
+    return null;
+  }
+
+  if (names.length === 0) {
+    return null;
+  }
+
+  const preferred = names.find(name => name.toLowerCase() === DEFAULT_PACK_NAME.toLowerCase());
+  return path.join(root, preferred ?? names[0]);
+}
+
+/**
+ * Folders a pre-built pack may live in, in precedence order.
+ *
+ * Pack authoring is an offline concern (`sm-cli pack`), so an existing pack is
+ * always preferred over building one at launch. The project root is checked
+ * before the working directory so a CLI-built pack next to the sources wins
+ * over the engine's own auto-build cache in `dist/`, which is never searched
+ * here.
+ */
+export function candidatePackRoots(): string[] {
+  if (app?.isPackaged && process.resourcesPath) {
+    return [process.resourcesPath];
+  }
+
+  const roots = [
+    // Compiled main lives in <project>/dist/main/content.
+    path.resolve(__dirname, '..', '..', '..'),
+    process.cwd(),
+  ];
+
+  const unique: string[] = [];
+  for (const root of roots) {
+    if (!unique.some(existing => existing.toLowerCase() === root.toLowerCase())) {
+      unique.push(root);
+    }
+  }
+  return unique;
+}
+
+/** Returns the first pre-built pack in the candidate roots, or null. */
+export function locatePack(): string | null {
+  for (const root of candidatePackRoots()) {
+    const pack = findPackIn(root);
+    if (pack) {
+      return pack;
+    }
+  }
+  return null;
+}
+
+/** Opens a pack and maps a bad key file onto an actionable startup error. */
+async function openPack(packPath: string): Promise<PackSource> {
+  const source = new PackSource(packPath);
+  try {
+    await source.open();
+  } catch (err) {
+    if (err instanceof BadPasswordError) {
+      throw new Error(
+        `A valid game.key file is required to unlock this game.\n\n` +
+        `Expected key file: ${packPath.replace(/\.fap$/i, '.key')}\n\n` +
+        `Details: ${err.message}`
+      );
+    }
+    throw err;
+  }
+  return source;
+}
+
+/**
+ * Opens the game's content. The engine reads *only* a `.fap`.
+ *
+ * A pack is found, in order, from `--pack`, from the folder next to a packaged
+ * build, or from the project root / working directory in development. Only when
+ * no pack exists at all does the engine fall back to building its own cache from
+ * the canonical loose-folder layout, so a pack produced by `sm-cli` is always
+ * played as-is and never regenerated.
+ *
+ * For encrypted packs the engine automatically resolves the password by reading
+ * the companion `game.key` file (Approach 3 — AES-256-GCM encoded key file).
+ * If the key file is absent or tampered with, a descriptive error is thrown so
+ * the caller can show an appropriate dialog.
  */
 export async function openGameSource(): Promise<GameSource> {
   const explicit = explicitPackPath();
   if (explicit) {
-    const source = new PackSource(explicit);
-    await source.open();
+    return openPack(explicit);
+  }
+
+  // Prefer a pack that already exists: it was authored by `sm-cli` (or shipped
+  // next to a packaged build) and must never be regenerated or overwritten.
+  const located = locatePack();
+  if (located) {
+    const source = await openPack(located);
+    (source as unknown as { buildMeta?: Record<string, unknown> }).buildMeta = {
+      reused: true,
+      warnings: [],
+      cachePack: located,
+      sourceRoot: path.dirname(located),
+      origin: 'existing pack',
+    };
     return source;
   }
 
@@ -105,12 +218,12 @@ export async function openGameSource(): Promise<GameSource> {
     throw new Error('Cannot determine where to read game content from.');
   }
 
-  // `ensurePack` builds the pack only when stale; when reused, nothing is
-  // written and the existing pack is considered current.
+  // No pack was found, so fall back to the development convenience of building
+  // one from the canonical loose-folder layout. `ensurePack` only writes when
+  // the cache is missing or stale, and the cache never outranks a real pack.
   const built = await ensurePack(sourceRoot, cachePack);
 
-  const source = new PackSource(cachePack);
-  await source.open();
+  const source = await openPack(cachePack);
 
   // Attach the build information to the instance's description to avoid leaking
   // internal state. The caller may log `source.description` and `source.entryCount`.
@@ -119,6 +232,7 @@ export async function openGameSource(): Promise<GameSource> {
     warnings: built.warnings,
     cachePack,
     sourceRoot,
+    origin: 'auto-built cache',
   };
 
   return source;

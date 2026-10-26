@@ -6,11 +6,30 @@ import { PackSource } from '../../src/main/content/PackSource';
 import { ensurePack } from '../../src/main/content/packBuilder';
 
 /**
- * The engine's own content folders, in the canonical layout. vitest runs with
- * SM-engine as its working directory, which is the same root the engine falls
- * back to in development.
+ * The content root used by tests that need a real, playable game.
+ *
+ * The sample project lives in `SM-cli`, which is also what produces the `.fap`
+ * the engine plays. `SM_CONTENT_ROOT` can point at another project when the
+ * layout is not the usual sibling checkout.
  */
 export function repoContentRoot(): string {
+  const candidates = [
+    process.env.SM_CONTENT_ROOT,
+    process.cwd(),
+    path.resolve(process.cwd(), '..', 'SM-cli'),
+  ];
+
+  for (const candidate of candidates) {
+    if (
+      typeof candidate === 'string' &&
+      candidate !== '' &&
+      fs.existsSync(path.join(candidate, 'Metadata.json')) &&
+      fs.existsSync(path.join(candidate, 'Scripts', 'Scenarios', 'Start.txt'))
+    ) {
+      return candidate;
+    }
+  }
+
   return process.cwd();
 }
 

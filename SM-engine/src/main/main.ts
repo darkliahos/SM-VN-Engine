@@ -49,7 +49,7 @@ async function bootstrap(): Promise<void> {
   const meta = (gameSource as unknown as { buildMeta?: Record<string, unknown> }).buildMeta;
   if (meta) {
     log.info(`Loading game content from pack: ${gameSource.description} (entries=${gameSource.entryCount}, reused=${meta.reused}, warnings=${(meta.warnings as unknown[] | undefined)?.length ?? 0})`);
-    log.info(`Source root: ${meta.sourceRoot}, cache: ${meta.cachePack}`);
+    log.info(`Source: ${meta.sourceRoot} (${meta.origin ?? 'auto-built cache'})`);
   } else {
     log.info(`Loading game content from pack: ${gameSource.description} (entries=${gameSource.entryCount})`);
   }

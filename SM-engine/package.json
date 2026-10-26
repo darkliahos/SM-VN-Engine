@@ -14,7 +14,8 @@
     "pack": "node tools/distribute.js --dir",
     "dist": "node tools/distribute.js",
     "distribute": "node tools/distribute.js",
-    "distribute:dir": "node tools/distribute.js --dir"
+    "distribute:dir": "node tools/distribute.js --dir",
+    "pack:fap": "node ../SM-cli/dist/index.js pack"
   },
   "author": "",
   "license": "MIT",

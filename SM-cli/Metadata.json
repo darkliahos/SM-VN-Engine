@@ -1,12 +1,12 @@
 {
-  "Title": "Pack Demo",
-  "TitleScreenImageName": "title",
+  "Title": "Cherry Blossoms",
+  "TitleScreenImageName": "Title",
   "Author": "Darkliahos",
-  "Version": "0.1",
-  "DateGenerated": "2026-10-05T16:43:34.572Z",
+  "Version": "0.7.0",
+  "DateGenerated": "2026-10-26T22:41:09.892Z",
   "VersionHash": "002101F8725E5C78D9F30D87F3FA4C87",
   "PictureFormatType": 2,
   "ScenarioExtension": "txt",
-  "StartFile": "start",
+  "StartFile": "Start",
   "PackFormatVersion": 1
 }
