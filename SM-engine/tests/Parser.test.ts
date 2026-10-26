@@ -294,7 +294,7 @@ describe('DirtyParser', () => {
       expect(result).not.toBeNull();
       expect(result!.MethodName).toBe('Jump');
       expect(result!.Parameters).toEqual(['chapter2']);
-      expect(mockInstructor.jumpScenario).toHaveBeenCalledWith('chapter2');
+      expect(mockInstructor.jumpScenario).toHaveBeenCalledWith('chapter2', 'chapter2');
     });
   });
 

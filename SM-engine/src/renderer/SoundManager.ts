@@ -1,8 +1,9 @@
 import { SoundEngine, SoundId } from './SoundEngine';
+import { assetBaseUrl, GameFolders } from '../services/GamePaths';
 
 export class SoundManager {
   private soundEngine: SoundEngine;
-  private audioBasePath: string = '../Audio';
+  private audioBasePath: string = assetBaseUrl(GameFolders.sounds);
 
   constructor(soundEngine?: SoundEngine) {
     this.soundEngine = soundEngine || new SoundEngine();

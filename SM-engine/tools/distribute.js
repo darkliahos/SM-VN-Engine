@@ -4,7 +4,7 @@ const isDirOnly = process.argv.includes('--dir');
 
 try {
   console.log('1/2 Building project and copying assets/scenarios...');
-  execSync('node scripts/build.js', { stdio: 'inherit' });
+  execSync('node tools/build.js', { stdio: 'inherit' });
 
   console.log('2/2 Packaging Electron application...');
   const command = isDirOnly ? 'npx electron-builder --dir' : 'npx electron-builder';

@@ -34,61 +34,303 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * SM-cli — Single CLI entry point.
+ *
+ * Commands:
+ *   sm-cli pack [--dir=<path>] [--out=<path>] [--password=<pwd>] [--iterations=<n>]
+ *   sm-cli metadata [--dir=<path>] [--password=<pwd>] [--iterations=<n>]
+ *   sm-cli validate [--dir=<path>]
+ *   sm-cli                     ← interactive menu
+ */
 const readline = __importStar(require("readline"));
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
 const crypto = __importStar(require("crypto"));
+const validator_1 = require("./validator");
+const packer_1 = require("./packer");
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
 var ImageFormatType;
 (function (ImageFormatType) {
     ImageFormatType[ImageFormatType["Bitmap"] = 0] = "Bitmap";
     ImageFormatType[ImageFormatType["JPEG"] = 1] = "JPEG";
     ImageFormatType[ImageFormatType["PNG"] = 2] = "PNG";
 })(ImageFormatType || (ImageFormatType = {}));
-const version = "ALPHA";
+// ---------------------------------------------------------------------------
+// Constants
+// ---------------------------------------------------------------------------
+const CLI_VERSION = 'ALPHA';
+const PACK_FORMAT_VERSION = 1;
+const DEFAULT_KDF_ITERATIONS = 100_000;
+const VERIFIER_BYTES = 32;
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
 function hashVersion() {
-    return crypto.createHash('md5').update(version, 'ascii').digest('hex').toUpperCase();
+    return crypto.createHash('md5').update(CLI_VERSION, 'ascii').digest('hex').toUpperCase();
 }
-async function main() {
-    const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout
-    });
-    const question = (query) => {
-        return new Promise((resolve) => rl.question(query, resolve));
+function createEncryptionMetadata(password, iterations) {
+    const salt = crypto.randomBytes(16);
+    const verifier = crypto.pbkdf2Sync(password, salt, iterations, VERIFIER_BYTES, 'sha256');
+    return {
+        Algorithm: 'ZipCrypto',
+        Kdf: 'pbkdf2-sha256',
+        Iterations: iterations,
+        Salt: salt.toString('base64'),
+        Verifier: verifier.toString('base64'),
     };
+}
+/**
+ * Reads a flag value from process.argv.
+ * Supports both `--name value` and `--name=value` forms.
+ */
+function readFlag(name, argv = process.argv.slice(2)) {
+    const prefix = `--${name}=`;
+    for (let i = 0; i < argv.length; i++) {
+        if (argv[i] === `--${name}` && argv[i + 1] !== undefined) {
+            return argv[i + 1];
+        }
+        if (argv[i].startsWith(prefix)) {
+            return argv[i].slice(prefix.length);
+        }
+    }
+    return undefined;
+}
+function readIterations(argv = process.argv.slice(2)) {
+    const raw = readFlag('iterations', argv);
+    if (!raw)
+        return DEFAULT_KDF_ITERATIONS;
+    const n = Number(raw);
+    if (!Number.isFinite(n) || n <= 0) {
+        throw new Error(`Invalid --iterations value: ${raw}`);
+    }
+    return n;
+}
+function makeRl() {
+    return readline.createInterface({ input: process.stdin, output: process.stdout });
+}
+function question(rl, query) {
+    return new Promise((resolve) => rl.question(query, resolve));
+}
+// ---------------------------------------------------------------------------
+// Commands
+// ---------------------------------------------------------------------------
+/**
+ * `sm-cli pack`
+ */
+async function cmdPack(argv) {
+    const projectDir = path.resolve(readFlag('dir', argv) ?? process.cwd());
+    const outArg = readFlag('out', argv);
+    const outPath = outArg ? path.resolve(outArg) : path.join(projectDir, 'game.fap');
+    const password = readFlag('password', argv);
+    const iterations = readIterations(argv);
+    // 1. Pre-flight validation
+    console.log(`\n📂 Project directory: ${projectDir}`);
+    console.log('🔍 Validating project layout…');
+    const validation = (0, validator_1.validateProjectLayout)(projectDir);
+    if (validation.warnings.length > 0) {
+        for (const w of validation.warnings) {
+            console.warn(`  ⚠  ${w}`);
+        }
+    }
+    if (!validation.valid) {
+        for (const e of validation.errors) {
+            console.error(`  ✖  ${e}`);
+        }
+        console.error('\n❌ Validation failed. Pack aborted.');
+        process.exit(1);
+    }
+    console.log('  ✔ Layout valid');
+    // 2. Build pack
+    console.log('\n📦 Building pack…');
+    if (password) {
+        console.log('  🔐 Encryption enabled (AES-256-GCM key file + PBKDF2 verifier)');
+    }
+    const result = await (0, packer_1.buildPack)({ projectDir, outPath, password, iterations });
+    console.log(`\n✅ Pack written: ${result.packPath}`);
+    console.log(`   Entries : ${result.entryCount}`);
+    console.log(`   Size    : ${result.bytes.toLocaleString()} bytes`);
+    console.log(`   Digest  : ${result.contentDigest}`);
+    if (result.keyPath) {
+        console.log(`\n🔑 Key file written: ${result.keyPath}`);
+        console.log('   Keep this file alongside the pack. The engine reads it to unlock the game.');
+    }
+    if (result.warnings.length > 0) {
+        console.log('\nWarnings:');
+        for (const w of result.warnings) {
+            console.warn(`  ⚠  ${w}`);
+        }
+    }
+}
+/**
+ * `sm-cli metadata`  (formerly the sole purpose of this tool)
+ */
+async function cmdMetadata(argv) {
+    const projectDir = path.resolve(readFlag('dir', argv) ?? process.cwd());
+    const passwordFlag = readFlag('password', argv);
+    const iterations = readIterations(argv);
+    const rl = makeRl();
     try {
-        // Set terminal colors: Blue background (\x1b[44m), Yellow foreground (\x1b[33m)
         process.stdout.write('\x1b[44m\x1b[33m');
-        console.log('=====Metadata Generator===== ');
-        const title = await question('What is the title of your game?\n');
-        const author = await question('Who is the creator of this game?\n');
-        const gameVersion = await question('Please type in the version number for this game\n');
-        const startFile = await question('Please enter the name of the start file (without the extension)\n');
+        console.log('===== Metadata Generator =====');
+        const title = await question(rl, 'What is the title of your game?\n');
+        const author = await question(rl, 'Who is the creator of this game?\n');
+        const titleScreenName = await question(rl, 'Title screen image name (no extension, place PNG in Assets/):\n');
+        const gameVersion = await question(rl, 'Version number:\n');
+        const startFile = await question(rl, 'Start file name (without extension):\n');
         const metadata = {
             Title: title,
+            TitleScreenImageName: titleScreenName,
             Author: author,
             Version: gameVersion,
             DateGenerated: new Date().toISOString(),
             VersionHash: hashVersion(),
-            PictureFormatType: ImageFormatType.PNG, // Hardcoded to PNG per C# version
+            PictureFormatType: ImageFormatType.PNG,
             ScenarioExtension: 'txt',
-            StartFile: startFile
+            StartFile: startFile,
+            PackFormatVersion: PACK_FORMAT_VERSION,
         };
-        const outputFilePath = path.join(process.cwd(), 'Metadata.json');
-        fs.writeFileSync(outputFilePath, JSON.stringify(metadata, null, 2), 'utf8');
-        console.log('\nCongratulations, your new metadata file has been generated');
-        // Reset terminal colors before blocking on keypress/exit
+        if (passwordFlag !== undefined) {
+            if (!passwordFlag) {
+                throw new Error('--password was supplied with an empty value');
+            }
+            // Only store the PBKDF2 verifier — NEVER the plaintext password
+            metadata.Encryption = createEncryptionMetadata(passwordFlag, iterations);
+            console.log('\n📝 Encryption block (PBKDF2 verifier) added to Metadata.json.', '\n   Run `sm-cli pack --password=<same>` to generate the matching game.key.');
+        }
+        const outputPath = path.join(projectDir, 'Metadata.json');
+        fs.writeFileSync(outputPath, JSON.stringify(metadata, null, 2), 'utf8');
         process.stdout.write('\x1b[0m');
-        await question('Press Enter to exit...\n');
-    }
-    catch (error) {
-        // Reset terminal colors in case of error
-        process.stdout.write('\x1b[0m');
-        console.error('An error occurred:', error);
+        console.log(`\n✅ Metadata.json written to ${outputPath}`);
+        await question(rl, 'Press Enter to exit…\n');
     }
     finally {
+        process.stdout.write('\x1b[0m');
         rl.close();
     }
+}
+/**
+ * `sm-cli validate`
+ */
+function cmdValidate(argv) {
+    const projectDir = path.resolve(readFlag('dir', argv) ?? process.cwd());
+    console.log(`Validating: ${projectDir}`);
+    const result = (0, validator_1.validateProjectLayout)(projectDir);
+    for (const w of result.warnings)
+        console.warn(`  ⚠  ${w}`);
+    for (const e of result.errors)
+        console.error(`  ✖  ${e}`);
+    if (result.valid) {
+        console.log('✔ Project layout is valid.');
+    }
+    else {
+        console.error('✖ Validation failed.');
+        process.exit(1);
+    }
+}
+/**
+ * Interactive main menu (no sub-command provided).
+ */
+async function cmdInteractive() {
+    const rl = makeRl();
+    try {
+        process.stdout.write('\x1b[44m\x1b[33m');
+        console.log('===== SM-cli =====');
+        console.log('[1] Build .fap pack (Standard or Encrypted)');
+        console.log('[2] Generate or update Metadata.json');
+        console.log('[3] Validate project layout');
+        console.log('[Q] Quit');
+        process.stdout.write('\x1b[0m');
+        const choice = (await question(rl, '\nChoose an option: ')).trim().toLowerCase();
+        rl.close();
+        switch (choice) {
+            case '1':
+                await cmdPack([]);
+                break;
+            case '2':
+                await cmdMetadata([]);
+                break;
+            case '3':
+                cmdValidate([]);
+                break;
+            case 'q':
+                break;
+            default:
+                console.error(`Unknown option: ${choice}`);
+                process.exit(1);
+        }
+    }
+    catch (err) {
+        process.stdout.write('\x1b[0m');
+        rl.close();
+        throw err;
+    }
+}
+// ---------------------------------------------------------------------------
+// Entry point
+// ---------------------------------------------------------------------------
+async function main() {
+    const args = process.argv.slice(2);
+    const subcommand = args[0];
+    const rest = args.slice(1);
+    try {
+        switch (subcommand) {
+            case 'pack':
+                await cmdPack(rest);
+                break;
+            case 'metadata':
+                await cmdMetadata(rest);
+                break;
+            case 'validate':
+                cmdValidate(rest);
+                break;
+            case '--help':
+            case '-h':
+            case 'help':
+                printHelp();
+                break;
+            case undefined:
+                await cmdInteractive();
+                break;
+            default:
+                console.error(`Unknown sub-command: ${subcommand}`);
+                printHelp();
+                process.exit(1);
+        }
+    }
+    catch (err) {
+        console.error('Error:', err instanceof Error ? err.message : String(err));
+        process.exit(1);
+    }
+}
+function printHelp() {
+    console.log(`
+SM-cli — Visual Novel Engine pack builder & metadata generator
+
+Usage:
+  sm-cli pack     [--dir=<path>] [--out=<path>] [--password=<pwd>] [--iterations=<n>]
+  sm-cli metadata [--dir=<path>] [--password=<pwd>] [--iterations=<n>]
+  sm-cli validate [--dir=<path>]
+  sm-cli                      (interactive menu)
+
+Options:
+  --dir=<path>        Project directory containing Metadata.json, Assets/, Scripts/
+                      (default: current working directory)
+  --out=<path>        Output path for the .fap file (default: <dir>/game.fap)
+  --password=<pwd>    Encrypt the pack; generates a matching game.key file.
+                      The password is NEVER stored in Metadata.json.
+  --iterations=<n>    PBKDF2 iteration count (default: 100000)
+  -h, --help          Show this help
+
+Examples:
+  sm-cli pack
+  sm-cli pack --password=secret123
+  sm-cli pack --dir=./my-game --out=./release/Story.fap --password=secret
+  sm-cli validate --dir=./my-game
+  sm-cli metadata
+`);
 }
 if (require.main === module) {
     main();

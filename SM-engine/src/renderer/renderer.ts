@@ -2,6 +2,7 @@ import * as PIXI from 'pixi.js';
 import { Animation } from "../enums/Animation"
 import { Position } from "../enums/Position"
 import { ElectronAPI } from "../main/preload"
+import { characterUrl, sceneUrl, titleImageUrl } from "../services/GamePaths"
 import { GameConfig } from "./GameConfig"
 
 
@@ -334,6 +335,10 @@ export class PixiRenderer {
 
       const ext = extensions[0];
       const img = new Image();
+      // Must be set before src. An image loaded without it is tainted, and a
+      // tainted image cannot be uploaded to WebGL, so PIXI.Texture.from() throws
+      // and the background silently never renders.
+      img.crossOrigin = 'anonymous';
       img.onload = () => {
         try {
           const texture = PIXI.Texture.from(img);
@@ -348,7 +353,7 @@ export class PixiRenderer {
       img.onerror = () => {
         loadImage(extensions.slice(1));
       };
-      img.src = `../Scenes/${name}.${ext}`;
+      img.src = sceneUrl(name, ext);
     };
 
     loadImage(['png', 'jpg', 'jpeg']);
@@ -391,6 +396,7 @@ export class PixiRenderer {
     }
 
     const img = new Image();
+    img.crossOrigin = 'anonymous';
     img.onload = () => {
       try {
         const texture = PIXI.Texture.from(img);
@@ -401,10 +407,10 @@ export class PixiRenderer {
       }
     };
     img.onerror = () => {
-      console.error(`Character sprite not found: ../Characters/${name}/${spriteName}.png`);
+      console.error(`Character sprite not found: ${characterUrl(name, spriteName)}`);
       window.electronAPI.showError(`Character sprite not found: ${name}/${spriteName}`);
     };
-    img.src = `../Characters/${name}/${spriteName}.png`;
+    img.src = characterUrl(name, spriteName);
   }
 
   private createCharacterSpriteFromTexture(name: string, textureKey: string, animation: Animation, screenPosition: number): void {
@@ -497,6 +503,7 @@ export class PixiRenderer {
     }
 
     const img = new Image();
+    img.crossOrigin = 'anonymous';
     img.onload = () => {
       try {
         const texture = PIXI.Texture.from(img);
@@ -509,10 +516,10 @@ export class PixiRenderer {
       }
     };
     img.onerror = () => {
-      console.error(`Sprite not found: ../Characters/${name}/${spriteName}.png`);
+      console.error(`Sprite not found: ${characterUrl(name, spriteName)}`);
       window.electronAPI.showError(`Sprite not found: ${name}/${spriteName}`);
     };
-    img.src = `../Characters/${name}/${spriteName}.png`;
+    img.src = characterUrl(name, spriteName);
   }
 
   private updateSpriteScaleAndPosition(sprite: PIXI.Sprite): void {
@@ -995,6 +1002,7 @@ export class PixiRenderer {
         }
         const ext = extensions[0];
         const img = new Image();
+        img.crossOrigin = 'anonymous';
         img.onload = () => {
           try {
             const texture = PIXI.Texture.from(img);
@@ -1014,7 +1022,7 @@ export class PixiRenderer {
         img.onerror = () => {
           loadTitleImage(extensions.slice(1));
         };
-        img.src = `../Assets/${this.titleScreenImageName}.${ext}`;
+        img.src = titleImageUrl(this.titleScreenImageName, ext);
       };
       loadTitleImage(['png', 'jpg', 'jpeg']);
     }

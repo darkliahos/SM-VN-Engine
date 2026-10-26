@@ -1,11 +1,12 @@
 {
-  "Title": "Crushed cherry blossoms in my heart",
-  "TitleScreenImageName": "title",
+  "Title": "Cherry Blossoms",
+  "TitleScreenImageName": "Title",
   "Author": "Darkliahos",
-  "Version": "1.0.0",
-  "DateGenerated": "2017-11-27T14:13:26.7695882Z",
+  "Version": "0.7.0",
+  "DateGenerated": "2026-10-26T22:41:09.892Z",
   "VersionHash": "002101F8725E5C78D9F30D87F3FA4C87",
-  "StartFile": "Start",
+  "PictureFormatType": 2,
   "ScenarioExtension": "txt",
-  "PictureFormatType": 2
+  "StartFile": "Start",
+  "PackFormatVersion": 1
 }

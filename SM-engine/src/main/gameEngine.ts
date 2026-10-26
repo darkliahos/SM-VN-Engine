@@ -1,12 +1,11 @@
-import * as fs from 'fs/promises';
-import * as path from 'path';
 import { BrowserWindow } from 'electron';
 import { ScenarioStatus } from '../enums';
 import { Metadata, GameWindowInstruction, RanScenario } from '../models';
 import { GameState, DirtyParser, StateManager, ConsoleAlertHandler } from '../services';
 import { generateGuid } from '../services/StringUtils';
+import { GameFolders } from '../services/GamePaths';
 import log from 'electron-log';
-import { getResourcePath } from './pathUtils';
+import { GameSource } from './content/GameSource';
 import { ScenarioMemoryStructure } from '../models/ScenarioMemoryStructure';
 
 export class GameEngine {
@@ -16,10 +15,21 @@ export class GameEngine {
   private scenarioLines: ScenarioMemoryStructure[] = [];
   private metadata: Metadata | null = null;
 
-  constructor(private mainWindow: BrowserWindow | null) {
+  constructor(private mainWindow: BrowserWindow | null, private source?: GameSource) {
     this.alertHandler = new ConsoleAlertHandler();
     this.stateManager = new StateManager(this.alertHandler);
     this.parser = new DirtyParser(this.stateManager);
+  }
+
+  public setSource(source: GameSource): void {
+    this.source = source;
+  }
+
+  private requireSource(): GameSource {
+    if (!this.source) {
+      throw new Error('Game content source has not been set');
+    }
+    return this.source;
   }
 
   public async initialize(): Promise<void> {
@@ -38,9 +48,7 @@ export class GameEngine {
   }
 
   private async loadMetadata(): Promise<void> {
-    const metadataPath = getResourcePath('Metadata.json');
-    const content = await fs.readFile(metadataPath, 'utf-8');
-    this.metadata = JSON.parse(content);
+    this.metadata = await this.requireSource().readMetadata();
   }
 
   private getScenarioLines(): string[] {
@@ -50,11 +58,9 @@ export class GameEngine {
   }
 
   private async loadScenario(): Promise<void> {
-    const scenarioPath = getResourcePath('Scenarios');
     const startFile = GameState.getInstance().getStartFile();
-    const scenarioFile = path.join(scenarioPath, startFile);
+    const content = await this.requireSource().readText(`${GameFolders.scenarios}/${startFile}`);
 
-    const content = await fs.readFile(scenarioFile, 'utf-8');
     const liveScenario = this.stateManager.getCurrentScenario();
     this.scenarioLines = [{
       id: liveScenario.Id,
@@ -85,7 +91,6 @@ export class GameEngine {
     }
 
 
-    const scenarioPath = getResourcePath('Scenarios');
     const ext = GameState.getInstance().getScenarioFileExtension() || 'txt';
     const candidateFiles = [
       targetScenario,
@@ -95,18 +100,17 @@ export class GameEngine {
     ];
 
     for (const file of candidateFiles) {
-      const scenarioFile = path.join(scenarioPath, file);
-      try {
-        const content = await fs.readFile(scenarioFile, 'utf-8');
-        this.scenarioLines.push({ name: targetScenario, id: "", lines: content.split('\n') });
-        GameState.getInstance().jumpScenarios(targetScenario, file);
-        GameState.getInstance().setCurrentLine(0);
-        log.info(`Jumped to scenario file: ${file}`);
-        this.mainWindow?.webContents.send('scene-transition');
-        return;
-      } catch {
+      const entryPath = `${GameFolders.scenarios}/${file}`;
+      if (!this.requireSource().exists(entryPath)) {
         continue;
       }
+      const content = await this.requireSource().readText(entryPath);
+      this.scenarioLines.push({ name: targetScenario, id: "", lines: content.split('\n') });
+      GameState.getInstance().jumpScenarios(targetScenario, file);
+      GameState.getInstance().setCurrentLine(0);
+      log.info(`Jumped to scenario file: ${file}`);
+      this.mainWindow?.webContents.send('scene-transition');
+      return;
     }
 
     log.warn(`Scenario target not found: ${targetScenario}`);
